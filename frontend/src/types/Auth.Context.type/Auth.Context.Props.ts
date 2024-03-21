@@ -1,3 +1,23 @@
+export type AuthContextProps = {
+    user: User | null;
+    isRegistered: boolean;
+    isRegisterLoading: boolean;
+    isRegisterError: string | null;
+    isRegisterInfo:  RegisterInfo;
+    loading: boolean;
+    isLogged: boolean;
+    isLoggedError: string | null;
+    isLoggedInfo: LoginInfo;
+    isLoggedLoading: boolean;
+    updateRegisterInfo: (isRegisterInfo: RegisterInfo) => void;
+    updateLoggedInfo: (isLoggedInfo: LoginInfo) => void;
+    registerUser: (isRegisterInfo: RegisterInfo) => Promise<void>;
+    loginUser: (isLoggedInfo: LoginInfo) => Promise<void>;
+    logoutUser: () => Promise<void>;
+    verifyUser: () => Promise<void>;
+}
+
+
 export type User = {
     id?: number; // Identifiant de l'utilisateur
     username?: string; // Nom d'utilisateur de l'utilisateur
@@ -10,3 +30,17 @@ export type User = {
     notifications?: number; // Nombre de notifications
     lastNotificationSeen?: string; // Date de la dernière notification vue
 };
+
+export type RegisterInfo = {
+    email: string;
+    username: string;
+    gender: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export type LoginInfo = {
+    email: string;
+    password: string;
+}
+

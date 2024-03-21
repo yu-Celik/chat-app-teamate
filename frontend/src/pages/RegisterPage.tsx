@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
-import { Link as RouterLink } from 'react-router-dom';
+import { Alert, Box, Button, CircularProgress, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
+import useAuth from '../contexts/Auth.Context/useAuthContext';
+import { RegisterInfo } from '../types/Auth.Context.type/Auth.Context.Props';
 
 const StyledTypography = styled(Typography)(() => ({
     color: customTheme.palette.slate[200],
 
     '&.MuiTypography-root.MuiTypography-h1': {
         fontWeight: 600,
-        [customTheme.breakpoints.down('lg')]: {
+        fontSize: customTheme.typography.h4.fontSize,
+        lineHeight: customTheme.typography.h4.lineHeight,
+
+        [customTheme.breakpoints.up('md')]: {
             fontSize: customTheme.typography.h3.fontSize,
             lineHeight: customTheme.typography.h3.lineHeight
         },
-        [customTheme.breakpoints.down('md')]: {
-            fontSize: customTheme.typography.h4.fontSize,
-            lineHeight: customTheme.typography.h4.lineHeight,
-        },
+
     },
     '&.MuiTypography-root.MuiTypography-body2': {
         fontSize: customTheme.typography.subtitle2.fontSize,
@@ -77,33 +79,25 @@ const StyledButton = styled(Button)(() => ({
         width: '30ch',
         fontWeight: 600,
         '&:hover': {
-            backgroundColor: customTheme.palette.orangePV.light,
+            backgroundColor: customTheme.palette.purplePV.dark,
         },
         [customTheme.breakpoints.down('md')]: {
             width: '100%',
             fontSize: customTheme.typography.body2.fontSize,
             lineHeight: customTheme.typography.body2.lineHeight,
+            '&:hover': {
+                backgroundColor: customTheme.palette.orangePV.dark,
+            },
         },
     },
 }));
 
-const steps = [
-    { label: 'Email', name: 'email', error: 'Une adresse email valide est requise' },
-    { label: 'Username', name: 'username', error: 'Le nom d\'utilisateur doit contenir entre 3 et 20 caractères' },
-    { label: 'Genre', name: 'gender', error: 'Genre invalide' },
-    { label: 'Mot de passe', name: 'password', error: 'Le mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' },
-    { label: 'Confirmation du mot de passe', name: 'confirmPassword', error: 'Les mots de passe ne correspondent pas' },
-];
+
 
 export default function RegisterPage() {
-    const [formData, setFormData] = useState({
-        email: '',
-        username: '',
-        gender: '',
-        password: '',
-        confirmPassword: '',
-    });
-    const [formError, setFormError] = useState({
+    const { user, isRegistered, isRegisterLoading, isRegisterError, isRegisterInfo, updateRegisterInfo, registerUser } = useAuth();
+    const navigate = useNavigate();
+    const [registerError, setRegisterError] = useState<RegisterInfo>({
         email: '',
         username: '',
         gender: '',
@@ -112,19 +106,36 @@ export default function RegisterPage() {
     });
 
     useEffect(() => {
-        console.log('formData', formData);
-    }, [formData]);
+        if (user !== null) {
+            navigate('/');
+        }
+    }, [user, navigate]);
+
+
+    // useEffect(() => {
+    //     console.log('isRegisterInfo', isRegisterInfo);
+    // }, [isRegisterInfo]);
+
+    // useEffect(() => {
+    //     console.log('registerError', registerError);
+    // }, [registerError]);
+
+    // useEffect(() => {
+    //     if (isRegisterError !== null) {
+    //         console.log('isRegisterError', isRegisterError);
+    //     }
+    // }, [isRegisterError]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
         const { name, value } = e.target as { name: string, value: string };
-        setFormData({ ...formData, [name]: value });
+        updateRegisterInfo({ ...isRegisterInfo, [name]: value });
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // Préparer un objet pour les erreurs potentielles
-        const newErrors = {
+        // Créer une copie locale de registerError pour vérifier les erreurs
+        const errors = {
             email: '',
             username: '',
             gender: '',
@@ -132,37 +143,59 @@ export default function RegisterPage() {
             confirmPassword: '',
         };
 
-        // Vérifier tous les champs
-        if (!formData.email) {
-            newErrors.email = steps[0].error;
+        // Vérifier tous les champs et mettre à jour la copie locale des erreurs
+        if (isRegisterInfo.email === '') {
+            errors.email = 'Veuillez saisir une adresse email';
         }
-        if (!formData.username) {
-            newErrors.username = steps[1].error;
+        if (isRegisterInfo.username === '') {
+            errors.username = 'Veuillez saisir un nom d\'utilisateur';
         }
-        if (!formData.password) {
-            newErrors.password = steps[3].error;
+        if (isRegisterInfo.password === '') {
+            errors.password = 'Veuillez saisir un mot de passe';
         }
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = steps[4].error;
+        if (isRegisterInfo.confirmPassword === '') {
+            errors.confirmPassword = 'Veuillez saisir une confirmation du mot de passe';
         }
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = steps[4].error;
+        if (isRegisterInfo.password !== isRegisterInfo.confirmPassword) {
+            errors.confirmPassword = 'Les mots de passe ne correspondent pas';
         }
-        if (!formData.gender) {
-            newErrors.gender = steps[2].error;
+        if (isRegisterInfo.gender === '') {
+            errors.gender = 'Veuillez saisir votre genre';
         }
 
         // Mettre à jour l'état des erreurs avec les nouvelles erreurs
-        setFormError(newErrors);
+        setRegisterError(errors);
 
-        // Vérifier si le formulaire est valide
-        const isValid = Object.values(newErrors).every(error => error === '');
+        // Vérifier si le formulaire est completé en utilisant la copie locale des erreurs
+        const formIsValid = Object.values(errors).every(error => error === '');
 
-        if (isValid) {
-            console.log('form valid');
-            // Soumettre le formulaire ou effectuer d'autres actions
+        if (formIsValid) {
+            if (registerUser === undefined) { console.error('registerUser is undefined'); return; }
+            registerUser(isRegisterInfo).then(() => {
+
+                // Faire quelque chose lorsque la promesse est résolue
+                // setTimeout() ne marche pas ici
+                // Vider les champs d'entrée
+                if (isRegistered === true) {
+                    if (updateRegisterInfo === undefined) { console.error('updateRegisterInfo is undefined'); return; }
+                    updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
+                    console.log('Inscription réussie');
+                    navigate('/');
+                }
+            }).catch((error) => {
+                // Gérer l'erreur
+                console.error('catcheur', error);
+            });
         }
     };
+
+    const formField = [
+        { name: 'email', label: 'Adresse email', },
+        { name: 'username', label: 'Nom d\'utilisateur', },
+        { name: 'gender', label: 'Genre', },
+        { name: 'password', label: 'Mot de passe', },
+        { name: 'confirmPassword', label: 'Confirmation du mot de passe', },
+    ];
 
     return (
         <ThemeProvider theme={customTheme}>
@@ -209,17 +242,18 @@ export default function RegisterPage() {
                     <StyledTypography gutterBottom variant="h1">Créez un compte</StyledTypography>
                     <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
                         <Stack spacing={2}>
-                            {steps.map(step => (
+                            {formField.map(step => (
                                 step.name === 'gender' ? (
                                     <StyledTextField
+                                        key={step.name}
                                         color="primary"
                                         label={step.label}
                                         variant='filled'
                                         name={step.name}
-                                        value={formData[step.name as keyof typeof formData]}
+                                        value={isRegisterInfo[step.name as keyof typeof isRegisterInfo]}
                                         onChange={handleChange}
-                                        error={formError[step.name as keyof typeof formError] !== ''}
-                                        helperText={formError[step.name as keyof typeof formError]}
+                                        error={registerError[step.name as keyof typeof registerError] !== ''}
+                                        helperText={registerError[step.name as keyof typeof registerError]}
                                         select
                                     >
                                         <MenuItem value=""><em>Genre</em></MenuItem>
@@ -228,23 +262,37 @@ export default function RegisterPage() {
                                     </StyledTextField>
                                 ) : (
                                     <StyledTextField
+                                        key={step.name}
                                         color="primary"
                                         label={step.label}
                                         variant="filled"
                                         name={step.name}
-                                        value={formData[step.name as keyof typeof formData]}
+                                        value={isRegisterInfo[step.name as keyof typeof isRegisterInfo]}
                                         onChange={handleChange}
-                                        error={formError[step.name as keyof typeof formError] !== ''}
-                                        helperText={formError[step.name as keyof typeof formError]}
+                                        error={registerError[step.name as keyof typeof registerError] !== ''}
+                                        helperText={registerError[step.name as keyof typeof registerError]}
                                     />
                                 )
                             ))}
                         </Stack>
+                        {isRegisterError !== null && (
+                            <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+                                {isRegisterError}
+                            </Alert>
+                        )}
+                        {isRegistered === true && (
+                            <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
+                                Inscription réussie !
+                            </Alert>
+                        )}
                         <StyledButton
                             variant="contained"
                             color="primary"
-                            type="submit">
-                            S'inscrire
+                            type="submit"
+                            disabled={isRegisterLoading}
+                            endIcon={isRegisterLoading ? <CircularProgress size="1rem" /> : undefined}
+                        >
+                            {isRegisterLoading ? 'Enregistrement...' : 'S\'inscrire'}
                         </StyledButton>
                         <StyledTypography gutterBottom variant={'body2'}>
                             Vous avez déjà un compte ? <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/login'}>Connectez-vous</Link>

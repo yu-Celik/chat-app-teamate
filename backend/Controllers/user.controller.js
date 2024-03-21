@@ -10,35 +10,32 @@ const registerUser = async (req, res) => {
         let user = await UserModel.findOne({ email });
 
         if (user) {
-            return res.status(400).json({ error: 'Un utilisateur avec cette adresse email existe déjà' });
+            return res.status(400).json({error: 'Un utilisateur avec cette adresse email existe déjà'});
         }
         if (!username || !email || !password || !gender) {
-            return res.status(400).json({ error: 'Veuillez remplir tous les champs' });
+            return res.status(400).json({error: 'Veuillez remplir tous les champs' });
         }
         
         if (!validator.isEmail(email)) {
-            return res.status(400).json({ error: 'Une adresse email valide est requise' });
+            return res.status(400).json({error: 'Une adresse email valide est requise' });
         }
         
         if (!validator.isLength(username, { min: 3, max: 15 })) {
-            return res.status(400).json({ error: 'Le nom d\'utilisateur doit contenir entre 3 et 15 caractères' });
+            return res.status(400).json({error: 'Le nom d\'utilisateur doit contenir entre 3 et 15 caractères' });
         }
         
         if (!validator.isStrongPassword(password)) {
-            return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères et contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' });
+            return res.status(400).json({error: 'Le mot de passe doit contenir au moins 8 caractères et contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' });
         }
         
         if (password !== confirmPassword) {
-            return res.status(400).json({ error: 'Les mots de passe ne correspondent pas' });
+            return res.status(400).json({error: 'Les mots de passe ne correspondent pas' });
         }
         
         if (!validator.isAlpha(gender)) {
-            return res.status(400).json({ error: 'Genre invalide' });
+            return res.status(400).json({error: 'Veuillez saisir votre genre' });
         }
 
-        if (!validator.isAlpha(gender)) {
-            return res.status(400).json('Genre invalide');
-        }
         // hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -111,13 +108,16 @@ const getUsers = async (req, res) => {
     }
 };
 
-export const logout = (_, res) => {
+const verifyToken = (req, res) => {
+    console.log('verifyToken', req.user);
+    res.status(200).json({ message: "Token verified", user: req.user });
+}
+
+const logout = (req, res) => {
     try {
-        res.cookie('jwt', '', { maxAge: 1 }); // Efface le cookie
-        res.redirect('/'); // Redirige l'utilisateur après la déconnexion
+        res.clearCookie('jwt'); // Efface le cookie
         res.status(200).json({ message: "User logged out successfully" });
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error logging out user', error.message);
         res.status(500).json({ error: "Something went wrong" });
     }
@@ -125,4 +125,4 @@ export const logout = (_, res) => {
 
 
 
-export { registerUser, loginUser, findUser, getUsers };
+export { registerUser, loginUser, findUser, getUsers, verifyToken, logout };

@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
-import { Link as RouterLink } from 'react-router-dom';
+import { Alert, Box, Button, CircularProgress, Link, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
+import useAuth from '../contexts/Auth.Context/useAuthContext';
 
 const StyledTypography = styled(Typography)(() => ({
   color: customTheme.palette.slate[200],
 
   '&.MuiTypography-root.MuiTypography-h1': {
     fontWeight: 600,
-    [customTheme.breakpoints.down('lg')]: {
+    fontSize: customTheme.typography.h4.fontSize,
+    lineHeight: customTheme.typography.h4.lineHeight,
+
+    [customTheme.breakpoints.up('md')]: {
       fontSize: customTheme.typography.h3.fontSize,
       lineHeight: customTheme.typography.h3.lineHeight
     },
-    [customTheme.breakpoints.down('md')]: {
-      fontSize: customTheme.typography.h4.fontSize,
-      lineHeight: customTheme.typography.h4.lineHeight,
-    },
+
   },
+
   '&.MuiTypography-root.MuiTypography-body2': {
     fontSize: customTheme.typography.subtitle2.fontSize,
     lineHeight: customTheme.typography.subtitle2.lineHeight,
@@ -39,9 +41,6 @@ const StyledTypography = styled(Typography)(() => ({
       lineHeight: customTheme.typography.caption.lineHeight,
     },
   },
-
-
-
 }));
 
 const StyledTextField = styled(TextField)(() => ({
@@ -77,51 +76,44 @@ const StyledButton = styled(Button)(() => ({
     width: '30ch',
     fontWeight: 600,
     '&:hover': {
-      backgroundColor: customTheme.palette.purplePV.light,
+      backgroundColor: customTheme.palette.purplePV.dark,
     },
     [customTheme.breakpoints.down('md')]: {
       width: '100%',
       fontSize: customTheme.typography.body2.fontSize,
       lineHeight: customTheme.typography.body2.lineHeight,
+      '&:hover': {
+        backgroundColor: customTheme.palette.orangePV.dark,
+      },
     },
   },
 }));
 
-const steps = [
-  { label: 'Email', name: 'email', error: 'Une adresse email valide est requise' },
-  { label: 'Mot de passe', name: 'password', error: 'Le mot de passe doit contenir au moins 8 caractères et au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' },
-];
-
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
+  const { user, loginUser, isLoggedLoading, isLoggedError, isLoggedInfo, updateLoggedInfo, isLogged } = useAuth();
+  const navigate = useNavigate();
+  const [loginError, setLoginError] = useState({
     email: '',
-    username: '',
-    gender: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [formError, setFormError] = useState({
-    email: '',
-    username: '',
-    gender: '',
     password: '',
     confirmPassword: '',
   });
 
   useEffect(() => {
-    console.log('formData', formData);
-  }, [formData]);
+    if (user !== null) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const { name, value } = e.target as { name: string, value: string };
-    setFormData({ ...formData, [name]: value });
+    updateLoggedInfo({ ...isLoggedInfo, [name]: value });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Préparer un objet pour les erreurs potentielles
-    const newErrors = {
+    const errors = {
       email: '',
       username: '',
       gender: '',
@@ -130,36 +122,46 @@ export default function RegisterPage() {
     };
 
     // Vérifier tous les champs
-    if (!formData.email) {
-      newErrors.email = steps[0].error;
+    if (!isLoggedInfo.email) {
+      errors.email = 'Veuillez saisir une adresse email';
     }
-    if (!formData.username) {
-      newErrors.username = steps[1].error;
-    }
-    if (!formData.password) {
-      newErrors.password = steps[3].error;
-    }
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = steps[4].error;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = steps[4].error;
-    }
-    if (!formData.gender) {
-      newErrors.gender = steps[2].error;
+
+    if (!isLoggedInfo.password) {
+      errors.password = 'Veuillez saisir un mot de passe';
     }
 
     // Mettre à jour l'état des erreurs avec les nouvelles erreurs
-    setFormError(newErrors);
+    setLoginError(errors);
 
     // Vérifier si le formulaire est valide
-    const isValid = Object.values(newErrors).every(error => error === '');
+    const formIsValid = Object.values(errors).every(error => error === '');
 
-    if (isValid) {
-      console.log('form valid');
-      // Soumettre le formulaire ou effectuer d'autres actions
+    if (formIsValid) {
+      if (loginUser === undefined) { console.error('loginUser is undefined'); return; }
+      loginUser(isLoggedInfo).then(() => {
+
+        // Faire quelque chose lorsque la promesse est résolue
+        // setTimeout() ne marche pas ici
+        // Vider les champs d'entrée
+        if (isLogged === true) {
+          if (updateLoggedInfo === undefined) { console.error('updateRegisterInfo is undefined'); return; }
+          updateLoggedInfo({ email: '', password: '' });
+          console.log('Inscription réussie');
+          navigate('/');
+        }
+      }).catch((error) => {
+        // Gérer l'erreur
+        console.error('catcheur', error);
+      });
     }
-  };
+  }
+
+
+
+  const formField = [
+    { name: 'email', label: 'Adresse email', },
+    { name: 'password', label: 'Mot de passe', },
+  ];
 
   return (
     <ThemeProvider theme={customTheme}>
@@ -206,42 +208,39 @@ export default function RegisterPage() {
           <StyledTypography gutterBottom variant="h1">Se connecter</StyledTypography>
           <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
             <Stack spacing={2}>
-              {steps.map(step => (
-                step.name === 'gender' ? (
-                  <StyledTextField
-                    color="primary"
-                    label={step.label}
-                    variant='filled'
-                    name={step.name}
-                    value={formData[step.name as keyof typeof formData]}
-                    onChange={handleChange}
-                    error={formError[step.name as keyof typeof formError] !== ''}
-                    helperText={formError[step.name as keyof typeof formError]}
-                    select
-                  >
-                    <MenuItem value=""><em>Genre</em></MenuItem>
-                    <MenuItem value="male">Homme</MenuItem>
-                    <MenuItem value="female">Femme</MenuItem>
-                  </StyledTextField>
-                ) : (
-                  <StyledTextField
-                    color="primary"
-                    label={step.label}
-                    variant="filled"
-                    name={step.name}
-                    value={formData[step.name as keyof typeof formData]}
-                    onChange={handleChange}
-                    error={formError[step.name as keyof typeof formError] !== ''}
-                    helperText={formError[step.name as keyof typeof formError]}
-                  />
-                )
+              {formField.map(step => (
+
+                <StyledTextField
+                  key={step.name}
+                  color="primary"
+                  label={step.label}
+                  variant="filled"
+                  name={step.name}
+                  value={isLoggedInfo[step.name as keyof typeof isLoggedInfo]}
+                  onChange={handleChange}
+                  error={loginError[step.name as keyof typeof loginError] !== ''}
+                  helperText={loginError[step.name as keyof typeof loginError]}
+                />
               ))}
             </Stack>
+            {isLoggedError !== null && (
+              <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+                {isLoggedError}
+              </Alert>
+            )}
+            {isLogged === true && (
+              <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
+                Inscription réussie !
+              </Alert>
+            )}
             <StyledButton
               variant="contained"
               color="primary"
-              type="submit">
-              Se connecter
+              type="submit"
+              disabled={isLoggedLoading}
+              endIcon={isLoggedLoading ? <CircularProgress size="1rem" /> : undefined}
+            >
+              {isLoggedLoading ? 'Connexion...' : 'Se connecter'}
             </StyledButton>
             <StyledTypography gutterBottom variant={'body2'}>
               Vous n'avez pas de compte ? <Link fontWeight={600} component={RouterLink} color={'primary'} underline={'hover'} to={'/Register'}>Inscrivez-vous</Link>

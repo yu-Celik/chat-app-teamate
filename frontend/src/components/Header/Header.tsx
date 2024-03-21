@@ -8,6 +8,7 @@ import { SearchBar } from "../SearchBar/SearchBar";
 import { SearchIconOnly } from "../SearchBar/SearchIconOnly";
 import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
 import BurgerButtonMui from "../Button/BurgerButtonMui";
+import useAuth from "../../contexts/Auth.Context/useAuthContext";
 
 const pages = ['Accueil', 'Événement', 'Calendrier'];
 
@@ -20,7 +21,7 @@ const StyledStack = styled(Stack)(() => ({
     },
 }));
 export default function Header() {
-
+    const { user, logoutUser } = useAuth();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -121,15 +122,15 @@ export default function Header() {
             }}
 
         >
-            <MenuItem onClick={handleMenuClose}>Username</MenuItem>
+            <MenuItem onClick={handleMenuClose}>{user?.email}</MenuItem>
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem
-            // onClick={() => {
-            //     handleMenuClose();
-            //     if (logoutUser !== undefined && logoutUser !== null) {
-            //         logoutUser();
-            //     }
-            // }}
+                onClick={() => {
+                    handleMenuClose();
+                    if (logoutUser !== undefined && logoutUser !== null) {
+                        logoutUser();
+                    }
+                }}
             >Déconnexion</MenuItem>
         </Menu>
     );
