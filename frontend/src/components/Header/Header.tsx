@@ -21,7 +21,7 @@ const StyledStack = styled(Stack)(() => ({
     },
 }));
 export default function Header() {
-    const { user, logoutUser } = useAuth();
+    const { currentUser, logoutUser } = useAuth();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -122,7 +122,7 @@ export default function Header() {
             }}
 
         >
-            <MenuItem onClick={handleMenuClose}>{user?.email}</MenuItem>
+            <MenuItem onClick={handleMenuClose}>{currentUser?.username}</MenuItem>
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem
                 onClick={() => {

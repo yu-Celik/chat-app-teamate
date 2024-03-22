@@ -3,7 +3,7 @@ import Header from '../components/Header/Header';
 import { Box, Stack } from '@mui/material';
 import { User } from '../data/userData';
 
-const MainLayout = ({ children, connected }: { children: ReactNode, connected: User }) => {
+const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
     return (
         <Box sx={{
             height: 'fit-content',

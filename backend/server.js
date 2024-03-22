@@ -6,7 +6,6 @@ import cors from 'cors';
 import messageRoutes from './routes/message.routes.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
-import protectRoute from './middleware/protectRoute.js';
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -14,7 +13,7 @@ const app = express();
 
 // Configuration CORS
 const corsOptions = {
-  origin: 'http://localhost:3000', // Autorise les requêtes provenant de ce domaine
+  origin: process.env.CLIENT_URL, // Autorise les requêtes provenant de ce domaine
   credentials: true, // Autorise les cookies et les en-têtes d'authentification
 };
 

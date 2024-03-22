@@ -17,6 +17,7 @@ import customTheme from '../../styles/customTheme';
 import GroupeDisplay from './GroupeDisplay/GroupeDisplay';
 import { GroupAdd, Search, Add } from '@mui/icons-material';
 import { ListItemIcon } from '@mui/material';
+import { useChat } from '../../contexts/Chat.Context/useChatContext';
 
 const drawerWidth = 360;
 const heightHeader = 69.5;
@@ -115,7 +116,20 @@ function getLastMessageSeen(userId: number): string {
 export function PersistentDesktopDrawer({ children }: { children: React.ReactNode }) {
     const [value, setValue] = React.useState(0);
     const [showGroupe, setShowGroupe] = React.useState(true);
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const { fetchingUsers, isFetchingUsersLoading } = useChat();
+
+
+    React.useEffect(() => {
+        console.log(fetchingUsers);
+    }, [fetchingUsers]);
+
+    React.useEffect(() => {
+        console.log(isFetchingUsersLoading);
+    }, [isFetchingUsersLoading]);
+
+
+
+    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
     // const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
@@ -286,7 +300,7 @@ export function SwipeableMobileDrawer(props: SwipeableMobileDrawerProps) {
     const [showGroupe, setShowGroupe] = React.useState(true);
     const [value, setValue] = React.useState(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
     // const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));

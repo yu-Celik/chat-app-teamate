@@ -1,12 +1,12 @@
-import { ReactNode, SetStateAction, createContext, useCallback, useState } from "react";
+import { ReactNode, SetStateAction, createContext, useCallback, useEffect, useState } from "react";
 import { User } from "../../data/userData";
-import axios from "axios";
+import axios from "../../config/axiosConfig";
 import { AuthContextProps, LoginInfo, RegisterInfo } from "../../types/Auth.Context.type/Auth.Context.Props";
 
 export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [currentUser , setCurrentUser] = useState<User | null>(null);
     const [isRegistered, setIsRegistered] = useState(false);
     const [isRegisterLoading, setIsRegisterLoading] = useState(false);
     const [isRegisterError, setIsRegisterError] = useState<string | null>(null);
@@ -17,8 +17,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const [isLoggedError, setIsLoggedError] = useState<string | null>(null);
     const [isLoggedInfo, setIsLoggedInfo] = useState<LoginInfo>({ email: "", password: "" });
 
-
-    const [loading, setLoading] = useState(true);
+    const [isAuthChecking, setIsAuthChecking] = useState(true); // Nouvel état pour suivre la vérification de l'authentification
 
 
 
@@ -30,20 +29,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setIsLoggedInfo(info);
     }, []);
 
-    const verifyUser = useCallback(async () => {
-        try {
-            console.log('userverify',user);
-            
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/verify`, { withCredentials: true });
-            console.log('response.data.user',response.data.user);
-            setUser(response.data.user);
-            setLoading(false);
-        } catch (error) {
-            console.error('Erreur lors de la vérification de l\'utilisateur', error);
-            setUser(null); // Assurez-vous de gérer l'utilisateur non authentifié
-            setLoading(false);
-        }
-    }, [user]);
 
 
     const registerUser = useCallback(async () => {
@@ -51,8 +36,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setIsRegisterError(null);
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, isRegisterInfo);
-            setUser(response.data);
+            const response = await axios.post('/users/register', isRegisterInfo);
+            setCurrentUser(response.data);
             setIsRegistered(true);
             setIsRegisterLoading(false);
             setIsLogged(true);
@@ -62,10 +47,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
                 setIsRegisterError(errorMessage);
                 setIsRegisterLoading(false);
                 setIsRegistered(false);
-            } else if (error instanceof Error) {
-                setIsRegisterError(error.message);
-            } else {
-                setIsRegisterError('Une erreur inconnue est survenue lors de l\'inscription');
             }
         } finally {
             setIsRegisterInfo({
@@ -82,21 +63,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setIsLoggedLoading(true);
         setIsLoggedError(null);
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, isLoggedInfo);
-            setUser(response.data);
+            const response = await axios.post('/users/login', isLoggedInfo);
+            setCurrentUser(response.data);
             setIsLogged(true);
             setIsLoggedLoading(false);
-
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 const errorMessage = error.response.data.error || 'Une erreur inconnue est survenue lors de la connexion';
                 setIsLoggedError(errorMessage);
                 setIsLoggedLoading(false);
                 setIsLogged(false);
-            } else if (error instanceof Error) {
-                setIsLoggedError(error.message);
-            } else {
-                setIsLoggedError('Une erreur inconnue est survenue lors de la connexion');
             }
         } finally {
             setIsLoggedInfo({
@@ -108,22 +84,40 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
     const logoutUser = useCallback(async () => {
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/users/logout`);
-            document.cookie = 'token=; Max-Age=0';
-            setUser(null);
+            await axios.post('/users/logout');
+            setCurrentUser(null);
             setIsLogged(false);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 const errorMessage = error.response.data.error || 'Une erreur inconnue est survenue lors de la déconnexion';
                 setIsLoggedError(errorMessage);
-                setIsLoggedLoading(false);
-                setIsLogged(false);
             }
         }
     }, []);
 
+    useEffect(() => {
+        const verifyUser = async () => {
+            try {
+                const response = await axios.get('/users/verify');
+                setCurrentUser(response.data.user);
+                setIsLogged(true);
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                    if (error.response.status === 401 || error.response.status === 403) {
+                        setIsLogged(false);
+                        // Ne pas afficher l'erreur dans la console pour l'experience utilisateur
+                    }
+                }
+            } finally {
+                setIsAuthChecking(false); 
+            }
+        };
+        verifyUser();
+    }, []);
+
+
     return (
-        <AuthContext.Provider value={{ user, isRegistered, isRegisterLoading, isRegisterError, isRegisterInfo, updateRegisterInfo, registerUser, loading, verifyUser, isLogged, isLoggedError, isLoggedInfo, loginUser, isLoggedLoading, logoutUser, updateLoggedInfo }}>
+        <AuthContext.Provider value={{ currentUser , isRegistered, isRegisterLoading, isRegisterError, isRegisterInfo, updateRegisterInfo, registerUser, isLogged, isLoggedError, isLoggedInfo, loginUser, isLoggedLoading, logoutUser, updateLoggedInfo, isAuthChecking }}>
             {children}
         </AuthContext.Provider>
     )

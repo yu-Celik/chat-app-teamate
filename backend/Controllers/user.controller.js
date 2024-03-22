@@ -2,7 +2,7 @@ import UserModel from '../Models/user.model.js';
 import bcrypt from 'bcrypt';
 import generateTokenAndSetCookie from '../utils/generateToken.js';
 import validator from 'validator';
-
+import jwt from 'jsonwebtoken';
 
 const registerUser = async (req, res) => {
     try {
@@ -76,9 +76,9 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await UserModel.findOne({ email });
-        if (!user) return res.status(400).json('Invalid email or password');
+        if (!user) return res.status(400).json({error: 'Invalid email or password'});
         const isValidPassword = await bcrypt.compare(password, user.password || '');
-        if (!isValidPassword) return res.status(400).json('Invalid email or password');
+        if (!isValidPassword) return res.status(400).json({error: 'Invalid email or password'});
         generateTokenAndSetCookie(user._id, res);
         res.status(200).json({ _id: user._id, email });
     } catch (error) {
@@ -91,27 +91,24 @@ const findUser = async (req, res) => {
     const userId = req.params.userId;
     try {
         const user = await UserModel.findById(userId);
-        if (!user) return res.status(404).json('User not found');
+        if (!user) return res.status(404).json({error: 'User not found'});
         res.status(200).json(user);
     } catch (error) {
         console.log(error);
         res.status(500).json(error);
     }
 };
-const getUsers = async (req, res) => {
-    try {
-        const users = await UserModel.find();
-        res.status(200).json(users);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(error);
-    }
-};
 
-const verifyToken = (req, res) => {
-    console.log('verifyToken', req.user);
-    res.status(200).json({ message: "Token verified", user: req.user });
-}
+const getAllUsersExceptLoggedIn = async (req, res) => {
+    try {
+        const loggedInUserId = req.user._id;
+		const filteredUsers = await UserModel.find({ _id: { $ne: loggedInUserId } }).select("-password");
+		res.status(200).json(filteredUsers);
+	} catch (error) {
+		console.error("Error in getAllUsersExceptLoggedIn: ", error.message);
+		res.status(500).json({ error: "Internal server error" });
+	}
+};
 
 const logout = (req, res) => {
     try {
@@ -123,6 +120,28 @@ const logout = (req, res) => {
     }
 };
 
+const verifyUser = async (req, res) => {
+    try {
+        const token = req.cookies.jwt;
+        if (!token) {
+            return res.status(401).json({ message: "Non autorisé" });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        if (!decoded) {
+            return res.status(401).json({ message: "Token invalide" });
+        }
+
+        const user = await UserModel.findById(decoded.userId).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        // console.error('Erreur lors de la vérification de l\'utilisateur', error.message);
+        // res.status(500).json({ error: "Erreur serveur" });
+    }
+};
 
 
-export { registerUser, loginUser, findUser, getUsers, verifyToken, logout };
+export { registerUser, loginUser, findUser, getAllUsersExceptLoggedIn, logout, verifyUser };
