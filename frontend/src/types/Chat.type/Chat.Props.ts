@@ -16,15 +16,17 @@ export type Message = {
 
 export type Chat = {
     _id: string;
-    members?: string[];
-    messages?: Message[];
+    members: User[];
+    createdAt: string;
+    updatedAt: string;
 }
 
-
-
-export type PotentialChat = {
-    users: User[];
+export type ChatState = {
+    isLoading: boolean;
+    error: string | null;
+    data: Chat | null;
 }
+
 
 export type UserChats = {
     isLoading: boolean;
@@ -33,9 +35,7 @@ export type UserChats = {
     secondUsers: User[];
 }
 
-export type secondUsers = {
-    members: User[];
-}
+
 
 
 export type UsersState = {

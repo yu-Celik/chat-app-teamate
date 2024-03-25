@@ -41,6 +41,18 @@ const findUserChats = async (req, res) => {
     }
 };
 
+const deleteChat = async (req, res) => {
+    console.log('deleteChat');
+    const { chatId } = req.params;
+    try {
+        const chat = await ChatModel.findByIdAndDelete(chatId);
+        res.status(200).json(chat);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+
 // findChat
 
 const findChat = async (req, res) => {
@@ -56,4 +68,4 @@ const findChat = async (req, res) => {
     }
 };
 
-export { createChat, findUserChats, findChat };
+export { createChat, findUserChats, findChat, deleteChat };

@@ -5,11 +5,10 @@ import { useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
 import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
-import useUserChats from "../hooks/Chat/useUserChats";
 
 export default function ChatPage() {
     const [open, setOpen] = useState(false);
-    const { userChats, refreshChats } = useUserChats();    
+
 
     const toggleDrawer = useCallback(() => {
         setOpen((prevOpen) => !prevOpen);
@@ -21,7 +20,7 @@ export default function ChatPage() {
     return (
         <>
             {isMdUp &&
-                <PersistentDesktopDrawer userChats={userChats} refreshChats={refreshChats}>
+                <PersistentDesktopDrawer>
                     <ChatHeader onClickOpenDrawer={toggleDrawer} />
                     <ChatBody />
                 </PersistentDesktopDrawer>

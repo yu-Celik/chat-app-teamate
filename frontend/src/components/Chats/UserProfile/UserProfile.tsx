@@ -1,20 +1,64 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Badge, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Stack, alpha } from '@mui/material';
+import { Avatar, Badge, ListItemAvatar, ListItemButton, ListItemText, PopoverPosition, Skeleton, Stack, alpha } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { Fragment } from 'react/jsx-runtime';
 import { User } from '../../../types/Auth.type/Auth.Props';
+import { useState } from 'react';
+import ContextMenu from '../ContextMenu/ContextMenu';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
     inHeader: boolean,
     isLoading?: boolean,
+    onDelete?: (chatId: string) => void,
+    isLoadingUserChat?: boolean,
+    isLoadingCreateChat?: boolean,
+    isLoadingDeleteChat?: boolean,
+    chatId?: string,
 }
 
-export default function UserProfile({ username, profilePic, isOnline = false, inHeader, isLoading }: UserProfileProps) {
+export default function UserProfile({ username, profilePic, isOnline = false, inHeader, isLoadingUserChat, isLoadingCreateChat, isLoadingDeleteChat, onDelete, chatId }: UserProfileProps) {
+    const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
+
+    const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
+
+        // Ferme d'abord tout menu ouvert
+        if (menuPosition !== null) {
+            setMenuPosition(null);
+            // Utilisez un timeout pour s'assurer que le menu est fermé avant de réouvrir un nouveau
+            // Cela permet d'éviter que le même clic ne soit interprété comme une tentative de fermeture du menu
+            setTimeout(() => {
+                openMenuAtPosition(event);
+            }, 0);
+        } else {
+            openMenuAtPosition(event);
+        }
+    };
+
+    const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
+        const userProfileElement = event.currentTarget; // Obtient l'élément de message
+        const rect = userProfileElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
+
+        // Calcule la position du menu pour qu'il s'affiche à l'intérieur du message
+        setMenuPosition({
+            top: rect.top + window.scrollY, // Ajuste en fonction du défilement de la page
+            left: rect.right + window.scrollX,
+        });
+    };
+
+    const handleCloseMenu = () => {
+        setMenuPosition(null);
+    };
+
+
+
+
 
     return (
         <Typography
+            onContextMenu={handleContextMenuOnChat}
             variant="h6"
             noWrap
             component="div"
@@ -26,7 +70,7 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
                 }
             }}
         >
-            {!isLoading ? (
+            {!isLoadingUserChat && !isLoadingCreateChat && !isLoadingDeleteChat ? (
                 <ListItemButton alignItems="flex-start" sx={{
                     padding: inHeader ? customTheme.spacing(0, 1) : customTheme.spacing(1),
                     display: 'flex',
@@ -159,6 +203,19 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
 
                             }}
                         />
+                        {menuPosition !== null && (
+                            <ContextMenu
+                                open={menuPosition !== null}
+                                chatId={chatId as string}
+                                anchorReference="anchorPosition"
+                                anchorPosition={menuPosition as PopoverPosition}
+                                onDelete={() => onDelete && onDelete(chatId as string)}
+                                message={'Votre message ici'}
+                                menuPosition={menuPosition}
+                                handleCloseMenu={handleCloseMenu}
+                                handleContextMenu={handleContextMenuOnChat}
+                            />
+                        )}
                     </Stack>}
                 </ListItemButton>) : (
                 <Skeleton variant="rectangular" width={'100%'} height={inHeader ? '55px' : '86px'} />

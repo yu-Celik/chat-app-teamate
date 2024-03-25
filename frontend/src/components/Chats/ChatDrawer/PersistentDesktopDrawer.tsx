@@ -1,5 +1,5 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tab, Tabs, alpha } from "@mui/material";
-import { ReactNode, SyntheticEvent, useState } from "react";
+import { ReactNode, SyntheticEvent, useCallback, useState } from "react";
 import UserProfile from "../UserProfile/UserProfile";
 import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
 import { DrawerFooter, DrawerHeader, drawerWidth, heightHeader } from "./stylesDrawers";
@@ -7,24 +7,43 @@ import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search } from "@mui/icons-material";
 import { groupes, users } from "../../../data/userData";
 import useCreateChat from "../../../hooks/Chat/useCreateChat";
-import { UserChats } from "../../../types/Chat.type/Chat.Props";
-import useGetAllUsers from "../../../hooks/Chat/usePotentialChats";
+import useGetAllUsers from "../../../hooks/Chat/useGetAllUsers";
 import MenuCreateChat from "../MenuCreateChat";
+import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
+import useUserChats from "../../../hooks/Chat/useUserChats";
 
 
-const PersistentDesktopDrawer = ({ children, userChats, refreshChats }: { children: ReactNode, userChats: UserChats, refreshChats: () => void }) => {
+const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
-    const { createChat } = useCreateChat({ refreshChats })
-    const { usersState } = useGetAllUsers()
-    
-    
-    const potentialChats = usersState.users.filter((user) => !userChats.secondUsers.some(u => u._id === user._id))
+    const { userChats, updateUserChats } = useUserChats() // Récupération des chats du current user
+    const { createChat, newChat } = useCreateChat() // Création d'un chat
+    const { deleteChat, deleteChatState } = useDeleteChat() // Suppression d'un chat
+    const { usersState } = useGetAllUsers() // Récupération de tous les utilisateurs
 
+    const potentialChats = usersState.users.filter((user) => !userChats.secondUsers.some(u => u._id === user._id))
 
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
+    const handleCreateChat = useCallback(async (secondUserId: string) => {
+        // console.log("secondUserId", secondUserId);
+        const createdChat = await createChat(secondUserId);
+        if (createdChat) {
+            console.log("Chat créé", createdChat);
+            updateUserChats([...userChats.chats, createdChat]);
+        }
+    }, [createChat, userChats.chats, updateUserChats]);
+
+    const handleDeleteChat = useCallback(async (chatId: string) => {
+        // console.log('chatId', chatId);
+        const deletedChat = await deleteChat(chatId);
+        if (deletedChat) {
+            console.log('chat supprimé', deletedChat);
+            updateUserChats(userChats.chats.filter(chat => chat._id !== chatId));
+        }
+    }, [deleteChat, userChats.chats, updateUserChats]);
     // const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
     // const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
 
@@ -116,14 +135,19 @@ const PersistentDesktopDrawer = ({ children, userChats, refreshChats }: { childr
                     }}>
                         {value === 0 ?
                             (
-                                userChats.secondUsers.map((secondUser) => (
+                                userChats.chats.map((chat) => (
                                     <UserProfile
-                                        key={secondUser._id}
-                                        username={secondUser.username}
-                                        profilePic={secondUser.profilePic}
+                                        key={chat._id}
+                                        chatId={chat._id}
+                                        username={chat.members[1].username}
+                                        profilePic={chat.members[1].profilePic}
                                         inHeader={false}
-                                        isLoading={userChats.isLoading}
+                                        isLoadingUserChat={userChats.isLoading}
+                                        isLoadingCreateChat={newChat.isLoading}
+                                        isLoadingDeleteChat={deleteChatState.isLoading}
+                                        onDelete={() => handleDeleteChat(chat._id)}
                                     />
+                                    // <p>{chat.members[1].username}</p>
                                 ))) :
                             groupes.map((groupe) => (
                                 <GroupeDisplay
@@ -155,7 +179,7 @@ const PersistentDesktopDrawer = ({ children, userChats, refreshChats }: { childr
                             ))
                         ) : (
                             <>
-                                <MenuCreateChat potentialChats={potentialChats} createChat={createChat} />
+                                <MenuCreateChat potentialChats={potentialChats} onClick={handleCreateChat} />
                                 <ListItem key="Rechercher un chat" disablePadding>
                                     <ListItemButton>
                                         <ListItemIcon>

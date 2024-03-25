@@ -1,64 +1,27 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import Menu, { MenuProps } from '@mui/material/Menu';
-
-import Divider from '@mui/material/Divider';
-
 import { Add } from '@mui/icons-material';
 import { ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import customTheme from '../../styles/customTheme';
 import { SearchBar } from '../SearchBar/SearchBar';
 import UserProfile from './UserProfile/UserProfile';
 import { User } from '../../types/Auth.type/Auth.Props';
+import { StyledMenu } from './ContextMenu/ContextMenu';
 
-const StyledMenu = styled((props: MenuProps) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'right',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    {...props}
-  />
-))(() => ({
-  '& .MuiPaper-root': {
-    borderRadius: 6,
-    marginTop: customTheme.spacing(1),
-    minWidth: 180,
-    color: customTheme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : customTheme.palette.slate[300],
-    boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-    backgroundColor: customTheme.palette.bluePV.dark,
-    '& .MuiMenu-list': {
-      padding: '4px 0',
-      '& .MuiTypography-root': {
-        color: customTheme.palette.slate[200],
-      }
-    },
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        color: customTheme.palette.text.secondary,
-        marginRight: customTheme.spacing(1.5),
-      },
-      '&:active': {
-        backgroundColor: alpha(
-          customTheme.palette.slate[300],
-          customTheme.palette.action.selectedOpacity,
-        ),
-      },
-    },
-  },
-}));
 
-export default function MenuCreateChat({ potentialChats, createChat }: { potentialChats: User[], createChat: (userId: string) => void }) {
+
+export default function MenuCreateChat({ potentialChats, onClick }: { potentialChats: User[], onClick: (id: string) => void }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); // ouverture du menu
   const open = Boolean(anchorEl);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredChats = potentialChats.filter(chat =>
+    chat.username?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -102,12 +65,18 @@ export default function MenuCreateChat({ potentialChats, createChat }: { potenti
         }}>
           Créer un chat
         </Typography>
-        <SearchBar placeholder='Rechercher un utilisateur' />
-        <Divider sx={{ my: 0.5 }} />
-        {potentialChats?.map((potentialChat) => (
+        <SearchBar placeholder='Rechercher un utilisateur' inputProps={{
+          autoFocus: true,
+          autoComplete: 'off',
+          autoCorrect: 'off',
+          autoCapitalize: 'off',
+          value: searchTerm,
+          onChange: handleChange,
+        }} />
+        {filteredChats.map((potentialChat) => (
           <ListItem key={potentialChat._id} disablePadding onClick={() => {
-            handleClose(),
-              createChat(potentialChat._id as string)
+            onClick(potentialChat._id as string);
+            handleClose()
           }}>
             <UserProfile
               inHeader={false}
@@ -117,8 +86,6 @@ export default function MenuCreateChat({ potentialChats, createChat }: { potenti
             />
           </ListItem>
         ))}
-
-
       </StyledMenu>
     </div >
   );

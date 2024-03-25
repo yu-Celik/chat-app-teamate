@@ -1,9 +1,10 @@
-import { Avatar, Menu, MenuItem, PopoverPosition, Skeleton, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Avatar, PopoverPosition, Skeleton, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../../../styles/customTheme";
 import { Visibility } from '@mui/icons-material/';
 import { Fragment } from "react/jsx-runtime";
 import { useState } from "react";
 import { useClipboard } from "../../../hooks/useClipboeard";
+import ContextMenu from "../ContextMenu/ContextMenu";
 
 type User = {
     id: number;
@@ -20,6 +21,7 @@ type MessageSendProps = {
     isLoading?: boolean
 }
 
+
 export default function MessageSend({ user, isModify = false, view = false, isLoading = false }: MessageSendProps) {
 
     const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
@@ -34,9 +36,31 @@ export default function MessageSend({ user, isModify = false, view = false, isLo
         copy(text);
     };
 
-    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setMenuPosition({ top: event.clientY, left: event.clientX });
+    const handleContextMenuOnMessage = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
+    
+        // Ferme d'abord tout menu ouvert
+        if (menuPosition !== null) {
+            setMenuPosition(null);
+            // Utilisez un timeout pour s'assurer que le menu est fermé avant de réouvrir un nouveau
+            // Cela permet d'éviter que le même clic ne soit interprété comme une tentative de fermeture du menu
+            setTimeout(() => {
+                openMenuAtPosition(event);
+            }, 0);
+        } else {
+            openMenuAtPosition(event);
+        }
+    };
+    
+    const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
+        const messageElement = event.currentTarget; // Obtient l'élément de message
+        const rect = messageElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
+    
+        // Calcule la position du menu pour qu'il s'affiche à l'intérieur du message
+        setMenuPosition({
+            top: rect.top + window.scrollY, // Ajuste en fonction du défilement de la page
+            left: rect.right + window.scrollX,
+        });
     };
 
     const handleCloseMenu = () => {
@@ -59,24 +83,33 @@ export default function MessageSend({ user, isModify = false, view = false, isLo
     };
 
     return (
-        <Stack margin={1} color={customTheme.palette.background.default} onContextMenu={handleContextMenu}>
+        <Stack margin={1} color={customTheme.palette.background.default} width={'fit-content'} height={'fit-content'}>
             {isLoading === true ? (
                 <Skeleton variant="rectangular" width={isSmallScreen ? '10rem' : isMediumScreen ? '20rem' : isLargeScreen ? '25rem' : '35rem'} height={'3rem'} />
             ) : (
 
                 <Stack spacing={1} direction={'row'} justifyContent={user.id === 1 ? 'flex-end' : 'flex-start'}>
-                    {user.id !== 1 && < Avatar alt="user" src={user.profilePic} />}
-                    <Stack direction={'column'} maxWidth={'60%'} alignItems={'flex-end'} padding={1} borderRadius={`${user.id === 1 ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}`} width={'fit-content'} sx={{
-                        boxShadow: customTheme.shadows[5],
-                        backdropFilter: 'blur(10px)',
-                        backgroundColor: user.id === 1 ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
-                        userSelect: 'none',
-                        '& .MuiTypography-root': {
-                            wordBreak: 'break-all',
-                            letterSpacing: '0.3px',
-                            lineHeight: '1.5',
-                        },
-                    }}>
+                    {user.id !== 1 && <Avatar alt="user" src={user.profilePic} />}
+                    <Stack
+                        direction={'column'}
+                        maxWidth={'60%'}
+                        alignItems={'flex-end'}
+                        padding={1}
+                        borderRadius={`${user.id === 1 ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}`}
+                        width={'fit-content'}
+                        sx={{
+                            boxShadow: customTheme.shadows[5],
+                            backdropFilter: 'blur(10px)',
+                            backgroundColor: user.id === 1 ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
+                            userSelect: 'none',
+                            '& .MuiTypography-root': {
+                                wordBreak: 'break-all',
+                                letterSpacing: '0.3px',
+                                lineHeight: '1.5',
+                            },
+                        }}
+                        onContextMenu={handleContextMenuOnMessage} // Attache le gestionnaire ici
+                    >
                         <Fragment>
                             <Typography width={'100%'} padding={0.5} textAlign={user.id === 1 ? 'right' : 'left'} fontSize={customTheme.typography.body2.fontSize} color={user.id !== 1 ? customTheme.palette.primary.main : customTheme.palette.slate[200]}>{user.username}</Typography>
                             <Typography paragraph padding={0.5} m={0} fontSize={customTheme.typography.body1.fontSize} >
@@ -101,28 +134,19 @@ export default function MessageSend({ user, isModify = false, view = false, isLo
                                 }} />
                             </Stack>
                         </Fragment>
-                        <Menu
+                        <ContextMenu
                             open={menuPosition !== null}
-                            onClose={handleCloseMenu}
                             anchorReference="anchorPosition"
                             anchorPosition={menuPosition as PopoverPosition}
-                            sx={{
-                                '& .MuiMenu-paper': {
-                                    backgroundColor: customTheme.palette.bluePV.dark,
-                                    color: customTheme.palette.slate[300],
-                                },
-                                '& .MuiMenuItem-root': {
-                                    '&:hover': {
-                                        backgroundColor: customTheme.palette.transparant[100],
-                                    },
-                                },
-                            }}
-                        >
-                            <MenuItem onClick={() => { handleEdit(); handleCloseMenu(); }}>Modifier</MenuItem>
-                            <MenuItem onClick={() => { handleDelete(); handleCloseMenu(); }}>Supprimer</MenuItem>
-                            <MenuItem onClick={() => { handleReply(); handleCloseMenu(); }}>Répondre</MenuItem>
-                            <MenuItem onClick={() => { handleCopy('Votre message ici'); handleCloseMenu(); }}>Copier</MenuItem>
-                        </Menu>
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onReply={handleReply}
+                            onCopy={handleCopy}
+                            message={'Votre message ici'}
+                            menuPosition={menuPosition}
+                            handleCloseMenu={handleCloseMenu}
+                            handleContextMenu={handleContextMenuOnMessage}
+                        />
                     </Stack>
                 </Stack>
             )}
