@@ -3,7 +3,7 @@ import { Alert, Box, Button, CircularProgress, Link, Stack, TextField, ThemeProv
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
-import useAuth from '../contexts/Auth.Context/useAuthContext';
+import useLogin from '../hooks/Auth/useLogin';
 
 const StyledTypography = styled(Typography)(() => ({
   color: customTheme.palette.slate[200],
@@ -90,7 +90,7 @@ const StyledButton = styled(Button)(() => ({
 }));
 
 export default function RegisterPage() {
-  const { user, loginUser, isLoggedLoading, isLoggedError, isLoggedInfo, updateLoggedInfo, isLogged } = useAuth();
+  const { login, updateLoginInfo, loginUser } = useLogin();
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState({
     email: '',
@@ -99,14 +99,14 @@ export default function RegisterPage() {
   });
 
   useEffect(() => {
-    if (user !== null) {
+    if (login.isLogged === true) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [login.isLogged, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const { name, value } = e.target as { name: string, value: string };
-    updateLoggedInfo({ ...isLoggedInfo, [name]: value });
+    updateLoginInfo({ ...login.loginInfo, [name]: value });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -122,11 +122,11 @@ export default function RegisterPage() {
     };
 
     // Vérifier tous les champs
-    if (!isLoggedInfo.email) {
+    if (login.loginInfo.email === '') {
       errors.email = 'Veuillez saisir une adresse email';
     }
 
-    if (!isLoggedInfo.password) {
+    if (login.loginInfo.password === '') {
       errors.password = 'Veuillez saisir un mot de passe';
     }
 
@@ -138,14 +138,13 @@ export default function RegisterPage() {
 
     if (formIsValid) {
       if (loginUser === undefined) { console.error('loginUser is undefined'); return; }
-      loginUser(isLoggedInfo).then(() => {
+      loginUser().then(() => {
 
         // Faire quelque chose lorsque la promesse est résolue
         // setTimeout() ne marche pas ici
         // Vider les champs d'entrée
-        if (isLogged === true) {
-          if (updateLoggedInfo === undefined) { console.error('updateRegisterInfo is undefined'); return; }
-          updateLoggedInfo({ email: '', password: '' });
+        if (login.isLogged === true) {
+          updateLoginInfo({ email: '', password: '' });
           console.log('Inscription réussie');
           navigate('/');
         }
@@ -216,19 +215,19 @@ export default function RegisterPage() {
                   label={step.label}
                   variant="filled"
                   name={step.name}
-                  value={isLoggedInfo[step.name as keyof typeof isLoggedInfo]}
+                  value={login.loginInfo[step.name as keyof typeof login.loginInfo]}
                   onChange={handleChange}
                   error={loginError[step.name as keyof typeof loginError] !== ''}
                   helperText={loginError[step.name as keyof typeof loginError]}
                 />
               ))}
             </Stack>
-            {isLoggedError !== null && (
+            {login.loginError !== null && (
               <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
-                {isLoggedError}
+                {login.loginError}
               </Alert>
             )}
-            {isLogged === true && (
+            {login.isLogged === true && (
               <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
                 Inscription réussie !
               </Alert>
@@ -237,10 +236,10 @@ export default function RegisterPage() {
               variant="contained"
               color="primary"
               type="submit"
-              disabled={isLoggedLoading}
-              endIcon={isLoggedLoading ? <CircularProgress size="1rem" /> : undefined}
+              disabled={login.isLoggedLoading}
+              endIcon={login.isLoggedLoading ? <CircularProgress size="1rem" /> : undefined}
             >
-              {isLoggedLoading ? 'Connexion...' : 'Se connecter'}
+              {login.isLoggedLoading ? 'Connexion...' : 'Se connecter'}
             </StyledButton>
             <StyledTypography gutterBottom variant={'body2'}>
               Vous n'avez pas de compte ? <Link fontWeight={600} component={RouterLink} color={'primary'} underline={'hover'} to={'/Register'}>Inscrivez-vous</Link>

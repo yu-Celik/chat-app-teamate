@@ -8,7 +8,8 @@ import { SearchBar } from "../SearchBar/SearchBar";
 import { SearchIconOnly } from "../SearchBar/SearchIconOnly";
 import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
 import BurgerButtonMui from "../Button/BurgerButtonMui";
-import useAuth from "../../contexts/Auth.Context/useAuthContext";
+import useAuth from "../../contexts/AuthContext/useAuthContext";
+import useLogout from "../../hooks/Auth/useLogout";
 
 const pages = ['Accueil', 'Événement', 'Calendrier'];
 
@@ -21,7 +22,8 @@ const StyledStack = styled(Stack)(() => ({
     },
 }));
 export default function Header() {
-    const { currentUser, logoutUser } = useAuth();
+    const { currentUser } = useAuth();
+    const { logoutUser } = useLogout();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -122,7 +124,7 @@ export default function Header() {
             }}
 
         >
-            <MenuItem onClick={handleMenuClose}>{currentUser?.username}</MenuItem>
+            <MenuItem onClick={handleMenuClose}>{currentUser.data?.username}</MenuItem>
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem
                 onClick={() => {

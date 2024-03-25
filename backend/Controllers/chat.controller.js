@@ -1,20 +1,24 @@
 // createChat
 
 import ChatModel from '../Models/chat.model.js';
+import UserModel from '../Models/user.model.js';
 
 const createChat = async (req, res) => {
-    const { firstId, secondId } = req.body;
+    console.log('createChat');
+    const user = req.user;
+    const { secondId } = req.body;
+    const secondUser = await UserModel.findById(secondId).select('-password');
 
     try {
-        const chat = await ChatModel.findOne({
-            members: { $all: [firstId, secondId] },
-        });
 
+        const chat = await ChatModel.findOne({
+            members: { $all: [user, secondUser] },
+        });
         if (chat) {
-            return res.status(200).json(chat);
+            return res.status(400).json({ error: 'Un chat avec ces deux utilisateurs existe déjà' });
         }
         const newChat = new ChatModel({
-            members: [firstId, secondId],
+            members: [user, secondUser],
         });
 
         const response = await newChat.save();
@@ -27,12 +31,10 @@ const createChat = async (req, res) => {
 // findUserChats
 
 const findUserChats = async (req, res) => {
-    const userId = req.params.userId;
-
+    console.log('findUserChats');
+    const userId = req.user._id;
     try {
-        const chats = await ChatModel.find({
-            members: { $in: [userId] },
-        });
+        const chats = await ChatModel.find({ members: { $ne: userId } });
         res.status(200).json(chats);
     } catch (error) {
         res.status(500).json(error);
@@ -42,8 +44,8 @@ const findUserChats = async (req, res) => {
 // findChat
 
 const findChat = async (req, res) => {
+    console.log('findChat');
     const { firstId, secondId } = req.params;
-
     try {
         const chat = await ChatModel.findOne({
             members: { $all: [firstId, secondId] },

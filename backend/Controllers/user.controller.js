@@ -5,35 +5,36 @@ import validator from 'validator';
 import jwt from 'jsonwebtoken';
 
 const registerUser = async (req, res) => {
+    console.log('registerUser');
     try {
         const { username, email, password, gender, confirmPassword } = req.body;
         let user = await UserModel.findOne({ email });
 
         if (user) {
-            return res.status(400).json({error: 'Un utilisateur avec cette adresse email existe déjà'});
+            return res.status(400).json({ error: 'Un utilisateur avec cette adresse email existe déjà' });
         }
         if (!username || !email || !password || !gender) {
-            return res.status(400).json({error: 'Veuillez remplir tous les champs' });
+            return res.status(400).json({ error: 'Veuillez remplir tous les champs' });
         }
-        
+
         if (!validator.isEmail(email)) {
-            return res.status(400).json({error: 'Une adresse email valide est requise' });
+            return res.status(400).json({ error: 'Une adresse email valide est requise' });
         }
-        
+
         if (!validator.isLength(username, { min: 3, max: 15 })) {
-            return res.status(400).json({error: 'Le nom d\'utilisateur doit contenir entre 3 et 15 caractères' });
+            return res.status(400).json({ error: 'Le nom d\'utilisateur doit contenir entre 3 et 15 caractères' });
         }
-        
+
         if (!validator.isStrongPassword(password)) {
-            return res.status(400).json({error: 'Le mot de passe doit contenir au moins 8 caractères et contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' });
+            return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères et contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial' });
         }
-        
+
         if (password !== confirmPassword) {
-            return res.status(400).json({error: 'Les mots de passe ne correspondent pas' });
+            return res.status(400).json({ error: 'Les mots de passe ne correspondent pas' });
         }
-        
+
         if (!validator.isAlpha(gender)) {
-            return res.status(400).json({error: 'Veuillez saisir votre genre' });
+            return res.status(400).json({ error: 'Veuillez saisir votre genre' });
         }
 
         // hash the password
@@ -62,6 +63,8 @@ const registerUser = async (req, res) => {
                 email: newUser.email,
                 username: newUser.username,
                 profilePic: newUser.profilePic,
+                gender: newUser.gender,
+                createdAt: newUser.createdAt
             });
 
         } else {
@@ -73,14 +76,22 @@ const registerUser = async (req, res) => {
     }
 };
 const loginUser = async (req, res) => {
+    console.log('loginUser');
     const { email, password } = req.body;
     try {
         const user = await UserModel.findOne({ email });
-        if (!user) return res.status(400).json({error: 'Invalid email or password'});
+        if (!user) return res.status(400).json({ error: 'Invalid email or password' });
         const isValidPassword = await bcrypt.compare(password, user.password || '');
-        if (!isValidPassword) return res.status(400).json({error: 'Invalid email or password'});
+        if (!isValidPassword) return res.status(400).json({ error: 'Invalid email or password' });
         generateTokenAndSetCookie(user._id, res);
-        res.status(200).json({ _id: user._id, email });
+        res.status(200).json({
+            _id: user._id,
+            email,
+            username: user.username,
+            profilePic: user.profilePic,
+            gender: user.gender,
+            createdAt: user.createdAt
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json(error);
@@ -88,10 +99,11 @@ const loginUser = async (req, res) => {
 };
 
 const findUser = async (req, res) => {
+    console.log('findUser');
     const userId = req.params.userId;
     try {
         const user = await UserModel.findById(userId);
-        if (!user) return res.status(404).json({error: 'User not found'});
+        if (!user) return res.status(404).json({ error: 'User not found' });
         res.status(200).json(user);
     } catch (error) {
         console.log(error);
@@ -100,17 +112,19 @@ const findUser = async (req, res) => {
 };
 
 const getAllUsersExceptLoggedIn = async (req, res) => {
+    console.log('getAllUsersExceptLoggedIn');
     try {
         const loggedInUserId = req.user._id;
-		const filteredUsers = await UserModel.find({ _id: { $ne: loggedInUserId } }).select("-password");
-		res.status(200).json(filteredUsers);
-	} catch (error) {
-		console.error("Error in getAllUsersExceptLoggedIn: ", error.message);
-		res.status(500).json({ error: "Internal server error" });
-	}
+        const filteredUsers = await UserModel.find({ _id: { $ne: loggedInUserId } }).select("-password");
+        res.status(200).json(filteredUsers);
+    } catch (error) {
+        console.error("Error in getAllUsersExceptLoggedIn: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 const logout = (req, res) => {
+    console.log('logout');
     try {
         res.clearCookie('jwt'); // Efface le cookie
         res.status(200).json({ message: "User logged out successfully" });
@@ -121,6 +135,7 @@ const logout = (req, res) => {
 };
 
 const verifyUser = async (req, res) => {
+    console.log('verifyUser');
     try {
         const token = req.cookies.jwt;
         if (!token) {
@@ -138,8 +153,8 @@ const verifyUser = async (req, res) => {
 
         res.status(200).json({ user });
     } catch (error) {
-        // console.error('Erreur lors de la vérification de l\'utilisateur', error.message);
-        // res.status(500).json({ error: "Erreur serveur" });
+        console.error('Erreur lors de la vérification de l\'utilisateur', error.message);
+        res.status(500).json({ error: "Erreur serveur" });
     }
 };
 

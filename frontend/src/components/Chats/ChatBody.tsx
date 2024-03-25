@@ -2,8 +2,8 @@ import { Stack } from "@mui/material";
 import ChatBar from "./MessageBar";
 import MessageList from "./MessageList";
 import { users } from "../../data/userData";
+import { heightHeader } from "./ChatDrawer/stylesDrawers";
 
-const heightHeader = 69.5;
 const heightHeaderChat = 71
 
 

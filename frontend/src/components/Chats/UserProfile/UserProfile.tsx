@@ -1,11 +1,18 @@
 import Typography from '@mui/material/Typography';
 import { Avatar, Badge, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Stack, alpha } from '@mui/material';
-import { format, formatDistanceToNow } from 'date-fns';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { Fragment } from 'react/jsx-runtime';
+import { User } from '../../../types/Auth.type/Auth.Props';
 
-export default function UserProfile({ username, profilePic, isOnline, lastSeen, inHeader, lastMessageSeen, notifications, lastNotificationSeen, isLoading = false }: { username: string, profilePic: string, isOnline: boolean, lastSeen: string, inHeader: boolean, lastMessageSeen?: string, notifications?: number, lastNotificationSeen?: string, isLoading?: boolean }) {
+type UserProfileProps = User & {
+    isOnline?: boolean,
+    inHeader: boolean,
+    isLoading?: boolean,
+}
+
+export default function UserProfile({ username, profilePic, isOnline = false, inHeader, isLoading }: UserProfileProps) {
+
     return (
         <Typography
             variant="h6"
@@ -19,7 +26,7 @@ export default function UserProfile({ username, profilePic, isOnline, lastSeen, 
                 }
             }}
         >
-            {isLoading === false ? (
+            {!isLoading ? (
                 <ListItemButton alignItems="flex-start" sx={{
                     padding: inHeader ? customTheme.spacing(0, 1) : customTheme.spacing(1),
                     display: 'flex',
@@ -77,7 +84,7 @@ export default function UserProfile({ username, profilePic, isOnline, lastSeen, 
                                     color={customTheme.palette.slate[200]}
                                     noWrap
                                 >
-                                    {lastMessageSeen}
+                                    {username}
                                 </Typography>
                             }
                         />
@@ -118,7 +125,7 @@ export default function UserProfile({ username, profilePic, isOnline, lastSeen, 
                                         fontSize="small"
                                         fontStyle="italic"
                                     >
-                                        Vu récemment : {formatDistanceToNow(new Date(lastSeen))}
+                                        date
                                     </Typography>
                                 )}
                             </Fragment>
@@ -133,10 +140,10 @@ export default function UserProfile({ username, profilePic, isOnline, lastSeen, 
                             sx={{
                                 display: 'block',
                             }}>
-                            {lastNotificationSeen != null && format(new Date(lastNotificationSeen), 'HH:mm')}
+                            date
                         </Typography>
                         <Badge
-                            badgeContent={notifications}
+                            badgeContent={4}
                             showZero={false}
                             color="error"
                             sx={{

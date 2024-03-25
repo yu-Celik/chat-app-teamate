@@ -3,8 +3,8 @@ import { Alert, Box, Button, CircularProgress, Link, MenuItem, Stack, TextField,
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
-import useAuth from '../contexts/Auth.Context/useAuthContext';
-import { RegisterInfo } from '../types/Auth.Context.type/Auth.Context.Props';
+import { RegisterInfo } from '../types/Auth.type/Auth.Props';
+import useRegister from '../hooks/Auth/useRegister';
 
 const StyledTypography = styled(Typography)(() => ({
     color: customTheme.palette.slate[200],
@@ -95,7 +95,7 @@ const StyledButton = styled(Button)(() => ({
 
 
 export default function RegisterPage() {
-    const { user, isRegistered, isRegisterLoading, isRegisterError, isRegisterInfo, updateRegisterInfo, registerUser } = useAuth();
+    const { register, updateRegisterInfo, registerUser } = useRegister();
     const navigate = useNavigate();
     const [registerError, setRegisterError] = useState<RegisterInfo>({
         email: '',
@@ -106,29 +106,15 @@ export default function RegisterPage() {
     });
 
     useEffect(() => {
-        if (user !== null) {
+        if (register.isRegistered) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [register.isRegistered, navigate]);
 
-
-    // useEffect(() => {
-    //     console.log('isRegisterInfo', isRegisterInfo);
-    // }, [isRegisterInfo]);
-
-    // useEffect(() => {
-    //     console.log('registerError', registerError);
-    // }, [registerError]);
-
-    // useEffect(() => {
-    //     if (isRegisterError !== null) {
-    //         console.log('isRegisterError', isRegisterError);
-    //     }
-    // }, [isRegisterError]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
         const { name, value } = e.target as { name: string, value: string };
-        updateRegisterInfo({ ...isRegisterInfo, [name]: value });
+        updateRegisterInfo({ ...register.registerInfo, [name]: value });
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -144,22 +130,22 @@ export default function RegisterPage() {
         };
 
         // Vérifier tous les champs et mettre à jour la copie locale des erreurs
-        if (isRegisterInfo.email === '') {
+        if (register.registerInfo.email === '') {
             errors.email = 'Veuillez saisir une adresse email';
         }
-        if (isRegisterInfo.username === '') {
+        if (register.registerInfo.username === '') {
             errors.username = 'Veuillez saisir un nom d\'utilisateur';
         }
-        if (isRegisterInfo.password === '') {
+        if (register.registerInfo.password === '') {
             errors.password = 'Veuillez saisir un mot de passe';
         }
-        if (isRegisterInfo.confirmPassword === '') {
+        if (register.registerInfo.confirmPassword === '') {
             errors.confirmPassword = 'Veuillez saisir une confirmation du mot de passe';
         }
-        if (isRegisterInfo.password !== isRegisterInfo.confirmPassword) {
+        if (register.registerInfo.password !== register.registerInfo.confirmPassword) {
             errors.confirmPassword = 'Les mots de passe ne correspondent pas';
         }
-        if (isRegisterInfo.gender === '') {
+        if (register.registerInfo.gender === '') {
             errors.gender = 'Veuillez saisir votre genre';
         }
 
@@ -171,13 +157,12 @@ export default function RegisterPage() {
 
         if (formIsValid) {
             if (registerUser === undefined) { console.error('registerUser is undefined'); return; }
-            registerUser(isRegisterInfo).then(() => {
+            registerUser().then(() => {
 
                 // Faire quelque chose lorsque la promesse est résolue
                 // setTimeout() ne marche pas ici
                 // Vider les champs d'entrée
-                if (isRegistered === true) {
-                    if (updateRegisterInfo === undefined) { console.error('updateRegisterInfo is undefined'); return; }
+                if (register.isRegistered === true) {
                     updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
                     console.log('Inscription réussie');
                     navigate('/');
@@ -250,7 +235,7 @@ export default function RegisterPage() {
                                         label={step.label}
                                         variant='filled'
                                         name={step.name}
-                                        value={isRegisterInfo[step.name as keyof typeof isRegisterInfo]}
+                                        value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
                                         onChange={handleChange}
                                         error={registerError[step.name as keyof typeof registerError] !== ''}
                                         helperText={registerError[step.name as keyof typeof registerError]}
@@ -267,7 +252,7 @@ export default function RegisterPage() {
                                         label={step.label}
                                         variant="filled"
                                         name={step.name}
-                                        value={isRegisterInfo[step.name as keyof typeof isRegisterInfo]}
+                                        value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
                                         onChange={handleChange}
                                         error={registerError[step.name as keyof typeof registerError] !== ''}
                                         helperText={registerError[step.name as keyof typeof registerError]}
@@ -275,12 +260,12 @@ export default function RegisterPage() {
                                 )
                             ))}
                         </Stack>
-                        {isRegisterError !== null && (
+                        {register.registerError !== null && (
                             <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
-                                {isRegisterError}
+                                {register.registerError}
                             </Alert>
                         )}
-                        {isRegistered === true && (
+                        {register.isRegistered === true && (
                             <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
                                 Inscription réussie !
                             </Alert>
@@ -289,10 +274,10 @@ export default function RegisterPage() {
                             variant="contained"
                             color="primary"
                             type="submit"
-                            disabled={isRegisterLoading}
-                            endIcon={isRegisterLoading ? <CircularProgress size="1rem" /> : undefined}
+                            disabled={register.isRegisterLoading}
+                            endIcon={register.isRegisterLoading ? <CircularProgress size="1rem" /> : undefined}
                         >
-                            {isRegisterLoading ? 'Enregistrement...' : 'S\'inscrire'}
+                            {register.isRegisterLoading ? 'Enregistrement...' : 'S\'inscrire'}
                         </StyledButton>
                         <StyledTypography gutterBottom variant={'body2'}>
                             Vous avez déjà un compte ? <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/login'}>Connectez-vous</Link>
