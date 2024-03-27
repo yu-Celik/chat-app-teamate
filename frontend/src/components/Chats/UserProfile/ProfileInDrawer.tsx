@@ -6,23 +6,26 @@ import { User } from '../../../types/Auth.type/Auth.Props';
 import ContextMenu from '../ContextMenu/ContextMenu';
 import { useState } from 'react';
 import { useChat } from '../../../contexts/ChatContext/useChatContext';
+import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
 
 type UserProfileProps = User & {
     isOnline?: boolean,
     isLoading?: boolean,
-    onDelete?: (chatId: string) => void,
     isLoadingUserChat?: boolean,
     isLoadingCreateChat?: boolean,
     isLoadingDeleteChat?: boolean,
     chatId?: string,
 }
 
-export default function ProfileInDrawer({ username, profilePic, isOnline = false, isLoadingUserChat, isLoadingCreateChat, isLoadingDeleteChat, onDelete, chatId }: UserProfileProps) {
+export default function ProfileInDrawer({ username, profilePic, isOnline = false, isLoadingUserChat, isLoadingCreateChat, isLoadingDeleteChat, chatId }: UserProfileProps) {
     const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
     const { updateChatId } = useChat();
+    const { deleteChat } = useDeleteChat();
+
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
         event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
+        event.stopPropagation(); // Empêche l'événement de se propager
 
         // Ferme d'abord tout menu ouvert
         if (menuPosition !== null) {
@@ -40,6 +43,11 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
 
     const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
         const userProfileElement = event.currentTarget; // Obtient l'élément de message
+
+        if (!userProfileElement) {
+            console.error("Élément de profil utilisateur non trouvé.");
+            return;
+        }
         const rect = userProfileElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
 
         // Calcule la position du menu pour qu'il s'affiche à l'intérieur du message
@@ -57,6 +65,9 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
         updateChatId(chatId);
     }
 
+    const handleDeleteChat = (chatId: string) => {
+        deleteChat(chatId);
+    };
 
 
     return (
@@ -170,7 +181,7 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
                                 chatId={chatId as string}
                                 anchorReference="anchorPosition"
                                 anchorPosition={menuPosition as PopoverPosition}
-                                onDelete={() => onDelete && onDelete(chatId as string)}
+                                onDelete={() => handleDeleteChat(chatId as string)}
                                 message={'Votre message ici'}
                                 menuPosition={menuPosition}
                                 handleCloseMenu={handleCloseMenu}

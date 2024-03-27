@@ -1,4 +1,4 @@
-import { Avatar, PopoverPosition, Skeleton, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { PopoverPosition, Skeleton, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../../../styles/customTheme";
 import { Visibility } from '@mui/icons-material/';
 import { Fragment } from "react/jsx-runtime";
@@ -30,6 +30,7 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
     };
 
     const handleContextMenuOnMessage = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation(); // Empêche l'événement de se propager
         event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
 
         // Ferme d'abord tout menu ouvert
@@ -47,6 +48,10 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
 
     const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
         const messageElement = event.currentTarget; // Obtient l'élément de message
+        if (!messageElement) {
+            console.error("Élément de message non trouvé.");
+            return;
+        }
         const rect = messageElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
 
         // Calcule la position du menu pour qu'il s'affiche à l'intérieur du message

@@ -17,6 +17,8 @@ export default function ChatList() {
         }
     }, [chatInfo?.chatId, getMessages])
 
+    console.log(chatInfo.messages.messagesList.length);
+    
     return (
         <>
             { chatInfo.messages.messagesList.length < 1 ? (

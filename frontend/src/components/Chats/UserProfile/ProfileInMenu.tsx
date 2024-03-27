@@ -3,7 +3,6 @@ import { Avatar, ListItemAvatar, ListItemButton, ListItemText, Skeleton, alpha }
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
-import { useState } from 'react';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
@@ -16,41 +15,11 @@ type UserProfileProps = User & {
 }
 
 export default function ProfileInMenu({ username, profilePic, onClick, isOnline = false, lastLogin, isLoadingUserChat, isLoadingAllUsers }: UserProfileProps) {
-    const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation(); // Empêche le menu contextuel par défaut du navigateur
         event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
-
-        // Ferme d'abord tout menu ouvert
-        if (menuPosition !== null) {
-            setMenuPosition(null);
-            // Utilisez un timeout pour s'assurer que le menu est fermé avant de réouvrir un nouveau
-            // Cela permet d'éviter que le même clic ne soit interprété comme une tentative de fermeture du menu
-            setTimeout(() => {
-                openMenuAtPosition(event);
-            }, 0);
-        } else {
-            openMenuAtPosition(event);
-        }
     };
-
-
-    const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
-        const userProfileElement = event.currentTarget; // Obtient l'élément de message
-        const rect = userProfileElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
-
-        // Calcule la position du menu pour qu'il s'affiche à l'intérieur du message
-        setMenuPosition({
-            top: rect.top + window.scrollY, // Ajuste en fonction du défilement de la page
-            left: rect.right + window.scrollX,
-        });
-    };
-
-
-
-
-
-
 
     return (
         <>

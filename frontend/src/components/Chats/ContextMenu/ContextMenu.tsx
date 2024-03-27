@@ -83,7 +83,13 @@ const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, 
                 }}
             >
                 {onEdit && <MenuItem onClick={() => { onEdit(); handleCloseMenu(); }}>Modifier</MenuItem>}
-                {onDelete && <MenuItem onClick={() => { onDelete(chatId as string); handleCloseMenu(); }}>Supprimer</MenuItem>}
+                {onDelete && (
+                    <MenuItem onClick={(event) => {
+                        event.stopPropagation(); 
+                        onDelete(chatId as string);
+                        handleCloseMenu();
+                    }}>Supprimer</MenuItem>
+                )}
                 {onReply && <MenuItem onClick={() => { onReply(); handleCloseMenu(); }}>Répondre</MenuItem>}
                 {onCopy && <MenuItem onClick={() => { onCopy(message as string); handleCloseMenu(); }}>Copier</MenuItem>}
             </StyledMenu>

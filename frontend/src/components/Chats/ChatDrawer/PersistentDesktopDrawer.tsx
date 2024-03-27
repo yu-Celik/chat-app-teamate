@@ -8,14 +8,12 @@ import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
 import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
 import MenuCreateChat from "../MenuCreateChat";
-import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
 
 
 const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
     const { chatInfo } = useChat();
-    const { deleteChat } = useDeleteChat();
 
     // console.log(deleteChatState.isLoading);
     // console.log(newChat.isLoading);
@@ -24,10 +22,6 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-
-    const handleDeleteChat = (chatId: string) => {
-        deleteChat(chatId);
-    }
 
 
     return (
@@ -123,7 +117,6 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                                         isLoadingUserChat={chatInfo.userChats?.isLoading}
                                         isLoadingCreateChat={chatInfo.createChat?.isLoading}
                                         isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                        onDelete={() => handleDeleteChat(chat._id)}
                                         lastLogin={chat.members[1].lastLogin}
                                     />
                                     // <p>{chat.members[1].username}</p>

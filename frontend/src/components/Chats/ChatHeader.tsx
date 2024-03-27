@@ -27,7 +27,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer: (
     };
     return (
         <>
-            <Box sx={{ flexGrow: 1 }}>
+            {selectedChat != null && <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="relative" sx={{
                     backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
                     boxShadow: 'none',
@@ -63,7 +63,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer: (
                     onClose={handleClose}
                     open={open}
                 />
-            </Box>
+            </Box>}
         </>
     );
 }
