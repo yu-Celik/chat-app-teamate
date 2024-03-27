@@ -76,12 +76,13 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
     };
 
     return (
-        <Stack margin={1} color={customTheme.palette.background.default} >
+        <Stack margin={1} color={customTheme.palette.background.default} width={'fit-content'} height={'fit-content'}>
             {isLoading === true ? (
                 <Skeleton variant="rectangular" width={isSmallScreen ? '10rem' : isMediumScreen ? '20rem' : isLargeScreen ? '25rem' : '35rem'} height={'3rem'} />
             ) : (
 
                 <Stack spacing={1} direction={'row'} justifyContent={currentUser.data?._id === senderId ? 'flex-end' : 'flex-start'}>
+                    {currentUser.data?._id !== senderId && <Avatar alt="user" src={currentUser.data?.profilePic} />}
                     <Stack
                         direction={'column'}
                         maxWidth={'60%'}
@@ -92,7 +93,7 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
                         sx={{
                             boxShadow: customTheme.shadows[5],
                             backdropFilter: 'blur(10px)',
-                            backgroundColor: currentUser.data?._id !== senderId ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
+                            backgroundColor: currentUser.data?._id === senderId ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
                             userSelect: 'none',
                             '& .MuiTypography-root': {
                                 wordBreak: 'break-all',
@@ -103,25 +104,26 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
                         onContextMenu={handleContextMenuOnMessage} // Attache le gestionnaire ici
                     >
                         <Fragment>
-                            <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} >
-                                {message}
+                            <Typography width={'100%'} padding={0.5} textAlign={user.id === 1 ? 'right' : 'left'} fontSize={customTheme.typography.body2.fontSize} color={user.id !== 1 ? customTheme.palette.primary.main : customTheme.palette.slate[200]}>{user.username}</Typography>
+                            <Typography paragraph padding={0.5} m={0} fontSize={customTheme.typography.body1.fontSize} >
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis recusandae ipsa, quia illum assumenda nam ipsam. Nisi cum sit quis molestiae officiis architecto nostrum amet beatae! Corporis pariatur aperiam delectus?
                             </Typography>
                             <Stack direction={'row'} alignItems={'flex-center'} spacing={0.5}>
                                 <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
                                     transition: 'all 0.3s',
-                                    opacity: edited ? 1 : 0,
+                                    opacity: isModify ? 1 : 0,
                                 }}>
                                     Modifier
                                 </Typography>
                                 <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
-                                    order: read ? 0 : 1,
+                                    order: view ? 0 : 1,
                                 }}>
-                                    {new Date(createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                    12:00
                                 </Typography>
                                 <Visibility sx={{
                                     fontSize: customTheme.typography.body1.fontSize,
                                     transition: 'all 0.3s',
-                                    opacity: read ? 1 : 0,
+                                    opacity: view ? 1 : 0,
                                 }} />
                             </Stack>
                         </Fragment>

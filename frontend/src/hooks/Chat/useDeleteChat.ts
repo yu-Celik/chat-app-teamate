@@ -1,32 +1,38 @@
-import { useState } from "react";
 import axios from "../../config/axiosConfig";
-import { ChatState } from "../../types/Chat.type/Chat.Props";
+import { useChat } from "../../contexts/ChatContext/useChatContext";
 
 const useDeleteChat = () => {
-    const [deleteChatState, setDeleteChatState] = useState<ChatState>({
-        data: null,
-        isLoading: false,
-        error: null,
-    });
+    const { updateDeleteChat, chatInfo, updateUserChats } = useChat();
 
     const deleteChat = async (chatId: string) => {
-        setDeleteChatState({ ...deleteChatState, isLoading: true });
+        console.log('delete chat');
+        updateDeleteChat({ isLoading: true, error: null });
         try {
-            const response = await axios.delete(`/chats/${chatId}`);
-            // console.log('delete chat', response.data);
-            setDeleteChatState({ ...deleteChatState, data: response.data, isLoading: false });
-            return response.data;
+            const response = await axios.delete (`/chats/${chatId}`);
+            updateDeleteChat({ isLoading: false, error: null, chat: response.data });
+
+            // Créer une nouvelle liste de chats en retirant le chat supprimé
+            const updatedUserChats = chatInfo.userChats.chats?.filter(chat => chat._id !== chatId);
+            const secondUsers = chatInfo.userChats.secondUsers?.filter(user => user._id !== response.data.members[1]);
+            
+            updateUserChats({ 
+                ...chatInfo.userChats,
+                chats: updatedUserChats,
+                isLoading: false,
+                error: null,
+                currentUser: chatInfo.userChats.currentUser,
+                secondUsers: secondUsers
+            });
+
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setDeleteChatState({ ...deleteChatState, error: error.message, isLoading: false });
+                updateDeleteChat({ chat: null, isLoading: false, error: error.message });
             }
-            console.log(error);
-            return null;
+            console.error(error);
         }
-    }
+    };
 
-    return { deleteChat, deleteChatState };
+    return { deleteChat };
 };
 
 export default useDeleteChat;
-

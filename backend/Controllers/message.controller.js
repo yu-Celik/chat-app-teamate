@@ -8,92 +8,102 @@ import { v4 as uuidv4 } from 'uuid';
 import s3 from '../config/s3.config.js';
 import { getUserNameById } from '../utils/userHelpers.js'; // Fonctions hypothétiques pour vérifier l'activité de l'utilisateur et obtenir le nom
 import NotificationModel from '../Models/notifications.model.js';
+import Chat from '../Models/chat.model.js';
 // import activeUsers from '../socket/socket.js';
 
 
 dotenv.config();
 
-// createMessage
+// Création d'un message grâce à l'id du chat, de l'expéditeur et du message
 const createMessage = async (req, res) => {
-    const { chatId, senderId, text } = req.body;
+    const senderId = req.user._id;
+    const { chatId, message } = req.body;
     const replyTo = req.body.replyTo || null;
-    const { receiverId } = req.params;
-    const imageFiles = req.files;
+    const imageFiles = req.files; // Assurez-vous que votre middleware gère 'multipart/form-data'
     const imageUrls = [];
 
-    // Traitement de l'upload des images
+    console.log(chatId, senderId, message);
+    if (!chatId || !senderId || !message) {
+        return res.status(400).json({ message: 'L\'ID du chat, de l\'expéditeur et du message sont requis.' });
+    }
+
+    let chat;
+    try {
+        chat = await Chat.findById(chatId);
+        if (!chat) {
+            return res.status(404).json({ message: 'Chat non trouvé.' });
+        }
+    } catch (error) {
+        console.error('Error finding chat:', error);
+        return res.status(500).json({ message: 'Erreur lors de la recherche du chat.', error });
+    }
+
+    // Déterminer le receiverId
+    const receiverId = chat.members.find(member => member.toString() !== senderId.toString());
+    if (!receiverId) {
+        return res.status(404).json({ message: 'Destinataire non trouvé.' });
+    }
+
+    let determinedMessageType = 'text'; // Défaut à 'text'
     if (imageFiles && imageFiles.length > 0) {
         for (const file of imageFiles) {
+            const fileExtension = path.extname(file.originalname);
+            const fileName = uuidv4() + fileExtension;
             const params = {
-                Bucket: 'teamate-chat',
-                Key: uuidv4() + path.extname(file.originalname),
+                Bucket: s3Config.bucketName, // Assurez-vous que ce nom de seau est correct
+                Key: fileName,
                 Body: file.buffer,
             };
 
             try {
-                await s3.send(new PutObjectCommand(params));
+                await s3Config.client.send(new PutObjectCommand(params));
                 const imageUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
                 imageUrls.push(imageUrl);
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                return res.status(500).json({ message: 'Error uploading file', error: error });
+            } catch (uploadError) {
+                console.error('Error uploading file:', uploadError);
+                return res.status(500).json({ message: 'Error uploading file', error: uploadError });
             }
         }
+
+        determinedMessageType = imageUrls.length > 0 ? (message ? 'mixed' : 'image') : 'text';
     }
 
-    // Création du message
-    const message = new MessageModel({
+    const newMessage = new MessageModel({
         chatId,
         senderId,
-        text,
+        receiverId,
+        message,
+        messageType: determinedMessageType,
         replyTo,
-        read: false,
         imageUrls,
-        replyTo,
-        edited: false,
     });
 
     try {
-        const response = await message.save();
-        // Vérifier si le destinataire est actif dans la conversation spécifique
-        const isActive = activeUsers[chatId]?.has(receiverId);
-
-        if (!isActive) {
-            const senderName = await getUserNameById(senderId);
-            const notification = new NotificationModel({
-                receiverId,
-                title: `Nouveau message de ${senderName}`,
-                message: text,
-                dateSent: new Date(),
-                read: false
-            });
-
-            await notification.save();
-        }
-
-        // Envoyer la réponse après avoir traité la notification
-        return res.status(200).json(response);
+        const savedMessage = await newMessage.save();
+        return res.status(200).json(savedMessage);
     } catch (error) {
         console.error('Error saving message:', error);
-        // S'assurer qu'aucune réponse n'a été envoyée avant d'envoyer une erreur
-        if (!res.headersSent) {
-            return res.status(500).json({ message: 'Error saving message', error: error });
-        }
+        return res.status(500).json({ message: 'Erreur lors de l\'enregistrement du message.', error });
     }
 };
 
-// getMessages
+// Récupération des messages d'un chat grâce à son id
 const getMessages = async (req, res) => {
     const { chatId } = req.params;
+
+    if (!chatId) {
+        return res.status(400).json({ message: "L'ID du chat est requis." });
+    }
+
     try {
-        const messages = await MessageModel.find({ chatId });
-        if (messages !== null) {
-            res.status(200).json(messages);
-        } else {
-            res.status(404).json({ messages: 'Messages not found' });
-        }
+        const messages = await MessageModel.find({ chatId })
+            .sort({ createdAt: -1 }) // Tri par date de création décroissante
+            .exec();
+
+        return res.status(200).json(messages);
     } catch (error) {
-        res.status(500).json(error);
+        console.error('Error retrieving messages:', error);
+        return res.status(500).json({ message: 'Erreur lors de la récupération des messages.', error });
     }
 };
 
@@ -101,9 +111,9 @@ const getMessages = async (req, res) => {
 // editMessage
 const editMessage = async (req, res) => {
     const { id } = req.params;
-    const { text } = req.body;
+    const { message } = req.body;
     try {
-        const message = await MessageModel.findByIdAndUpdate(id, { text, edited: true }, { new: true });
+        const message = await MessageModel.findByIdAndUpdate(id, { message, edited: true }, { new: true });
         if (message !== null) {
             res.status(200).json(message);
         } else {
@@ -172,11 +182,11 @@ const markMessageAsRead = async (req, res) => {
 };
 
 const searchMessages = async (req, res) => {
-    const { chatId, searchText } = req.query;
+    const { chatId, searchMessages } = req.query;
     try {
         const messages = await MessageModel.find({
             chatId,
-            text: { $regex: searchText, $options: "i" },
+            message: { $regex: searchMessages, $options: "i" },
         });
         res.json(messages);
     } catch (error) {

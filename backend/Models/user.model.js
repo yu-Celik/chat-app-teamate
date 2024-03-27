@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
             required: true,
             min: 3,
             max: 30,
+            unique: true,
         },
         email: {
             type: String,
@@ -14,6 +15,8 @@ const userSchema = new mongoose.Schema(
             min: 6,
             max: 200,
             unique: true,
+            lowercase: true,
+            index: true,
         },
         password: {
             type: String,
@@ -29,6 +32,10 @@ const userSchema = new mongoose.Schema(
         profilePic: {
             type: String,
             default: "",
+        },
+        lastLogin: {
+            type: Date,
+            default: Date.now,
         },
     },
     {

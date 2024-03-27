@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Header from '../components/Header/Header';
 import { Box, Stack } from '@mui/material';
-import { User } from '../data/userData';
+import { User } from '../types/Auth.type/Auth.Props';
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
     return (

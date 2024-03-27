@@ -1,15 +1,16 @@
 export type User = {
-    _id?: string; // Identifiant de l'utilisateur
-    username?: string; // Nom d'utilisateur de l'utilisateur
-    email?: string; // Email de l'utilisateur
-    password?: string; // Mot de passe de l'utilisateur
+    _id?: string | null; // Identifiant de l'utilisateur
+    username?: string | null; // Nom d'utilisateur de l'utilisateur
+    email?: string | null; // Email de l'utilisateur
+    password?: string | null; // Mot de passe de l'utilisateur
     gender?: string | "male" | "female"; // Genre de l'utilisateur
-    profilePic?: string; // Photo de profil de l'utilisateur
-    isOnline?: boolean; // Statut de l'utilisateur
-    lastSeen?: string; // Dernière connexion de l'utilisateur
-    notifications?: number; // Nombre de notifications
-    lastNotificationSeen?: string; // Date de la dernière notification vue
-    token?: string; // Token de l'utilisateur
+    profilePic?: string | null; // Photo de profil de l'utilisateur
+    isOnline?: boolean | null; // Statut de l'utilisateur
+    lastSeen?: string | null; // Dernière connexion de l'utilisateur
+    notifications?: number | null; // Nombre de notifications
+    lastNotificationSeen?: string | null; // Date de la dernière notification vue
+    token?: string | null; // Token de l'utilisateur
+    lastLogin?: string | null; // Dernière connexion de l'utilisateur
 };
 
 export type RegisterInfo = {
@@ -42,5 +43,4 @@ export type Register = {
 
 export type CurrentUser = {
     data: User | null;
-    isAuthChecking: boolean;
 }

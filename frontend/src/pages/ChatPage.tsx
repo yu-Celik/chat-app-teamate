@@ -5,9 +5,14 @@ import { useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
 import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
+import useGetAllUsers from "../hooks/Chat/useGetAllUsers";
+import useUserChats from "../hooks/Chat/useUserChats";
 
 export default function ChatPage() {
     const [open, setOpen] = useState(false);
+    useGetAllUsers();
+    useUserChats();
+
 
 
     const toggleDrawer = useCallback(() => {

@@ -1,57 +1,41 @@
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tab, Tabs, alpha } from "@mui/material";
-import { ReactNode, SyntheticEvent, useCallback, useState } from "react";
-import UserProfile from "../UserProfile/UserProfile";
-import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
+import { ReactNode, SyntheticEvent, useState } from "react";
 import { DrawerFooter, DrawerHeader, drawerWidth, heightHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search } from "@mui/icons-material";
 import { groupes, users } from "../../../data/userData";
-import useCreateChat from "../../../hooks/Chat/useCreateChat";
-import useGetAllUsers from "../../../hooks/Chat/useGetAllUsers";
+import { useChat } from "../../../contexts/ChatContext/useChatContext";
+import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
+import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
 import MenuCreateChat from "../MenuCreateChat";
 import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
-import useUserChats from "../../../hooks/Chat/useUserChats";
 
 
 const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
-    const { userChats, updateUserChats } = useUserChats() // Récupération des chats du current user
-    const { createChat, newChat } = useCreateChat() // Création d'un chat
-    const { deleteChat, deleteChatState } = useDeleteChat() // Suppression d'un chat
-    const { usersState } = useGetAllUsers() // Récupération de tous les utilisateurs
+    const { chatInfo } = useChat();
+    const { deleteChat } = useDeleteChat();
 
-    const potentialChats = usersState.users.filter((user) => !userChats.secondUsers.some(u => u._id === user._id))
+    // console.log(deleteChatState.isLoading);
+    // console.log(newChat.isLoading);
+
 
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
-    const handleCreateChat = useCallback(async (secondUserId: string) => {
-        // console.log("secondUserId", secondUserId);
-        const createdChat = await createChat(secondUserId);
-        if (createdChat) {
-            console.log("Chat créé", createdChat);
-            updateUserChats([...userChats.chats, createdChat]);
-        }
-    }, [createChat, userChats.chats, updateUserChats]);
+    const handleDeleteChat = (chatId: string) => {
+        deleteChat(chatId);
+    }
 
-    const handleDeleteChat = useCallback(async (chatId: string) => {
-        // console.log('chatId', chatId);
-        const deletedChat = await deleteChat(chatId);
-        if (deletedChat) {
-            console.log('chat supprimé', deletedChat);
-            updateUserChats(userChats.chats.filter(chat => chat._id !== chatId));
-        }
-    }, [deleteChat, userChats.chats, updateUserChats]);
-    // const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
-    // const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
 
     return (
         <>
             <Box flexGrow={1} display={'flex'} sx={{
                 height: 'calc(100vh - 69.5px)',
                 overflow: 'hidden',
+                border: 'none',
             }}>
                 <Drawer
 
@@ -60,6 +44,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         width: drawerWidth,
                         flexShrink: 0,
                         position: 'relative',
+                        border: 'none',
                         '& .MuiDrawer-paper': {
                             width: drawerWidth,
                             boxSizing: 'border-box',
@@ -70,19 +55,12 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
+                            border: 'none',
+
                             '&::-webkit-scrollbar': {
-                                width: '0.5rem',
-                            },
-                            '&::-webkit-scrollbar-thumb': {
-                                backgroundColor: customTheme.palette.slate[500],
-                                borderRadius: '10px',
-                            },
-                            '&::-webkit-scrollbar-track': {
-                                backgroundColor: 'transparent',
-                            },
-                            '&::-webkit-scrollbar-thumb:hover': {
-                                backgroundColor: customTheme.palette.slate[600],
-                            },
+                                display: 'none',
+                            }
+
                         },
                         '& .MuiDivider-root': {
                             backgroundColor: customTheme.palette.slate[500],
@@ -97,6 +75,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             width: '100%',
                             '& .MuiTab-root': {
                                 width: '50%',
+                                minHeight: '67.5px',
                             },
                             '& .MuiTab-textColorPrimary': {
                                 color: customTheme.palette.slate[200],
@@ -105,6 +84,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                                 color: customTheme.palette.orangePV.dark,
                             },
                             '& .MuiTabs-indicator': {
+                                bottom: '',
                                 backgroundColor: customTheme.palette.orangePV.dark,
                             },
                         }}>
@@ -112,7 +92,6 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             <Tab label="Groupe" {...groupes} onClick={() => setShowGroupe(true)} />
                         </Tabs>
                     </DrawerHeader>
-                    <Divider />
                     <List sx={{
                         height: '80%',
                         overflowY: 'auto',
@@ -135,17 +114,17 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                     }}>
                         {value === 0 ?
                             (
-                                userChats.chats.map((chat) => (
-                                    <UserProfile
+                                chatInfo.userChats.chats?.map((chat) => (
+                                    <ProfileInDrawer
                                         key={chat._id}
                                         chatId={chat._id}
                                         username={chat.members[1].username}
                                         profilePic={chat.members[1].profilePic}
-                                        inHeader={false}
-                                        isLoadingUserChat={userChats.isLoading}
-                                        isLoadingCreateChat={newChat.isLoading}
-                                        isLoadingDeleteChat={deleteChatState.isLoading}
+                                        isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                        isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                        isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
                                         onDelete={() => handleDeleteChat(chat._id)}
+                                        lastLogin={chat.members[1].lastLogin}
                                     />
                                     // <p>{chat.members[1].username}</p>
                                 ))) :
@@ -164,7 +143,6 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             ))
                         }
                     </List>
-                    <Divider />
                     <DrawerFooter >
                         {showGroupe ? (
                             ['Creer un groupe', 'Rejoins un groupe'].map((text, index) => (
@@ -179,7 +157,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             ))
                         ) : (
                             <>
-                                <MenuCreateChat potentialChats={potentialChats} onClick={handleCreateChat} />
+                                <MenuCreateChat />
                                 <ListItem key="Rechercher un chat" disablePadding>
                                     <ListItemButton>
                                         <ListItemIcon>
@@ -193,7 +171,13 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                     </DrawerFooter>
                 </Drawer>
                 <Box flexGrow={1} height={'100%'}>
-                    {children}
+                    {chatInfo?.chatId != null ? children : (
+                        <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'}>
+                            <Typography variant="h6" sx={{ color: customTheme.palette.slate[300] }}>
+                                Aucun chat selectionner
+                            </Typography>
+                        </Stack>
+                    )}
                 </Box>
             </Box>
         </>

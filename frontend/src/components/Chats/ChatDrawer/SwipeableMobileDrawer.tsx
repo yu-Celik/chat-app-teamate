@@ -1,6 +1,6 @@
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
 import { ReactEventHandler, SyntheticEvent, useState } from "react";
-import UserProfile from "../UserProfile/UserProfile";
+import UserProfile from "../UserProfile/ProfileInMenu";
 import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';

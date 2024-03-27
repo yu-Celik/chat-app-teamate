@@ -2,14 +2,13 @@ import Typography from '@mui/material/Typography';
 import { Avatar, Badge, ListItemAvatar, ListItemButton, ListItemText, PopoverPosition, Skeleton, Stack, alpha } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
-import { Fragment } from 'react/jsx-runtime';
 import { User } from '../../../types/Auth.type/Auth.Props';
-import { useState } from 'react';
 import ContextMenu from '../ContextMenu/ContextMenu';
+import { useState } from 'react';
+import { useChat } from '../../../contexts/ChatContext/useChatContext';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
-    inHeader: boolean,
     isLoading?: boolean,
     onDelete?: (chatId: string) => void,
     isLoadingUserChat?: boolean,
@@ -18,8 +17,9 @@ type UserProfileProps = User & {
     chatId?: string,
 }
 
-export default function UserProfile({ username, profilePic, isOnline = false, inHeader, isLoadingUserChat, isLoadingCreateChat, isLoadingDeleteChat, onDelete, chatId }: UserProfileProps) {
+export default function ProfileInDrawer({ username, profilePic, isOnline = false, isLoadingUserChat, isLoadingCreateChat, isLoadingDeleteChat, onDelete, chatId }: UserProfileProps) {
     const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
+    const { updateChatId } = useChat();
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
         event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
@@ -37,6 +37,7 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
         }
     };
 
+
     const openMenuAtPosition = (event: React.MouseEvent<HTMLDivElement>) => {
         const userProfileElement = event.currentTarget; // Obtient l'élément de message
         const rect = userProfileElement.getBoundingClientRect(); // Obtient la position et les dimensions de l'élément
@@ -52,7 +53,9 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
         setMenuPosition(null);
     };
 
-
+    const handleProfileClick = (chatId: string) => {
+        updateChatId(chatId);
+    }
 
 
 
@@ -64,15 +67,16 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
             component="div"
             sx={{
                 flexGrow: 1,
-                boxShadow: inHeader ? customTheme.shadows[0] : customTheme.shadows[1],
+                boxShadow: customTheme.shadows[1],
                 '& .MuiListItemButton-root:hover': {
                     backgroundColor: alpha(customTheme.palette.slate[100], 0.1),
                 }
             }}
+            onClick={() => handleProfileClick(chatId as string)}
         >
             {!isLoadingUserChat && !isLoadingCreateChat && !isLoadingDeleteChat ? (
                 <ListItemButton alignItems="flex-start" sx={{
-                    padding: inHeader ? customTheme.spacing(0, 1) : customTheme.spacing(1),
+                    padding: customTheme.spacing(0, 1),
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -89,56 +93,22 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
                             variant="dot"
                             isOnline={isOnline}
                         >
-                            <Avatar alt="Remy Sharp" src={profilePic} />
+                            <Avatar alt="Remy Sharp" src={profilePic || ''} />
                         </StyledBadge>
                     </ListItemAvatar>
-                    {inHeader === false ? (
-                        <ListItemText
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                height: '70px',
-                                margin: '0px',
-                                gap: '1px',
-                            }}
-                            primary={<Typography
-                                sx={{
-                                    display: 'block',
-                                    width: '100%',
-                                }}
-                                fontSize={customTheme.typography.body1.fontSize}
-                                textTransform={'capitalize'}
-                                component="span"
-                                variant="body2"
-                                color={customTheme.palette.slate[200]}
-                                noWrap
-                            >
-                                {username}
-                            </Typography>}
-                            secondary={
-                                <Typography
-                                    sx={{
-                                        display: 'inline-block',
-                                        width: '100%',
-                                    }}
-                                    component="span"
-                                    variant="body2"
-                                    fontSize={customTheme.typography.body2.fontSize}
-                                    color={customTheme.palette.slate[200]}
-                                    noWrap
-                                >
-                                    {username}
-                                </Typography>
-                            }
-                        />
-                    ) : (<ListItemText
+                    <ListItemText
                         sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            height: '70px',
                             margin: '0px',
+                            gap: '1px',
                         }}
                         primary={<Typography
                             sx={{
                                 display: 'block',
+                                width: '100%',
                             }}
                             fontSize={customTheme.typography.body1.fontSize}
                             textTransform={'capitalize'}
@@ -150,32 +120,23 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
                             {username}
                         </Typography>}
                         secondary={
-                            <Fragment>
-                                {isOnline ? (
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color={customTheme.palette.slate[200]}
-                                    >
-                                        En ligne
-                                    </Typography>
-                                ) : (
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color={customTheme.palette.slate[200]}
-                                        fontSize="small"
-                                        fontStyle="italic"
-                                    >
-                                        date
-                                    </Typography>
-                                )}
-                            </Fragment>
+                            <Typography
+                                sx={{
+                                    display: 'inline-block',
+                                    width: '100%',
+                                }}
+                                component="span"
+                                variant="body2"
+                                fontSize={customTheme.typography.body2.fontSize}
+                                color={customTheme.palette.slate[200]}
+                                noWrap
+                            >
+                                {username}
+                            </Typography>
                         }
-                    />)}
-                    {inHeader === false && <Stack flexGrow={1} spacing={0.5} pt={0.5} pr={1} direction={'column'} alignItems={'flex-end'} justifyContent={'center'}>
+                    />
+
+                    <Stack flexGrow={1} spacing={0.5} pt={0.5} pr={1} direction={'column'} alignItems={'flex-end'} justifyContent={'center'}>
                         <Typography
                             variant='caption'
                             noWrap
@@ -216,9 +177,9 @@ export default function UserProfile({ username, profilePic, isOnline = false, in
                                 handleContextMenu={handleContextMenuOnChat}
                             />
                         )}
-                    </Stack>}
+                    </Stack>
                 </ListItemButton>) : (
-                <Skeleton variant="rectangular" width={'100%'} height={inHeader ? '55px' : '86px'} />
+                <Skeleton variant="rectangular" width={'100%'} height={'86px'} />
             )}
 
         </Typography>

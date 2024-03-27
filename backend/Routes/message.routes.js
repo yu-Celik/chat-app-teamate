@@ -8,7 +8,7 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post('/:receiverId', protectRoute, upload.array('imageFiles'), createMessage); // Create a message
+router.post('/', protectRoute, upload.array('imageFiles'), createMessage); // Create a message
 router.get('/:chatId', protectRoute, getMessages); // Find all messages of a chat
 router.delete('/:id', protectRoute, deleteMessage); // Delete a message
 router.delete('/:id/imageUrls', protectRoute, deleteImageUrl); // Delete image URLs from a message

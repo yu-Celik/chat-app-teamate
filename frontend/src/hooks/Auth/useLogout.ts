@@ -8,7 +8,7 @@ const useLogout = () => {
     const logoutUser = useCallback(async () => {
         try {
             await axios.post('/users/logout');
-            setCurrentUser({ data: null, isAuthChecking: false });
+            setCurrentUser({ data: null });
             localStorage.removeItem('chat-user');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

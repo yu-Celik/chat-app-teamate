@@ -1,48 +1,26 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "../../config/axiosConfig";
-import { UsersState } from "../../types/Chat.type/Chat.Props";
-import { User } from "../../data/userData";
-
+import { useChat } from "../../contexts/ChatContext/useChatContext";
 
 const useGetAllUsers = () => {
-    const [usersState, setUsersState] = useState<UsersState>({
-        isLoading: false,
-        users: []
-    });
+    const { updateAllUsers } = useChat();
 
-    const updateUsersState = useCallback((updatedUsers: User[]) => {
-        setUsersState(prev => ({ ...prev, users: updatedUsers }));
-    }, []);
 
     useEffect(() => {
-
         const getAllUsers = async () => {
-            console.log('Début de récupération de tous les utilisateurs');
-            setUsersState(prev => ({
-                ...prev, isLoading: true
-            }));
-
+            console.log('getAllUsers');
+            updateAllUsers({ users: [], isLoading: true, error: null });
             try {
                 const response = await axios.get('/users');
-                // console.log('Utilisateurs récupérés:', response.data);
-
-                // Mise à jour de l'état avec tous les utilisateurs récupérés
-                setUsersState(prev => ({
-                    ...prev,
-                    users: response.data,
-                    isLoading: false
-                }));
+                updateAllUsers({ users: response.data, isLoading: false, error: null });
             } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                setUsersState(prev => ({
-                    ...prev, isLoading: false
-                }));
+                if (axios.isAxiosError(error)) {
+                    updateAllUsers({ users: [], isLoading: false, error: error.message });
+                }
             }
-        }
+        };
         getAllUsers();
-    }, []);
-
-    return { usersState, updateUsersState };
+    }, [updateAllUsers]);
 }
 
 export default useGetAllUsers;

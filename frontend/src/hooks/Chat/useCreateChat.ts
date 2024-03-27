@@ -1,31 +1,43 @@
-import { useState } from "react";
 import axios from "../../config/axiosConfig";
-import { ChatState } from "../../types/Chat.type/Chat.Props";
+import { useChat } from "../../contexts/ChatContext/useChatContext";
 
 const useCreateChat = () => {
-    const [newChat, setNewChat] = useState<ChatState>({
-        data: null,
-        isLoading: false,
-        error: null,
-    });
+    const { updateCreateChat, chatInfo, updateUserChats, updateChatId } = useChat();
 
     const createChat = async (secondUserId: string) => {
-        setNewChat({ ...newChat, isLoading: true });
+        console.log('createChat');
+        updateCreateChat({ chat: null, isLoading: true, error: null });
         try {
-            const response = await axios.post('/chats', { secondId: secondUserId });
-            console.log('create chat', response.data);
-            setNewChat({ data: response.data, isLoading: false, error: null });
-            return response.data; // Retourne les données du chat créé
+            const response = await axios.post('/chats', { secondUserId });
+            if (response.data && response.data._id) { // Assurez-vous que la réponse correspond au type Chat
+                updateCreateChat({ chat: response.data, isLoading: false, error: null });
+
+                // Créer une nouvelle liste de chats en ajoutant le nouveau chat
+                const newUserChats = [...(chatInfo.userChats.chats || []), response.data];
+                const secondUsers = [...(chatInfo.userChats.secondUsers || []), response.data.members[1]];
+
+                updateUserChats({
+                    ...chatInfo.userChats,
+                    chats: newUserChats,
+                    isLoading: false, 
+                    error: null,
+                    currentUser: response.data.members[0],
+                    secondUsers: secondUsers
+                });
+                updateChatId(response.data._id);
+            } else {
+                throw new Error("Invalid chat data");
+            }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                setNewChat({ ...newChat, error: error.message, isLoading: false });
+                updateCreateChat({ chat: null, isLoading: false, error: error.message });
             }
-            console.log(error);
-            return null; // Retourne null en cas d'erreur
+            console.error(error);
         }
     };
 
-    return { createChat, newChat };
+    return { createChat };
 };
 
 export default useCreateChat;
+

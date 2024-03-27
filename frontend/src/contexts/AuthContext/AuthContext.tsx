@@ -7,7 +7,6 @@ export const AuthContext = createContext({} as AuthContextProps);
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const [currentUser, setCurrentUser] = useState<CurrentUser>({
         data: JSON.parse(localStorage.getItem('chat-user') as string) || null,
-        isAuthChecking: false,
     })
 
 

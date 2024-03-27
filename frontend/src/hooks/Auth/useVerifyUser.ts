@@ -11,7 +11,7 @@ const useVerifyUser = () => {
             if (axios.isAxiosError(error) && error.response) {
                 if (error.response.status === 401 || error.response.status === 403) {
                     // Ne pas afficher l'erreur dans la console pour l'experience utilisateur
-                    setCurrentUser({ data: null, isAuthChecking: false });
+                    setCurrentUser({ data: null });
                     localStorage.removeItem('chat-user');
                 }
             }

@@ -27,7 +27,7 @@ import useAuth from "../../contexts/AuthContext/useAuthContext";
         try {
 
             const response = await axios.post('/users/login', login.loginInfo);
-            setCurrentUser({ data: response.data, isAuthChecking: true });
+            setCurrentUser({ data: response.data });
             setLogin((prev) => ({ ...prev, isLogged: true }));
             localStorage.setItem('chat-user', JSON.stringify(response.data));
 

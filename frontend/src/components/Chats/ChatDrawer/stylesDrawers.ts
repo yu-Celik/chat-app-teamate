@@ -18,6 +18,7 @@ export const DrawerHeader = styled(Box)(() => ({
 }));
 
 export const DrawerFooter = styled(Box)(() => ({
+
     '& .MuiListItem-root': {
         color: customTheme.palette.slate[200],
     },
@@ -76,12 +77,6 @@ export const DrawerFooter = styled(Box)(() => ({
             padding: customTheme.spacing(0, 1),
         },
     },
-
-    '& .css-16ac5r2-MuiButtonBase-root-MuiListItemButton-root': {
-
-    },
-
-
 
 }));
 

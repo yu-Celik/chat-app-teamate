@@ -29,7 +29,7 @@ const useRegister = () => {
 
         try {
             const response = await axios.post('/users/register', register.registerInfo);
-            setCurrentUser({ data: response.data, isAuthChecking: true });
+            setCurrentUser({ data: response.data });
             setRegister((prev) => ({ ...prev, isRegistered: true }));
             localStorage.setItem('chat-user', JSON.stringify(response.data));
 

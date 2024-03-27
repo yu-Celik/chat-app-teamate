@@ -3,8 +3,9 @@ import MainLayout from './layouts/MainLayout';
 import { Suspense, lazy } from 'react';
 import { CssBaseline } from '@mui/material';
 import useAuth from './contexts/AuthContext/useAuthContext';
-import { User } from './data/userData';
 import useVerifyUser from './hooks/Auth/useVerifyUser';
+import { ChatProvider } from './contexts/ChatContext/ChatContext';
+import { User } from './types/Auth.type/Auth.Props';
 
 const LoadingPage = lazy(() => import('./pages/LoadingPage'));
 const Welcome = lazy(() => import('./pages/WelcomePage'));
@@ -16,16 +17,14 @@ const App = () => {
   const { currentUser } = useAuth();
   useVerifyUser();
 
-  if (currentUser.isAuthChecking) {
-    return <LoadingPage />;
-  }
 
   const renderPageBasedOnAuth = (loggedInPage: JSX.Element, loggedOutPage: JSX.Element) => {
     return currentUser.data ? loggedInPage : loggedOutPage;
   };
 
   return (
-      <>
+    <>
+      <ChatProvider currentUser={currentUser.data as User}>
         <CssBaseline />
         <MainLayout connected={currentUser.data as User}>
           <Suspense fallback={<LoadingPage />}>
@@ -37,7 +36,8 @@ const App = () => {
             </Routes>
           </Suspense>
         </MainLayout>
-      </>
+      </ChatProvider>
+    </>
   );
 };
 

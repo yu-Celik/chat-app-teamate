@@ -1,17 +1,18 @@
 import { User } from "../Auth.type/Auth.Props";
 
-export type ChatContextProps = {
-    userChats: Chat[];
-    fetchingUsers: User[];
-    isFetchingUsersLoading: boolean;
-    isFindingUserChatsLoading: boolean;
-}
-
 export type Message = {
-    _id: string;
-    content: string;
-    user: User;
-    createdAt: string;
+    _id: string,
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    replyTo: null,
+    message: string,
+    messageType: "text" | "image" | "video" | "mixed",
+    read: boolean,
+    edited: boolean,
+    imageUrls: [],
+    createdAt: string,
+    updatedAt: string,
 }
 
 export type Chat = {
@@ -22,24 +23,41 @@ export type Chat = {
 }
 
 export type ChatState = {
+    isLoading?: boolean;
+    error?: string | null;
+    chat?: Chat | null;
+}
+
+export type ChatsState = {
     isLoading: boolean;
+    chats: Chat[];
     error: string | null;
-    data: Chat | null;
 }
 
 
 export type UserChats = {
+    isLoading?: boolean;
+    error?: string | null;
+    chats?: Chat[];
+    currentUser?: User;
+    secondUsers?: User[];
+}
+
+export type MessagesState = {
     isLoading: boolean;
-    chats: Chat[];
-    currentUser: User;
-    secondUsers: User[];
+    messagesList: Message[];
+    error: string | null;
 }
 
 
-
-
-export type UsersState = {
-    isLoading: boolean;
-    users: User[];
+export type AllUsers = {
+    isLoading?: boolean;
+    error?: string | null;
+    users?: User[];
 }
+
+export type UpdateMessagesParams = Partial<MessagesState>;
+
+
+
 

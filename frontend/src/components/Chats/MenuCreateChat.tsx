@@ -1,25 +1,30 @@
 import * as React from 'react';
 import { Add } from '@mui/icons-material';
-import { ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import customTheme from '../../styles/customTheme';
 import { SearchBar } from '../SearchBar/SearchBar';
-import UserProfile from './UserProfile/UserProfile';
-import { User } from '../../types/Auth.type/Auth.Props';
 import { StyledMenu } from './ContextMenu/ContextMenu';
+import { useChat } from '../../contexts/ChatContext/useChatContext';
+import useCreateChat from '../../hooks/Chat/useCreateChat';
+import ProfileInMenu from './UserProfile/ProfileInMenu';
 
 
 
-export default function MenuCreateChat({ potentialChats, onClick }: { potentialChats: User[], onClick: (id: string) => void }) {
+export default function MenuCreateChat() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); // ouverture du menu
   const open = Boolean(anchorEl);
   const [searchTerm, setSearchTerm] = React.useState('');
-
+  const { chatInfo } = useChat();
+  const { createChat } = useCreateChat();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+  // React.useEffect(() => {
+  //   console.log(chatInfo.potentialChats)
+  // }, [chatInfo.potentialChats])
 
-  const filteredChats = potentialChats.filter(chat =>
+  const filteredChats = chatInfo.potentialChats.filter(chat =>
     chat.username?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -30,6 +35,12 @@ export default function MenuCreateChat({ potentialChats, onClick }: { potentialC
     setAnchorEl(null);
   };
 
+  const handleCreateChat = async (userId: string) => {
+    if (userId) {
+      await createChat(userId);
+      handleClose();
+    }
+  };
 
   return (
     <div>
@@ -72,20 +83,44 @@ export default function MenuCreateChat({ potentialChats, onClick }: { potentialC
           autoCapitalize: 'off',
           value: searchTerm,
           onChange: handleChange,
-        }} />
-        {filteredChats.map((potentialChat) => (
-          <ListItem key={potentialChat._id} disablePadding onClick={() => {
-            onClick(potentialChat._id as string);
-            handleClose()
-          }}>
-            <UserProfile
-              inHeader={false}
-              key={potentialChat._id}
-              username={potentialChat.username}
-              profilePic={potentialChat.profilePic}
-            />
-          </ListItem>
-        ))}
+        }}
+        />
+        <List disablePadding sx={{
+          height: '300px',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          scrollBehavior: 'smooth',
+          '&::-webkit-scrollbar': {
+            width: '0.25rem',
+            height: '0.25rem',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: customTheme.palette.slate[500],
+            borderRadius: '10px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: customTheme.palette.slate[600],
+          },
+        }}>
+          {filteredChats.map((potentialChat) => (
+            <React.Fragment key={potentialChat._id}>
+              <ProfileInMenu
+                username={potentialChat.username}
+                profilePic={potentialChat.profilePic}
+                onClick={() => handleCreateChat(potentialChat._id as string)}
+                lastLogin={potentialChat.lastLogin}
+              />
+              <Divider variant='fullWidth'
+                sx={{
+                  backgroundColor: customTheme.palette.slate[200],
+                }}
+              />
+            </React.Fragment>
+          ))}
+        </List>
       </StyledMenu>
     </div >
   );
