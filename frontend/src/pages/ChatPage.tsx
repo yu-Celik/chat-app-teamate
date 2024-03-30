@@ -26,7 +26,7 @@ export default function ChatPage() {
         <>
             {isMdUp &&
                 <PersistentDesktopDrawer>
-                    <ChatHeader onClickOpenDrawer={toggleDrawer} />
+                    <ChatHeader/>
                     <ChatBody />
                 </PersistentDesktopDrawer>
             }

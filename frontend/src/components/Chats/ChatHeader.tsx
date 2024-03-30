@@ -2,7 +2,7 @@ import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import { AppBar } from '@mui/material';
+import { AppBar, useMediaQuery } from '@mui/material';
 import customTheme from '../../styles/customTheme';
 import { SearchIconOnly } from '../SearchBar/SearchIconOnly';
 import { SearchBarInDialog } from '../SearchBar/SearchBarInDialog';
@@ -11,13 +11,13 @@ import { KeyboardArrowRight } from '@mui/icons-material';
 import ProfileInHeader from './UserProfile/ProfileInHeader';
 import { useChat } from '../../contexts/ChatContext/useChatContext';
 
-export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer: () => void }) {
+export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: () => void }) {
     const { chatInfo } = useChat();
     const [open, setOpen] = React.useState(false);
 
     const selectedChat = chatInfo.userChats.chats?.find(chat => chat._id === chatInfo.chatId);
-    console.log(selectedChat);
-    
+    const isMdDown = useMediaQuery(customTheme.breakpoints.down('md'));
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -27,7 +27,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer: (
     };
     return (
         <>
-            {selectedChat != null && <Box sx={{ flexGrow: 1 }}>
+            {(selectedChat != null || isMdDown) && <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="relative" sx={{
                     backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
                     boxShadow: 'none',
@@ -53,8 +53,8 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer: (
                         >
                             <KeyboardArrowRight />
                         </StyledIconButton>
-                        <ProfileInHeader username={selectedChat?.members[1].username} profilePic={selectedChat?.members[1].profilePic} lastLogin={selectedChat?.members[1].lastLogin} />
-                        <SearchIconOnly onClick={handleOpen} />
+                        {selectedChat != null && <ProfileInHeader username={selectedChat?.members[1].username} profilePic={selectedChat?.members[1].profilePic} lastLogin={selectedChat?.members[1].lastLogin} />}
+                        {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
                     </Toolbar>
                 </AppBar>
                 <SearchBarInDialog

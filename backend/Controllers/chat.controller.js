@@ -1,6 +1,7 @@
 // createChat
 
 import ChatModel from '../Models/chat.model.js';
+import MessageModel from '../Models/message.model.js';
 import UserModel from '../Models/user.model.js';
 
 // Créer un chat entre deux utilisateurs grace a leurs id
@@ -66,6 +67,10 @@ const deleteChat = async (req, res) => {
     const { chatId } = req.params;
     try {
         const chat = await ChatModel.findByIdAndDelete(chatId);
+        const messages = await MessageModel.find({ chat: chatId });
+        messages.forEach(async (message) => {
+            await MessageModel.findByIdAndDelete(message._id);
+        });
         res.status(200).json(chat);
     } catch (error) {
         res.status(500).json(error);
@@ -107,4 +112,26 @@ const findChat = async (req, res) => {
     }
 };
 
-export { createChat, findUserChats, findChat, deleteChat, getChat };
+const updateChatOrder = async (req, res) => {
+    const { chatId, newOrder } = req.body;
+    console.log(chatId, newOrder);
+    // Validation simple des données d'entrée
+    if (!chatId || newOrder === undefined) {
+        return res.status(400).json({ message: "chatId et newOrder sont requis" });
+    }
+
+    try {
+        const chat = await ChatModel.findByIdAndUpdate(chatId, { order: newOrder }, { new: true });
+
+        if (!chat) {
+            // Si aucun chat n'est trouvé avec l'ID fourni
+            return res.status(404).json({ message: "Chat non trouvé" });
+        }
+
+        res.status(200).json(chat);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de la mise à jour de l'ordre du chat", error });
+    }
+};
+
+export { createChat, findUserChats, findChat, deleteChat, getChat, updateChatOrder };

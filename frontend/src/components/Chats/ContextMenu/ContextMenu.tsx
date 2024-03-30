@@ -3,11 +3,12 @@ import { Menu, MenuItem, MenuProps, PopoverPosition, alpha, styled } from '@mui/
 import customTheme from '../../../styles/customTheme';
 
 interface ContextMenuProps {
-    onEdit?: () => void;
+    onEdit?: (messageId: string, newText: string) => void;
     onDelete?: (chatId: string) => void;
     onReply?: () => void;
     onCopy?: (message: string) => void;
-    message?: string;
+    message: string;
+    messageId?: string;
     menuPosition: { top: number, left: number } | null;
     handleCloseMenu: () => void;
     handleContextMenu: (event: MouseEvent<HTMLDivElement>) => void;
@@ -61,7 +62,7 @@ export const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 
-const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, message, menuPosition, handleCloseMenu, handleContextMenu, chatId }) => {
+const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, message, menuPosition, handleCloseMenu, handleContextMenu, chatId, messageId }) => {
 
     return (
         <div onContextMenu={handleContextMenu}>
@@ -82,10 +83,16 @@ const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, 
                     },
                 }}
             >
-                {onEdit && <MenuItem onClick={() => { onEdit(); handleCloseMenu(); }}>Modifier</MenuItem>}
+                {onEdit && (
+                    <MenuItem onClick={(event) => {
+                        event.stopPropagation();
+                        onEdit(messageId as string, message);
+                        handleCloseMenu();
+                    }}>Modifier</MenuItem>
+                )}
                 {onDelete && (
                     <MenuItem onClick={(event) => {
-                        event.stopPropagation(); 
+                        event.stopPropagation();
                         onDelete(chatId as string);
                         handleCloseMenu();
                     }}>Supprimer</MenuItem>

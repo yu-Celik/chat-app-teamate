@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import ChatBar from "./MessageBar";
+import ChatBar from "./MessageBar/MessageBar";
 import MessageList from "./MessageList";
 import { users } from "../../data/userData";
 import { heightHeader } from "./ChatDrawer/stylesDrawers";

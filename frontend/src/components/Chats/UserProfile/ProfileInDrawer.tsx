@@ -7,6 +7,7 @@ import ContextMenu from '../ContextMenu/ContextMenu';
 import { useState } from 'react';
 import { useChat } from '../../../contexts/ChatContext/useChatContext';
 import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
+import { motion } from 'framer-motion';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
@@ -71,17 +72,22 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
 
 
     return (
-        <Typography
+        <motion.div
+            whileDrag={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
             onContextMenu={handleContextMenuOnChat}
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{
+            variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1 },
+            }}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.3 }}
+            style={{
                 flexGrow: 1,
                 boxShadow: customTheme.shadows[1],
-                '& .MuiListItemButton-root:hover': {
-                    backgroundColor: alpha(customTheme.palette.slate[100], 0.1),
-                }
+
             }}
             onClick={() => handleProfileClick(chatId as string)}
         >
@@ -92,6 +98,9 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    '&:hover': {
+                        backgroundColor: alpha(customTheme.palette.slate[100], 0.1),
+                    }
                 }}>
                     <ListItemAvatar
                         sx={{
@@ -177,6 +186,7 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
                         />
                         {menuPosition !== null && (
                             <ContextMenu
+
                                 open={menuPosition !== null}
                                 chatId={chatId as string}
                                 anchorReference="anchorPosition"
@@ -193,6 +203,7 @@ export default function ProfileInDrawer({ username, profilePic, isOnline = false
                 <Skeleton variant="rectangular" width={'100%'} height={'86px'} />
             )}
 
-        </Typography>
+        </motion.div>
     )
 }
+

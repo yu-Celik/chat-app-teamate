@@ -1,0 +1,26 @@
+.list-drawer-order {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+::-webkit-scrollbar {
+    width: 0.25rem;
+    height: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #64748b; /* Remplacez par votre couleur */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #475569; /* Remplacez par votre couleur au survol */
+}

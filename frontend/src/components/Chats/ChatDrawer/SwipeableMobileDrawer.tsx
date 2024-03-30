@@ -1,12 +1,17 @@
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
-import { ReactEventHandler, SyntheticEvent, useState } from "react";
-import UserProfile from "../UserProfile/ProfileInMenu";
-import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
+import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
-import { Add, GroupAdd, Search } from "@mui/icons-material";
-import { getLastMessageSeen } from "./getLastMessageSeen";
-import { groupes, messages, users } from "../../../data/userData";
+import { GroupAdd, KeyboardArrowLeft, Search, ViewListOutlined } from "@mui/icons-material";
+import { groupes, users } from "../../../data/userData";
+import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
+import { useChat } from "../../../contexts/ChatContext/useChatContext";
+import { Chat } from "../../../types/Chat.type/Chat.Props";
+import { Reorder } from "framer-motion";
+import { styleListDrawer } from "./styleListDrawer";
+import MenuCreateChat from "../MenuCreateChat";
+import { StyledIconButton } from "../../IconButton/IconButton";
+
 
 interface SwipeableMobileDrawerProps {
     anchor: Anchor;
@@ -17,13 +22,46 @@ interface SwipeableMobileDrawerProps {
 type Anchor = 'left';
 
 export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobileDrawerProps) {
-    const [showGroupe, setShowGroupe] = useState(true);
     const [value, setValue] = useState(0);
+    const [showGroupe, setShowGroupe] = useState(false);
+    const { chatInfo, updateChatOrder } = useChat();
+    const [items, setItems] = useState([...chatInfo.userChats.chats]); // Initialisez items avec les chats de l'utilisateur
+    const [isRearrangeMode, setIsRearrangeMode] = useState(false);
 
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-    // const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
+
+    // Mettre à jour l'état lorsque les éléments sont réordonnés
+    const handleReorder = (newOrder: Chat[]) => {
+        setItems(newOrder);
+        updateChatOrder(newOrder);
+        localStorage.setItem('chatsOrder', JSON.stringify(newOrder.map(chat => chat._id)));
+    };
+
+    useEffect(() => {
+        const storedOrder = localStorage.getItem('chatsOrder');
+        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : [];
+        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id);
+    
+        const validStoredOrderIds = storedOrderIds.filter((id: string) => currentChatIds.includes(id));
+        const chatIdsChanged = !storedOrderIds.every((id: string) => currentChatIds.includes(id)) || !currentChatIds.every((id: string) => storedOrderIds.includes(id));
+        const hasChatIdsChanged = storedOrderIds.length !== currentChatIds.length;
+    
+        if (hasChatIdsChanged || chatIdsChanged) {
+            setItems([...chatInfo.userChats.chats]);
+            return;
+        }
+    
+        // Réordonnez les chats selon l'ordre stocké, s'il existe
+        if (validStoredOrderIds.length > 0) {
+            const reorderedChats = validStoredOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined);
+            setItems(reorderedChats);
+        } else {
+            // Si aucun ordre n'est stocké, utilisez l'ordre par défaut
+            setItems([...chatInfo.userChats.chats]);
+        }
+    }, [chatInfo.userChats.chats]);
 
 
     const list = () => (
@@ -34,36 +72,51 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
 
             }}
             role="ChatDrawer"
-            onClick={onClose}
             onKeyDown={onClose}
         >
-            {value === 0 ?
-                users.map((user) => (
-                    <UserProfile
-                        key={user.id}
-                        username={user.username}
-                        profilePic={user.profilePic}
-                        isOnline={user.isOnline}
-                        lastSeen={user.lastSeen}
-                        inHeader={false}
-                        lastMessageSeen={getLastMessageSeen(messages, user.id)}
-                        notifications={user.notifications}
-                        lastNotificationSeen={user.lastNotificationSeen}
-                    />
-                )) :
-                groupes.map((groupe) => (
-                    <GroupeDisplay
-                        key={groupe.id}
-                        name={groupe.name}
-                        members={groupe.members}
-                        lastMessage={groupe.lastMessage.text}
-                        lastNotificationSeen={groupe.lastNotificationSeen}
-                        lastMessageSender={groupe.lastMessageSender}
-                        profilePic={groupe.profilePic}
-                        inHeader={false}
-                        notifications={groupe.notifications}
-                    />
-                ))
+            {
+                isRearrangeMode ? (
+                    <Reorder.Group
+                        axis="y"
+                        onReorder={handleReorder}
+                        values={items}
+                        className="list-drawer-order"
+
+                    >
+                        {items.map((item) => (
+                            <Reorder.Item key={item._id} value={item}>
+                                <ProfileInDrawer
+                                    chatId={chatInfo.chatId as string}
+                                    username={item.members[1].username}
+                                    profilePic={item.members[1].profilePic}
+                                    isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                    isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                    isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                                    lastLogin={item.members[1].lastLogin}
+                                />
+                            </Reorder.Item>
+                        ))}
+                    </Reorder.Group>
+                ) : (
+                    // Affichage normal sans possibilité de réordonnancement
+                    <List
+                        sx={{
+                            ...styleListDrawer,
+                        }}>
+                        {items.map((item) => (
+                            <ProfileInDrawer
+                                key={item._id}
+                                chatId={item._id}
+                                username={item.members[1].username}
+                                profilePic={item.members[1].profilePic}
+                                isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                                lastLogin={item.members[1].lastLogin}
+                            />
+                        ))}
+                    </List>
+                )
             }
         </Box>
     );
@@ -91,7 +144,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" sx={{
                         width: '100%',
                         '& .MuiTab-root': {
-                            width: '50%',
+                            flexGrow: 1,
                         },
                         '& .MuiTab-textColorPrimary': {
                             color: customTheme.palette.slate[200],
@@ -106,6 +159,16 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                         <Tab label="Chat privé" {...users} onClick={() => setShowGroupe(false)} />
                         <Tab label="Groupe" {...groupes} onClick={() => setShowGroupe(true)} />
                     </Tabs>
+                    <StyledIconButton
+                        title="Fermer le menu"
+                        size="large"
+                        aria-label="Fermer le menu"
+                        aria-controls="nav-drawer"
+                        aria-haspopup="true"
+                        onClick={onClose}
+                    >
+                        <KeyboardArrowLeft />
+                    </StyledIconButton>
                 </DrawerHeader>
                 {list()}
                 <DrawerFooter >
@@ -122,16 +185,23 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                                 </ListItem>
                             ))
                         ) : (
-                            ['Creer un chat', 'Recherche un chat'].map((text, index) => (
-                                <ListItem key={text} disablePadding>
-                                    <ListItemButton>
+                            <>
+                                <MenuCreateChat />
+                                <ListItem key="rearrange-button" disablePadding>
+                                    <ListItemButton
+                                        id="rearrange-button"
+                                        aria-controls={isRearrangeMode ? 'Terminer le rangement' : 'Ranger les chats'}
+                                        aria-haspopup="true"
+                                        aria-expanded={isRearrangeMode ? 'true' : undefined}
+                                        onClick={() => setIsRearrangeMode(!isRearrangeMode)}
+                                    >
                                         <ListItemIcon>
-                                            {index % 2 === 0 ? <Add /> : <Search />}
+                                            <ViewListOutlined />
                                         </ListItemIcon>
-                                        <ListItemText primary={text} />
+                                        <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} />
                                     </ListItemButton>
                                 </ListItem>
-                            ))
+                            </>
                         )}
                     </List>
                 </DrawerFooter>

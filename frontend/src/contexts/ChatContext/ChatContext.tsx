@@ -1,7 +1,5 @@
 import React, { createContext, useCallback, useState, useEffect } from 'react';
-import { ChatContextProps, ChatInfo, UpdateChatId, UpdateCreateChat, UpdateDeleteChat, UpdateMessages, UpdatePotentialChats, UpdateUserChats, UpdateAllUsers } from '../../types/Chat.type/ChatContext.Props';
-import { ChatState, MessagesState, UserChats } from '../../types/Chat.type/Chat.Props';
-import { User } from '../../types/Auth.type/Auth.Props';
+import { ChatContextProps, ChatInfo, UpdateChatId, UpdateCreateChat, UpdateDeleteChat, UpdateMessages, UpdatePotentialChats, UpdateUserChats, UpdateAllUsers, UpdateSendMessageStatus, UpdateMessageInList, DeleteMessageFromList, UpdateDeleteMessage, UpdateChatOrder } from '../../types/Chat.type/ChatContext.Props';
 
 export const ChatContext = createContext<ChatContextProps>({} as ChatContextProps);
 
@@ -14,7 +12,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [chatInfo, setChatInfo] = useState<ChatInfo>({
         chatId: null,
-        chatName: null,
         createChat: {
             isLoading: false,
             error: null,
@@ -42,38 +39,68 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             error: null,
             messagesList: []
         },
+        deleteMessage: {
+            isLoading: false,
+            error: null,
+            message: null
+        },
+        sendMessageStatus: {
+            isLoading: false,
+            error: null,
+            warning: null,
+            isTyping: false,
+            isEditing: false,
+            editId: null,
+            messageToEdit: null
+        },
         potentialChats: [],
-        lastLogin: null,
-        profilePic: null
     });
 
     // Mise à jour des états spécifiques
-    const updateAllUsers: UpdateAllUsers = useCallback((allUsers) => {
-        setChatInfo(prev => ({ ...prev, allUsers}));
+    const updateAllUsers: UpdateAllUsers = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            allUsers: updateFunction(prev.allUsers)
+        }));
     }, []);
 
-    const updateUserChats: UpdateUserChats = useCallback((userChats: UserChats) => {
-        setChatInfo(prev => ({ ...prev, userChats }));
+    const updateUserChats: UpdateUserChats = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            userChats: updateFunction(prev.userChats)
+        }));
     }, []);
 
-    const updateCreateChat: UpdateCreateChat = useCallback((createChat: ChatState) => {
-        setChatInfo(prev => ({ ...prev, createChat }));
+    const updateCreateChat: UpdateCreateChat = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            createChat: updateFunction(prev.createChat)
+        }));
     }, []);
 
-    const updateDeleteChat: UpdateDeleteChat = useCallback((deleteChat: ChatState) => {
-        setChatInfo(prev => ({ ...prev, deleteChat }));
+    const updateDeleteChat: UpdateDeleteChat = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            deleteChat: updateFunction(prev.deleteChat)
+        }));
     }, []);
 
-    const updatePotentialChats: UpdatePotentialChats = useCallback((potentialChats: User[]) => {
-        setChatInfo(prev => ({ ...prev, potentialChats }));
+    const updatePotentialChats: UpdatePotentialChats = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            potentialChats: updateFunction(prev.potentialChats)
+        }));
     }, []);
 
-    const updateMessages: UpdateMessages = useCallback((messages: MessagesState) => {
-        setChatInfo(prev => ({ ...prev, messages }));
+    const updateMessages: UpdateMessages = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            messages: updateFunction(prev.messages)
+        }));
     }, []);
-
-    const updateChatId: UpdateChatId = useCallback((newChatId: string) => {
+    const updateChatId: UpdateChatId = useCallback((chatId) => {
         setChatInfo(prev => {
+            const newChatId = chatId;
             if (prev.chatId === newChatId) {
                 // Pas de changement, pas besoin de mettre à jour l'état
                 return prev;
@@ -83,22 +110,70 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         });
     }, []);
 
+    const updateSendMessageStatus: UpdateSendMessageStatus = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            sendMessageStatus: updateFunction(prev.sendMessageStatus)
+        }));
+    }, []);
+
+    const updateMessageInList: UpdateMessageInList = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            messages: {
+                ...prev.messages,
+                messagesList: updateFunction(prev.messages.messagesList),
+            },
+        }));
+    }, []);
+
+    const deleteMessageFromList: DeleteMessageFromList = useCallback((messageId) => {
+        setChatInfo(prev => ({
+            ...prev,
+            messages: {
+                ...prev.messages,
+                messagesList: prev.messages.messagesList.filter(message => message._id !== messageId),
+            },
+        }));
+    }, []);
+
+    const updateDeleteMessage: UpdateDeleteMessage = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            deleteMessage: updateFunction(prev.deleteMessage)
+        }));
+    }, []);
+
+    const updateChatOrder: UpdateChatOrder = useCallback((newChatsArray) => {
+        setChatInfo(prev => ({
+            ...prev,
+            userChats: {
+                ...prev.userChats,
+                chats: newChatsArray,
+            },
+        }));
+    }, []);
+
     // Mise à jour de potentialChats basée sur allUsers et userChats
     useEffect(() => {
-        const newPotentialChats = chatInfo.allUsers.users?.filter(user =>
-            !chatInfo.userChats.chats?.some(chat =>
-                chat.members.some(member => member._id === user._id)
-            )
-        );
-        updatePotentialChats(newPotentialChats ?? []);
+        updatePotentialChats(prevState => {
+            const newPotentialChats = chatInfo.allUsers.users?.filter(user =>
+                !chatInfo.userChats.chats?.some(chat =>
+                    chat.members.some(member => member._id === user._id)
+                )
+            );
+            // Retourne les nouveaux chats potentiels ou l'état précédent si aucun changement
+            return newPotentialChats ?? prevState;
+        });
     }, [chatInfo.allUsers, chatInfo.userChats, updatePotentialChats]);
 
+    
     useEffect(() => {
-        console.log('chatId', chatInfo.chatId);
-    }, [chatInfo.chatId]);
+        // console.log('chatInfo', chatInfo.userChats.chats);
+    }, [chatInfo]);
 
     return (
-        <ChatContext.Provider value={{ chatInfo, updateAllUsers, updateUserChats, updateCreateChat, updateDeleteChat, updatePotentialChats, updateMessages, updateChatId }}>
+        <ChatContext.Provider value={{ chatInfo, updateAllUsers, updateUserChats, updateCreateChat, updateDeleteChat, updatePotentialChats, updateMessages, updateChatId, updateSendMessageStatus, updateMessageInList, deleteMessageFromList, updateDeleteMessage, updateChatOrder }}>
             {children}
         </ChatContext.Provider>
     );

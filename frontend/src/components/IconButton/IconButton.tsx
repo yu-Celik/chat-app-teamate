@@ -28,3 +28,4 @@ export const StyledIconButton = styled(IconButtonWithProps)<StyledIconButtonProp
         },
     },
 }));
+

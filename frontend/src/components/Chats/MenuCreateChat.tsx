@@ -43,7 +43,7 @@ export default function MenuCreateChat() {
   };
 
   return (
-    <div>
+    <>
       <ListItem key="create-chat-button" disablePadding>
         <ListItemButton
           id="create-chat-button"
@@ -122,6 +122,6 @@ export default function MenuCreateChat() {
           ))}
         </List>
       </StyledMenu>
-    </div >
+    </ >
   );
 }

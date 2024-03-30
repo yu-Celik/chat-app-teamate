@@ -1,28 +1,59 @@
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
-import { ReactNode, SyntheticEvent, useState } from "react";
+import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader, drawerWidth, heightHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
-import { GroupAdd, Search } from "@mui/icons-material";
+import { GroupAdd, Search, ViewListOutlined } from "@mui/icons-material";
 import { groupes, users } from "../../../data/userData";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
-import GroupeDisplay from "../GroupeDisplay/GroupeDisplay";
 import MenuCreateChat from "../MenuCreateChat";
+import { Reorder } from "framer-motion";
+import { Chat } from "../../../types/Chat.type/Chat.Props";
+import { styleListDrawer } from "./styleListDrawer";
+import './list-drawer-order.css';
 
 
 const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
-    const { chatInfo } = useChat();
-
-    // console.log(deleteChatState.isLoading);
-    // console.log(newChat.isLoading);
-
+    const { chatInfo, updateChatOrder } = useChat();
+    const [items, setItems] = useState([...chatInfo.userChats.chats]); // Initialisez items avec les chats de l'utilisateur
+    const [isRearrangeMode, setIsRearrangeMode] = useState(false);
 
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
+    // Mettre à jour l'état lorsque les éléments sont réordonnés
+    const handleReorder = (newOrder: Chat[]) => {
+        setItems(newOrder);
+        updateChatOrder(newOrder);
+        localStorage.setItem('chatsOrder', JSON.stringify(newOrder.map(chat => chat._id)));
+    };
+
+    useEffect(() => {
+        const storedOrder = localStorage.getItem('chatsOrder');
+        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : [];
+        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id);
+    
+        const validStoredOrderIds = storedOrderIds.filter((id: string) => currentChatIds.includes(id));
+        const chatIdsChanged = !storedOrderIds.every((id: string) => currentChatIds.includes(id)) || !currentChatIds.every((id: string) => storedOrderIds.includes(id));
+        const hasChatIdsChanged = storedOrderIds.length !== currentChatIds.length;
+    
+        if (hasChatIdsChanged || chatIdsChanged) {
+            setItems([...chatInfo.userChats.chats]);
+            return;
+        }
+    
+        // Réordonnez les chats selon l'ordre stocké, s'il existe
+        if (validStoredOrderIds.length > 0) {
+            const reorderedChats = validStoredOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined);
+            setItems(reorderedChats);
+        } else {
+            // Si aucun ordre n'est stocké, utilisez l'ordre par défaut
+            setItems([...chatInfo.userChats.chats]);
+        }
+    }, [chatInfo.userChats.chats]);
 
     return (
         <>
@@ -50,6 +81,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             flexDirection: 'column',
                             justifyContent: 'space-between',
                             border: 'none',
+                            flexGrow: 1,
 
                             '&::-webkit-scrollbar': {
                                 display: 'none',
@@ -86,57 +118,52 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             <Tab label="Groupe" {...groupes} onClick={() => setShowGroupe(true)} />
                         </Tabs>
                     </DrawerHeader>
-                    <List sx={{
-                        height: '80%',
-                        overflowY: 'auto',
-                        overflowX: 'hidden',
-                        scrollBehavior: 'smooth',
-                        '&::-webkit-scrollbar': {
-                            width: '0.25rem',
-                            height: '0.25rem',
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: customTheme.palette.slate[500],
-                            borderRadius: '10px',
-                        },
-                        '&::-webkit-scrollbar-track': {
-                            backgroundColor: 'transparent',
-                        },
-                        '&::-webkit-scrollbar-thumb:hover': {
-                            backgroundColor: customTheme.palette.slate[600],
-                        },
-                    }}>
-                        {value === 0 ?
-                            (
-                                chatInfo.userChats.chats?.map((chat) => (
+                    {
+                        isRearrangeMode ? (
+                            <Reorder.Group
+                                axis="y"
+                                onReorder={handleReorder}
+                                values={items}
+                                className="list-drawer-order"
+
+                            >
+                                {items.map((item) => (
+                                    <Reorder.Item key={item._id} value={item}>
+                                        <ProfileInDrawer
+                                            chatId={chatInfo.chatId as string}
+                                            username={item.members[1].username}
+                                            profilePic={item.members[1].profilePic}
+                                            isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                            isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                            isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                                            lastLogin={item.members[1].lastLogin}
+                                        />
+                                    </Reorder.Item>
+                                ))}
+                            </Reorder.Group>
+                        ) : (
+                            // Affichage normal sans possibilité de réordonnancement
+                            <List
+                                sx={{
+                                    ...styleListDrawer,
+                                }}>
+                                {items.map((item) => (
                                     <ProfileInDrawer
-                                        key={chat._id}
-                                        chatId={chat._id}
-                                        username={chat.members[1].username}
-                                        profilePic={chat.members[1].profilePic}
+                                        key={item._id}
+                                        chatId={item._id}
+                                        username={item.members[1].username}
+                                        profilePic={item.members[1].profilePic}
                                         isLoadingUserChat={chatInfo.userChats?.isLoading}
                                         isLoadingCreateChat={chatInfo.createChat?.isLoading}
                                         isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                        lastLogin={chat.members[1].lastLogin}
+                                        lastLogin={item.members[1].lastLogin}
                                     />
-                                    // <p>{chat.members[1].username}</p>
-                                ))) :
-                            groupes.map((groupe) => (
-                                <GroupeDisplay
-                                    key={groupe.id}
-                                    name={groupe.name}
-                                    members={groupe.members}
-                                    lastMessage={groupe.lastMessage.text}
-                                    lastNotificationSeen={groupe.lastNotificationSeen}
-                                    lastMessageSender={groupe.lastMessageSender}
-                                    profilePic={groupe.profilePic}
-                                    inHeader={false}
-                                    notifications={groupe.notifications}
-                                />
-                            ))
-                        }
-                    </List>
+                                ))}
+                            </List>
+                        )
+                    }
                     <DrawerFooter >
+
                         {showGroupe ? (
                             ['Creer un groupe', 'Rejoins un groupe'].map((text, index) => (
                                 <ListItem key={text} disablePadding>
@@ -151,12 +178,18 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         ) : (
                             <>
                                 <MenuCreateChat />
-                                <ListItem key="Rechercher un chat" disablePadding>
-                                    <ListItemButton>
+                                <ListItem key="rearrange-button" disablePadding>
+                                    <ListItemButton
+                                        id="rearrange-button"
+                                        aria-controls={isRearrangeMode ? 'Terminer le rangement' : 'Ranger les chats'}
+                                        aria-haspopup="true"
+                                        aria-expanded={isRearrangeMode ? 'true' : undefined}
+                                        onClick={() => setIsRearrangeMode(!isRearrangeMode)}
+                                    >
                                         <ListItemIcon>
-                                            <Search />
+                                            <ViewListOutlined />
                                         </ListItemIcon>
-                                        <ListItemText primary="Rechercher un chat" />
+                                        <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} />
                                     </ListItemButton>
                                 </ListItem>
                             </>
@@ -172,7 +205,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         </Stack>
                     )}
                 </Box>
-            </Box>
+            </Box >
         </>
     );
 };

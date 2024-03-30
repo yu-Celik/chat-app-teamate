@@ -20,6 +20,7 @@ export type Chat = {
     members: User[];
     createdAt: string;
     updatedAt: string;
+    order: number;
 }
 
 export type ChatState = {
@@ -36,9 +37,9 @@ export type ChatsState = {
 
 
 export type UserChats = {
-    isLoading?: boolean;
-    error?: string | null;
-    chats?: Chat[];
+    isLoading: boolean;
+    error: string | null;
+    chats: Chat[];
     currentUser?: User;
     secondUsers?: User[];
 }
@@ -54,6 +55,22 @@ export type AllUsers = {
     isLoading?: boolean;
     error?: string | null;
     users?: User[];
+}
+
+export type MessageState = {
+    isLoading: boolean;
+    error: string | null;
+    warning: string | null;
+    isTyping: boolean;
+    isEditing: boolean;
+    editId: string | null;
+    messageToEdit: string | null;
+}
+
+export type DeleteMessage = {
+    isLoading: boolean;
+    error: string | null;
+    message: string | null;
 }
 
 export type UpdateMessagesParams = Partial<MessagesState>;

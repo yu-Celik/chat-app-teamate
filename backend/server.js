@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
   res.send('Bienvenue sur le serveur !');
 });
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   connectToMongoDB();
   console.log(`Le serveur fonctionne sur le port : ${PORT}`);
 });

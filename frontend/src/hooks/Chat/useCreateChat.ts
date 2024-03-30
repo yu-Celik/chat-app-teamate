@@ -1,38 +1,37 @@
 import axios from "../../config/axiosConfig";
 import { useChat } from "../../contexts/ChatContext/useChatContext";
+import { handleError } from "./handleErrorFunc";
 
 const useCreateChat = () => {
     const { updateCreateChat, chatInfo, updateUserChats, updateChatId } = useChat();
 
     const createChat = async (secondUserId: string) => {
         console.log('createChat');
-        updateCreateChat({ chat: null, isLoading: true, error: null });
+        updateCreateChat(prevState => ({ ...prevState, isLoading: true }));
         try {
             const response = await axios.post('/chats', { secondUserId });
-            if (response.data && response.data._id) { // Assurez-vous que la réponse correspond au type Chat
-                updateCreateChat({ chat: response.data, isLoading: false, error: null });
+            const chat = response.data;
+            if (chat && chat._id) { // Sécurise la réponse
+                updateCreateChat(prevState => ({ ...prevState, chat: chat }));
 
                 // Créer une nouvelle liste de chats en ajoutant le nouveau chat
-                const newUserChats = [...(chatInfo.userChats.chats || []), response.data];
-                const secondUsers = [...(chatInfo.userChats.secondUsers || []), response.data.members[1]];
+                const newUserChats = [...(chatInfo.userChats.chats || []), chat];
+                const secondUsers = [...(chatInfo.userChats.secondUsers || []), chat.members[1]];
 
-                updateUserChats({
-                    ...chatInfo.userChats,
-                    chats: newUserChats,
-                    isLoading: false, 
-                    error: null,
-                    currentUser: response.data.members[0],
-                    secondUsers: secondUsers
-                });
-                updateChatId(response.data._id);
+                updateUserChats(prevState => ({ ...prevState, chats: newUserChats, currentUser: chat.members[0], secondUsers: secondUsers }));
+                updateChatId(chat._id);
+                // Gestion du localStorage
+                const storedOrder = localStorage.getItem('chatsOrder');
+                const chatsOrder = storedOrder ? JSON.parse(storedOrder) : chatInfo.userChats.chats.map(chat => chat._id);
+                chatsOrder.push(chat._id);
+                localStorage.setItem('chatsOrder', JSON.stringify(chatsOrder));
             } else {
-                throw new Error("Invalid chat data");
-            }
+                throw new Error("Données du chat invalides");
+            }   
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                updateCreateChat({ chat: null, isLoading: false, error: error.message });
-            }
-            console.error(error);
+            handleError(error, updateCreateChat);
+        } finally {
+            updateCreateChat(prevState => ({ ...prevState, isLoading: false }));
         }
     };
 

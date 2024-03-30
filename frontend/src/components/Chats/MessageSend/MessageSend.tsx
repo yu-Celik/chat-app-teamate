@@ -1,25 +1,30 @@
-import { PopoverPosition, Skeleton, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { PopoverPosition, Stack, Typography, alpha } from "@mui/material";
 import customTheme from "../../../styles/customTheme";
 import { Visibility } from '@mui/icons-material/';
 import { Fragment } from "react/jsx-runtime";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useClipboard } from "../../../hooks/useClipboeard";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { Message } from "../../../types/Chat.type/Chat.Props";
 import useAuth from "../../../contexts/AuthContext/useAuthContext";
+import { motion } from 'framer-motion';
+import { ChatInfo } from "../../../types/Chat.type/ChatContext.Props";
+import { useChat } from "../../../contexts/ChatContext/useChatContext";
+import useDeleteMessage from "../../../hooks/Chat/useDeleteMessage";
 
 
 
 
 
-
-export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo, message, messageType, read, edited, imageUrls, createdAt, updatedAt, isLoading }: Message & { isLoading: boolean }) {
+export default function MessageSend({ _id, chatId, senderId, message, read, edited, createdAt, chatInfo }: Message & { isLoading: boolean, isTyping: boolean, chatInfo: ChatInfo }) {
 
     const { currentUser } = useAuth();
-
-    const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
-    const isMediumScreen = useMediaQuery(customTheme.breakpoints.down('md'));
-    const isLargeScreen = useMediaQuery(customTheme.breakpoints.down('lg'));
+    const { updateSendMessageStatus, deleteMessageFromList } = useChat();
+    const { deleteMessage } = useDeleteMessage()
+    // const imgAllowed = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp'];
+    // const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
+    // const isMediumScreen = useMediaQuery(customTheme.breakpoints.down('md'));
+    // const isLargeScreen = useMediaQuery(customTheme.breakpoints.down('lg'));
 
     const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
 
@@ -36,11 +41,6 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
         // Ferme d'abord tout menu ouvert
         if (menuPosition !== null) {
             setMenuPosition(null);
-            // Utilisez un timeout pour s'assurer que le menu est fermé avant de réouvrir un nouveau
-            // Cela permet d'éviter que le même clic ne soit interprété comme une tentative de fermeture du menu
-            setTimeout(() => {
-                openMenuAtPosition(event);
-            }, 0);
         } else {
             openMenuAtPosition(event);
         }
@@ -65,14 +65,29 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
         setMenuPosition(null);
     };
 
-    const handleEdit = () => {
-        // Logique pour l'action de modification
-        console.log('Modifier');
-    };
+
+    const handleEditMessage = useCallback((_id: string) => {
+        const messageToEdit = chatInfo?.messages.messagesList?.find(msg => msg?._id === _id);
+        console.log(messageToEdit);
+
+        if (messageToEdit !== undefined) {
+            // Mise à jour de l'état pour indiquer l'édition d'un message
+            updateSendMessageStatus(prevState => ({
+                ...prevState,
+                isEditing: true,
+                editId: messageToEdit._id,
+                messageToEdit: messageToEdit.message
+            }));
+        } else {
+            console.error(`No message found with id : ${_id}`);
+        }
+    }, [chatInfo?.messages.messagesList, updateSendMessageStatus]);
 
     const handleDelete = () => {
-        // Logique pour l'action de suppression
-        console.log('Supprimer');
+        if (chatInfo.chatId === chatId) {
+            deleteMessageFromList(_id);
+            deleteMessage(_id);
+        }
     };
 
     const handleReply = () => {
@@ -81,71 +96,70 @@ export default function MessageSend({ _id, chatId, senderId, receiverId, replyTo
     };
 
     return (
-        <Stack margin={1} color={customTheme.palette.background.default} >
-            {isLoading === true ? (
-                <Skeleton variant="rectangular" width={isSmallScreen ? '10rem' : isMediumScreen ? '20rem' : isLargeScreen ? '25rem' : '35rem'} height={'3rem'} />
-            ) : (
+        <Stack margin={1} color={customTheme.palette.slate[200]} >
 
-                <Stack spacing={1} direction={'row'} justifyContent={currentUser.data?._id === senderId ? 'flex-end' : 'flex-start'}>
-                    <Stack
-                        direction={'column'}
-                        maxWidth={'60%'}
-                        alignItems={'flex-end'}
-                        padding={1}
-                        borderRadius={`${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}`}
-                        width={'fit-content'}
-                        sx={{
-                            boxShadow: customTheme.shadows[5],
-                            backdropFilter: 'blur(10px)',
-                            backgroundColor: currentUser.data?._id !== senderId ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
-                            userSelect: 'none',
-                            '& .MuiTypography-root': {
-                                wordBreak: 'break-all',
-                                letterSpacing: '0.3px',
-                                lineHeight: '1.5',
-                            },
-                        }}
-                        onContextMenu={handleContextMenuOnMessage} // Attache le gestionnaire ici
-                    >
-                        <Fragment>
-                            <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} >
-                                {message}
+
+            <Stack spacing={1} direction={'row'} justifyContent={currentUser.data?._id === senderId ? 'flex-end' : 'flex-start'}>
+                <motion.div // Utilisez motion.div ici
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    initial={{ translateX: 100, scale: 0.5, borderRadius: '0px' }} // Bordures angulaires au début
+                    animate={{ translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` }} // Bordures arrondies à la fin
+                    exit={{ translateX: 100, scale: 0.5, borderRadius: '0px' }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }} // Contrôle de la durée et du type d'animation
+                    style={{
+                        maxWidth: '60%',
+                        alignItems: 'flex-end',
+                        padding: customTheme.spacing(1),
+                        width: 'fit-content',
+                        boxShadow: customTheme.shadows[5],
+                        backdropFilter: 'blur(10px)',
+                        backgroundColor: currentUser.data?._id !== senderId ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
+                        userSelect: 'none',
+                    }}
+                    onContextMenu={handleContextMenuOnMessage} // Attache le gestionnaire ici
+                >
+                    <Fragment>
+                        <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} >
+                            {message}
+                        </Typography>
+                        <Stack direction={'row'} alignItems={'flex-center'} spacing={0.5}>
+                            <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
+                                transition: 'all 0.3s',
+                                opacity: edited ? 1 : 0,
+                                order: edited ? 1 : 0,
+                            }}>
+                                Modifier
                             </Typography>
-                            <Stack direction={'row'} alignItems={'flex-center'} spacing={0.5}>
-                                <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
-                                    transition: 'all 0.3s',
-                                    opacity: edited ? 1 : 0,
-                                }}>
-                                    Modifier
-                                </Typography>
-                                <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
-                                    order: read ? 0 : 1,
-                                }}>
-                                    {new Date(createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                </Typography>
-                                <Visibility sx={{
-                                    fontSize: customTheme.typography.body1.fontSize,
-                                    transition: 'all 0.3s',
-                                    opacity: read ? 1 : 0,
-                                }} />
-                            </Stack>
-                        </Fragment>
-                        <ContextMenu
-                            open={menuPosition !== null}
-                            anchorReference="anchorPosition"
-                            anchorPosition={menuPosition as PopoverPosition}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onReply={handleReply}
-                            onCopy={handleCopy}
-                            message={'Votre message ici'}
-                            menuPosition={menuPosition}
-                            handleCloseMenu={handleCloseMenu}
-                            handleContextMenu={handleContextMenuOnMessage}
-                        />
-                    </Stack>
-                </Stack>
-            )}
-        </Stack>
+                            <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
+                                order: read ? 0 : 1,
+                            }}>
+                                {new Date(createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                            </Typography>
+                            <Visibility sx={{
+                                fontSize: customTheme.typography.body1.fontSize,
+                                transition: 'all 0.3s',
+                                opacity: read ? 1 : 0,
+                            }} />
+                        </Stack>
+                    </Fragment>
+                    <ContextMenu
+                        open={menuPosition !== null}
+                        anchorReference="anchorPosition"
+                        anchorPosition={menuPosition as PopoverPosition}
+                        messageId={_id}
+                        onEdit={handleEditMessage}
+                        onDelete={handleDelete}
+                        onReply={handleReply}
+                        onCopy={handleCopy}
+                        message={message}
+                        menuPosition={menuPosition}
+                        handleCloseMenu={handleCloseMenu}
+                        handleContextMenu={handleContextMenuOnMessage}
+                    />
+                </motion.div>
+            </Stack>
+
+        </Stack >
     )
 }

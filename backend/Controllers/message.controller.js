@@ -89,6 +89,7 @@ const createMessage = async (req, res) => {
 
 // Récupération des messages d'un chat grâce à son id
 const getMessages = async (req, res) => {
+    console.log('getMessages');
     const { chatId } = req.params;
 
     if (!chatId) {
@@ -110,22 +111,34 @@ const getMessages = async (req, res) => {
 
 // editMessage
 const editMessage = async (req, res) => {
+    console.log('editMessage');
     const { id } = req.params;
     const { message } = req.body;
     try {
-        const message = await MessageModel.findByIdAndUpdate(id, { message, edited: true }, { new: true });
-        if (message !== null) {
-            res.status(200).json(message);
+        // Mise à jour du message avec le nouveau contenu et marquage comme édité
+        const updatedMessage = await MessageModel.findByIdAndUpdate(
+            id, 
+            { 
+                message, 
+                edited: true, 
+                editedAt: new Date() // Ajout de la date de modification
+            }, 
+            { new: true } // Retourne le document modifié
+        );
+
+        if (updatedMessage) {
+            res.status(200).json(updatedMessage);
         } else {
             res.status(404).json({ message: 'Message not found' });
         }
     } catch (error) {
         console.error('Error updating message:', error);
-        res.status(500).json(error);
+        res.status(500).json({ message: 'Error updating message', error });
     }
 };
 
 const deleteMessage = async (req, res) => {
+    console.log('deleteMessage');
     const { id } = req.params;
     try {
         const message = await MessageModel.findOneAndDelete({ _id: id });
