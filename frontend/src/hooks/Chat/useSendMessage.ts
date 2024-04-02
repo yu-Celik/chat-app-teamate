@@ -3,11 +3,11 @@ import axios from "../../config/axiosConfig";
 import { handleError } from "./handleErrorFunc";
 
 const useSendMessage = () => {
-    const { updateMessages, chatInfo, updateSendMessageStatus } = useChat();
+    const { updateMessages, chatInfo, updateSendMessageStatus,updateLastMessageSeen } = useChat();
 
     const sendMessage = async (chatId: string, message: string) => {
         updateSendMessageStatus(prevState => ({ ...prevState, isLoading: true }));
-        if (chatInfo.messages.isLoading || chatInfo.sendMessageStatus.isLoading || chatInfo.messages.error || chatInfo.sendMessageStatus.error) {
+        if (chatInfo.messages.isLoading || chatInfo.sendMessageStatus.isLoading || chatInfo.messages.error) {
             updateSendMessageStatus(prevState => ({ ...prevState, warning: "Une erreur est survenue lors de l'envoi du message" }));
             return;
         }
@@ -25,6 +25,12 @@ const useSendMessage = () => {
             if (messageSent) {
                 const newMessage = [messageSent, ...(chatInfo.messages.messagesList)];
                 updateMessages(prevState => ({ ...prevState, messagesList: newMessage }));
+                updateLastMessageSeen(prevState => ({
+                    ...prevState,
+                    messages: [messageSent, ...prevState.messages] // Correction ici
+                }));
+                updateSendMessageStatus(prevState => ({ ...prevState, isLoading: false, error: null, warning: null, isEditing: false, editId: null, messageToEdit: null, firstMessageSend: true }));
+                
             } else {
                 updateSendMessageStatus(prevState => ({ ...prevState, warning: "Le message n'a pas été envoyé" }));
             }

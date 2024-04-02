@@ -16,10 +16,10 @@ import useDeleteMessage from "../../../hooks/Chat/useDeleteMessage";
 
 
 
-export default function MessageSend({ _id, chatId, senderId, message, read, edited, createdAt, chatInfo }: Message & { isLoading: boolean, isTyping: boolean, chatInfo: ChatInfo }) {
+export default function MessageSend({ _id, chatId, senderId, message, read, edited, createdAt, chatInfo }: Message & { isLoading: boolean, chatInfo: ChatInfo }) {
 
     const { currentUser } = useAuth();
-    const { updateSendMessageStatus, deleteMessageFromList } = useChat();
+    const { updateSendMessageStatus } = useChat();
     const { deleteMessage } = useDeleteMessage()
     // const imgAllowed = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/svg', 'image/webp'];
     // const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
@@ -85,7 +85,6 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
 
     const handleDelete = () => {
         if (chatInfo.chatId === chatId) {
-            deleteMessageFromList(_id);
             deleteMessage(_id);
         }
     };
@@ -100,13 +99,18 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
 
 
             <Stack spacing={1} direction={'row'} justifyContent={currentUser.data?._id === senderId ? 'flex-end' : 'flex-start'}>
-                <motion.div // Utilisez motion.div ici
+                <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
-                    initial={{ translateX: 100, scale: 0.5, borderRadius: '0px' }} // Bordures angulaires au début
-                    animate={{ translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` }} // Bordures arrondies à la fin
-                    exit={{ translateX: 100, scale: 0.5, borderRadius: '0px' }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }} // Contrôle de la durée et du type d'animation
+                    variants={{
+                        hidden: { translateX: 100, scale: 0.5, borderRadius: '0px' },
+                        visible: { translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
+                        off: { translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
+                    }}
+                    initial={chatInfo.sendMessageStatus.firstMessageSend ? 'hidden' : 'off'}
+                    animate={chatInfo.sendMessageStatus.firstMessageSend ? 'visible' : 'off'}
+                    exit="hidden"
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
                     style={{
                         maxWidth: '60%',
                         alignItems: 'flex-end',
@@ -117,13 +121,17 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
                         backgroundColor: currentUser.data?._id !== senderId ? alpha(customTheme.palette.orangePV.main, 0.1) : alpha(customTheme.palette.slate[800], 0.5),
                         userSelect: 'none',
                     }}
-                    onContextMenu={handleContextMenuOnMessage} // Attache le gestionnaire ici
+                    onContextMenu={handleContextMenuOnMessage}
                 >
                     <Fragment>
-                        <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} >
+                        <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} sx={{
+                            wordBreak: 'break-all',
+                            letterSpacing: '0.3px',
+                            lineHeight: '1.5',
+                        }}>
                             {message}
                         </Typography>
-                        <Stack direction={'row'} alignItems={'flex-center'} spacing={0.5}>
+                        <Stack direction={'row'} alignItems={'flex-center'} spacing={0.5} justifyContent={'flex-end'}>
                             <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
                                 transition: 'all 0.3s',
                                 opacity: edited ? 1 : 0,
@@ -156,6 +164,8 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
                         menuPosition={menuPosition}
                         handleCloseMenu={handleCloseMenu}
                         handleContextMenu={handleContextMenuOnMessage}
+                        senderId={senderId}
+                        currentUserId={currentUser.data?._id}
                     />
                 </motion.div>
             </Stack>

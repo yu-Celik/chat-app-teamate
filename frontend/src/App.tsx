@@ -6,6 +6,7 @@ import useAuth from './contexts/AuthContext/useAuthContext';
 import useVerifyUser from './hooks/Auth/useVerifyUser';
 import { ChatProvider } from './contexts/ChatContext/ChatContext';
 import { User } from './types/Auth.type/Auth.Props';
+import { SocketProvider } from './contexts/Socket/SocketContext';
 
 const LoadingPage = lazy(() => import('./pages/LoadingPage'));
 const Welcome = lazy(() => import('./pages/WelcomePage'));
@@ -24,19 +25,21 @@ const App = () => {
 
   return (
     <>
-      <ChatProvider currentUser={currentUser.data as User}>
-        <CssBaseline />
-        <MainLayout connected={currentUser.data as User}>
-          <Suspense fallback={<LoadingPage />}>
-            <Routes>
-              <Route path="/" element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
-              <Route path="/login" element={renderPageBasedOnAuth(<ChatPage />, <LoginPage />)} />
-              <Route path="/register" element={renderPageBasedOnAuth(<ChatPage />, <RegisterPage />)} />
-              <Route path='/Chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
-            </Routes>
-          </Suspense>
-        </MainLayout>
-      </ChatProvider>
+      <SocketProvider currentUser={currentUser}>
+        <ChatProvider currentUser={currentUser}>
+          <CssBaseline />
+          <MainLayout connected={currentUser.data as User}>
+            <Suspense fallback={<LoadingPage />}>
+              <Routes>
+                <Route path="/" element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
+                <Route path="/login" element={renderPageBasedOnAuth(<ChatPage />, <LoginPage />)} />
+                <Route path="/register" element={renderPageBasedOnAuth(<ChatPage />, <RegisterPage />)} />
+                <Route path='/Chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
+              </Routes>
+            </Suspense>
+          </MainLayout>
+        </ChatProvider>
+      </SocketProvider>
     </>
   );
 };

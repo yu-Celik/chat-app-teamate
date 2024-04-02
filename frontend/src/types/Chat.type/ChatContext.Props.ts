@@ -1,8 +1,9 @@
-import { User } from "../Auth.type/Auth.Props";
-import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat } from "./Chat.Props";
+import { CurrentUser, User } from "../Auth.type/Auth.Props";
+import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat, LastMessageSeen, TypingState } from "./Chat.Props";
 
 export type ChatContextProps = {
     chatInfo: ChatInfo;
+    currentUser: CurrentUser;
     updateAllUsers: UpdateAllUsers;
     updateUserChats: UpdateUserChats;
     updateCreateChat: UpdateCreateChat;
@@ -15,6 +16,9 @@ export type ChatContextProps = {
     deleteMessageFromList: DeleteMessageFromList;
     updateDeleteMessage: UpdateDeleteMessage
     updateChatOrder: UpdateChatOrder
+    updateLastMessageSeen: UpdateLastMessageSeen
+    addNewMessage: AddNewMessage
+    updateTypingState: updateTypingState
 };
 
 export type ChatInfo = {
@@ -27,6 +31,10 @@ export type ChatInfo = {
     messages: MessagesState
     deleteMessage: DeleteMessage
     sendMessageStatus: MessageState
+    lastMessageSeen: LastMessageSeen
+    onlineUsersIds: string[]
+    typingState: TypingState;
+
 };
 export type UpdateSendMessageStatus = (updateFunction: (prevState: MessageState) => MessageState) => void;
 export type UpdateDeleteMessage = (updateFunction: (prevState: DeleteMessage) => DeleteMessage) => void;
@@ -37,6 +45,9 @@ export type UpdateDeleteChat = (updateFunction: (prevState: ChatState) => ChatSt
 export type UpdatePotentialChats = (updateFunction: (prevState: User[]) => User[]) => void;
 export type UpdateMessages = (updateFunction: (prevState: MessagesState) => MessagesState) => void;
 export type UpdateMessageInList = (updateFunction: (prevState: Message[]) => Message[]) => void;
+export type UpdateLastMessageSeen = (updateFunction: (prevState: LastMessageSeen) => LastMessageSeen) => void;
+export type updateTypingState = (updateFunction: (prevState: TypingState) => TypingState) => void;
+export type AddNewMessage = (newMessage: Message) => void;
 export type UpdateChatId = (chatId: string | null) => void;
 export type DeleteMessageFromList = (messageId: string) => void;
 export type UpdateChatOrder = (newChatsArray: Chat[]) => void;

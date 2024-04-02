@@ -4,7 +4,6 @@ import customTheme from '../../styles/customTheme';
 
 const DialogSearch = styled('div')(({ theme }) => ({
     position: 'relative',
-    // borderRadius: theme.shape.borderRadius,
     borderRadius: '.5rem',
     border: '1px solid #cbd5e1',
     backgroundColor: alpha(theme.palette.grey[800], 0.15),
@@ -12,7 +11,7 @@ const DialogSearch = styled('div')(({ theme }) => ({
     '&:hover': {
         backgroundColor: alpha(theme.palette.grey[900], 0.25),
     },
-    width: '100%', // make the width 100%
+    width: '100%', 
 }));
 const DialogSearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -28,10 +27,9 @@ const DialogStyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
-        width: '100%', // make the width 100%
+        width: '100%',
     },
 }));
 
@@ -47,8 +45,8 @@ export function SearchBarInDialog({ placeholder, inputProps, onClose, open }: Se
         <>
             <Dialog fullWidth open={open} onClose={onClose} sx={{
                 '& .MuiDialog-paper': {
-                    backgroundColor: 'transparent', // change the background color
-                    color: alpha(customTheme.palette.common.white, 0.95), // change the text color
+                    backgroundColor: 'transparent',
+                    color: alpha(customTheme.palette.common.white, 0.95),
                     borderRadius: '.5rem',
                     display: 'flex',
                     justifyContent: 'center',

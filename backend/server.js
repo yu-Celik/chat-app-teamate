@@ -6,10 +6,10 @@ import cors from 'cors';
 import messageRoutes from './routes/message.routes.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
+import { app, server } from './socket/socket.js';
 
-dotenv.config();
 const PORT = process.env.PORT || 5000;
-const app = express();
+dotenv.config();
 
 // Configuration CORS
 const corsOptions = {
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
   res.send('Bienvenue sur le serveur !');
 });
 
-app.listen(PORT,'0.0.0.0', () => {
+server.listen(PORT,'0.0.0.0', () => {
   connectToMongoDB();
   console.log(`Le serveur fonctionne sur le port : ${PORT}`);
 });

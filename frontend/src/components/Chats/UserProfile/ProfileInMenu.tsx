@@ -1,8 +1,9 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, ListItemAvatar, ListItemButton, ListItemText, Skeleton, alpha } from '@mui/material';
+import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, Skeleton, alpha } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
+import formatLastLogin from '../../../utils/dateUtils';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
@@ -12,14 +13,17 @@ type UserProfileProps = User & {
     isLoadingAllUsers?: boolean,
     lastLogin?: string | null,
     onClick?: () => void
+    onlineUsers: string[]
+    userId: string
 }
 
-export default function ProfileInMenu({ username, profilePic, onClick, isOnline = false, lastLogin, isLoadingUserChat, isLoadingAllUsers }: UserProfileProps) {
+export default function ProfileInMenu({ username, profilePic, onClick, lastLogin, isLoadingUserChat, isLoadingAllUsers, onlineUsers, userId }: UserProfileProps) {
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation(); // Empêche le menu contextuel par défaut du navigateur
         event.preventDefault(); // Empêche le menu contextuel par défaut du navigateur
     };
+    const isUserOnline = onlineUsers.includes(userId);
 
     return (
         <>
@@ -56,7 +60,7 @@ export default function ProfileInMenu({ username, profilePic, onClick, isOnline 
                                 overlap="circular"
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 variant="dot"
-                                isOnline={isOnline}
+                                isOnline={isUserOnline}
                             >
                                 <Avatar alt="Remy Sharp" src={profilePic || ''} />
                             </StyledBadge>
@@ -85,19 +89,36 @@ export default function ProfileInMenu({ username, profilePic, onClick, isOnline 
                                 {username}
                             </Typography>}
                             secondary={
-                                <Typography
-                                    sx={{
-                                        display: 'inline-block',
-                                        width: '100%',
-                                    }}
-                                    component="span"
-                                    variant="body2"
-                                    fontSize={customTheme.typography.body2.fontSize}
-                                    color={customTheme.palette.slate[200]}
-                                    noWrap
-                                >
-                                    Dernière connexion: {new Date(lastLogin || '').toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                </Typography>
+                                <Box>
+                                    {isUserOnline ? (
+                                        <Typography
+                                            sx={{
+                                                display: 'inline-block',
+                                                width: '100%',
+                                            }}
+                                            component="span"
+                                            variant="body2"
+                                            fontSize={customTheme.typography.body2.fontSize}
+                                            color={customTheme.palette.slate[200]}
+                                            noWrap
+                                        >
+                                            En ligne
+                                        </Typography>
+                                    ) : (
+                                        <Typography
+                                            sx={{
+                                                display: 'inline-block',
+                                                width: '100%',
+                                            }}
+                                            component="span"
+                                            variant="body2"
+                                            fontSize={customTheme.typography.body2.fontSize}
+                                            color={customTheme.palette.slate[200]}
+                                            noWrap
+                                        >
+                                            {username && `Dernière connexion : ${formatLastLogin(lastLogin as string)}`}
+                                        </Typography>)}
+                                </Box>
                             }
                         />
                     </ListItemButton>

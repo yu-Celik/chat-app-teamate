@@ -14,13 +14,10 @@ const useUserChats = () => {
                 const response = await axios.get('/chats/findUserChats');
                 const chats = response.data;
                 if (chats.length > 0) {
-                    const currentUser = chats[0].members[0];
-                    const secondUsers = chats.map((chat: Chat) => chat.members[1]);
                     updateUserChats(prevState => ({
                         ...prevState,
                         chats,
-                        currentUser,
-                        secondUsers,
+                        secondUsers : chats.map((chat: Chat) => chat.members.find(member => member._id !== prevState.currentUser?._id))
                     }));
                     // localStorage.setItem('userChats', JSON.stringify(chats));
                 } else {

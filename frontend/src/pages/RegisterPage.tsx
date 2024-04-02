@@ -159,8 +159,6 @@ export default function RegisterPage() {
             if (registerUser === undefined) { console.error('registerUser is undefined'); return; }
             registerUser().then(() => {
 
-                // Faire quelque chose lorsque la promesse est résolue
-                // setTimeout() ne marche pas ici
                 // Vider les champs d'entrée
                 if (register.isRegistered === true) {
                     updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
@@ -184,7 +182,7 @@ export default function RegisterPage() {
 
     return (
         <ThemeProvider theme={customTheme}>
-            <Stack direction={'column'} justifyContent={{ xs: 'center', md: 'initial' }} alignItems={{ xs: 'center', md: 'initial' }} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100vh'} spacing={{ xs: 2, md: 4 }}>
+            <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100vh'} spacing={{ xs: 2, md: 4 }}>
                 <Stack sx={{
                     backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
                     padding: customTheme.spacing(4),
@@ -283,7 +281,7 @@ export default function RegisterPage() {
                             Vous avez déjà un compte ? <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/login'}>Connectez-vous</Link>
                         </StyledTypography>
                         <StyledTypography variant={'subtitle2'}>
-                            En cliquant sur "S'inscrire", vous acceptez les <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Conditions d'utilisation</Link> et la <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Politique de confidentialité</Link> de Nomad.
+                            En cliquant sur "S'inscrire", vous acceptez les <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Conditions d'utilisation</Link> et la <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Politique de confidentialité</Link> de Teamate.
                         </StyledTypography>
                     </Box>
                 </Stack>

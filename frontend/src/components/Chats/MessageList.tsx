@@ -19,10 +19,7 @@ export default function ChatList() {
         }
     }, [chatInfo?.chatId, getMessages])
 
-    const currentChat = chatInfo.userChats.chats?.find(chat => chat._id === chatInfo.chatId);
-    // console.log(currentChat?.members[1]._id);
-    // console.log(currentUser.data?._id);
-
+    
     return (
         <>
             {chatInfo.messages.messagesList.length < 1 ? (
@@ -53,8 +50,8 @@ export default function ChatList() {
                 }}>
                     <>
                     {/* Affiche le skeleton si le chat n'est pas en cours d'édition et si isTyping ou isLoading sont true */}
-                        {((chatInfo.sendMessageStatus.isTyping === true || chatInfo.sendMessageStatus.isLoading === true) && chatInfo.sendMessageStatus.isEditing === false) && (
-                            <Stack marginTop={1} alignItems={currentUser.data?._id !== currentChat?.members[1]._id ? 'flex-end' : 'flex-start'}>
+                        {((chatInfo.typingState.isTyping && chatInfo.typingState.userId !== currentUser.data?._id) && chatInfo.sendMessageStatus.isEditing === false) && (
+                            <Stack marginTop={1} alignItems={'flex-start'}>
                                 <Skeleton variant="rectangular" width={'40%'} height={'3rem'} />
                             </Stack>
                         )}
@@ -78,7 +75,6 @@ export default function ChatList() {
                                         createdAt={message.createdAt}
                                         updatedAt={message.updatedAt}
                                         isLoading={chatInfo.messages.isLoading}
-                                        isTyping={chatInfo.sendMessageStatus.isTyping}
                                         chatInfo={chatInfo}
                                     />
                                 ))}

@@ -10,6 +10,7 @@ const useLogout = () => {
             await axios.post('/users/logout');
             setCurrentUser({ data: null });
             localStorage.removeItem('chat-user');
+            localStorage.removeItem('chatsOrder');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 const errorMessage = error.response.data.error || 'Une erreur inconnue est survenue lors de la déconnexion';

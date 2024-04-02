@@ -13,6 +13,7 @@ const useVerifyUser = () => {
                     // Ne pas afficher l'erreur dans la console pour l'experience utilisateur
                     setCurrentUser({ data: null });
                     localStorage.removeItem('chat-user');
+                    localStorage.removeItem('chatsOrder');
                 }
             }
         }

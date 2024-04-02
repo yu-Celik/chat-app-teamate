@@ -1,10 +1,13 @@
 import React, { createContext, useCallback, useState, useEffect } from 'react';
-import { ChatContextProps, ChatInfo, UpdateChatId, UpdateCreateChat, UpdateDeleteChat, UpdateMessages, UpdatePotentialChats, UpdateUserChats, UpdateAllUsers, UpdateSendMessageStatus, UpdateMessageInList, DeleteMessageFromList, UpdateDeleteMessage, UpdateChatOrder } from '../../types/Chat.type/ChatContext.Props';
+import { ChatContextProps, ChatInfo, UpdateChatId, UpdateCreateChat, UpdateDeleteChat, UpdateMessages, UpdatePotentialChats, UpdateUserChats, UpdateAllUsers, UpdateSendMessageStatus, UpdateMessageInList, DeleteMessageFromList, UpdateDeleteMessage, UpdateChatOrder, UpdateLastMessageSeen, AddNewMessage, updateTypingState } from '../../types/Chat.type/ChatContext.Props';
+import { CurrentUser, User } from '../../types/Auth.type/Auth.Props';
+import { useSocket } from '../Socket/useSocketContext';
+import { Message } from '../../types/Chat.type/Chat.Props';
 
 export const ChatContext = createContext<ChatContextProps>({} as ChatContextProps);
 
-export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-
+export const ChatProvider = ({ children, currentUser }: { children: React.ReactNode, currentUser: CurrentUser }) => {
+    const { onlineUsers } = useSocket()
     // Remplisage de chatInfo par allUsers en 1er
     // Remplisage de chatInfo par userChats en 2e
     // Remplisage de chatInfo par potentialChats en envoyant tous les users de allUsers 
@@ -26,8 +29,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             isLoading: false,
             error: null,
             chats: [],
-            currentUser: {},
-            secondUsers: []
+            currentUser: {} as User,
+            secondUsers: [],
+            onlineUsers: []
         },
         allUsers: {
             isLoading: false,
@@ -48,15 +52,31 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             isLoading: false,
             error: null,
             warning: null,
-            isTyping: false,
             isEditing: false,
             editId: null,
-            messageToEdit: null
+            messageToEdit: null,
+            firstMessageSend: false
         },
         potentialChats: [],
-    });
+        lastMessageSeen: {
+            isLoading: false,
+            error: null,
+            messages: []
+        },
+        onlineUsersIds: [],
+        typingState: { isTyping: false, userId: null },
 
-    // Mise à jour des états spécifiques
+    });
+    useEffect(() => {
+        setChatInfo(prev => ({
+            ...prev,
+            userChats: {
+                ...prev.userChats,
+                currentUser: currentUser.data as User,
+            },
+        }));
+    }, [currentUser.data]);
+
     const updateAllUsers: UpdateAllUsers = useCallback((updateFunction) => {
         setChatInfo(prev => ({
             ...prev,
@@ -102,10 +122,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         setChatInfo(prev => {
             const newChatId = chatId;
             if (prev.chatId === newChatId) {
-                // Pas de changement, pas besoin de mettre à jour l'état
                 return prev;
             }
-            // Mise à jour de l'état avec le nouveau chatId
             return { ...prev, chatId: newChatId };
         });
     }, []);
@@ -127,6 +145,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         }));
     }, []);
 
+    const addNewMessage: AddNewMessage = useCallback((newMessage: Message) => {
+        setChatInfo(prev => ({
+            ...prev,
+            messages: {
+                ...prev.messages,
+                messagesList: [...prev.messages.messagesList, newMessage]
+            }
+        }));
+    }, []);
+
     const deleteMessageFromList: DeleteMessageFromList = useCallback((messageId) => {
         setChatInfo(prev => ({
             ...prev,
@@ -144,6 +172,20 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         }));
     }, []);
 
+    const updateLastMessageSeen: UpdateLastMessageSeen = useCallback((updateFunction) => {
+        setChatInfo(prev => ({
+            ...prev,
+            lastMessageSeen: updateFunction(prev.lastMessageSeen)
+        }));
+    }, []);
+
+    const updateTypingState: updateTypingState = useCallback((updateFunction) => {
+    setChatInfo(prev => ({
+            ...prev,
+            typingState: updateFunction(prev.typingState)
+        }));
+    }, []);
+
     const updateChatOrder: UpdateChatOrder = useCallback((newChatsArray) => {
         setChatInfo(prev => ({
             ...prev,
@@ -153,6 +195,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             },
         }));
     }, []);
+
+
+
 
     // Mise à jour de potentialChats basée sur allUsers et userChats
     useEffect(() => {
@@ -167,13 +212,34 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         });
     }, [chatInfo.allUsers, chatInfo.userChats, updatePotentialChats]);
 
-    
+
     useEffect(() => {
-        // console.log('chatInfo', chatInfo.userChats.chats);
+        // Mettre à jour onlineUsersIds chaque fois que onlineUsers change
+        const ids = onlineUsers.map(user => user.userId);
+        setChatInfo(prev => ({
+            ...prev,
+            onlineUsersIds: ids
+        }));
+    }, [onlineUsers]);
+
+    useEffect(() => {
+        // Set est utilisé pour éviter les doublons dans les ids
+        const idsChats = new Set(chatInfo.userChats.chats.map(chat => chat._id));
+        // has est utilisé pour vérifier si l'id existe dans le Set
+        const lastMessageOfChat = chatInfo.lastMessageSeen.messages.filter(message => idsChats.has(message.chatId));
+        updateLastMessageSeen(prevState => ({
+            ...prevState,
+            messages: lastMessageOfChat
+        }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chatInfo.userChats.chats, updateLastMessageSeen]); // Retirer chatInfo.lastMessageSeen.messages des dépendances
+
+    useEffect(() => {
+        // console.log('chatInfo', chatInfo);
     }, [chatInfo]);
 
     return (
-        <ChatContext.Provider value={{ chatInfo, updateAllUsers, updateUserChats, updateCreateChat, updateDeleteChat, updatePotentialChats, updateMessages, updateChatId, updateSendMessageStatus, updateMessageInList, deleteMessageFromList, updateDeleteMessage, updateChatOrder }}>
+        <ChatContext.Provider value={{ chatInfo, currentUser, updateAllUsers, updateUserChats, updateCreateChat, updateDeleteChat, updatePotentialChats, updateMessages, updateChatId, updateSendMessageStatus, updateMessageInList, deleteMessageFromList, updateDeleteMessage, updateChatOrder, updateLastMessageSeen, addNewMessage, updateTypingState }}>
             {children}
         </ChatContext.Provider>
     );

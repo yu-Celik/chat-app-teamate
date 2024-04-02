@@ -140,8 +140,6 @@ export default function RegisterPage() {
       if (loginUser === undefined) { console.error('loginUser is undefined'); return; }
       loginUser().then(() => {
 
-        // Faire quelque chose lorsque la promesse est résolue
-        // setTimeout() ne marche pas ici
         // Vider les champs d'entrée
         if (login.isLogged === true) {
           updateLoginInfo({ email: '', password: '' });
@@ -164,7 +162,7 @@ export default function RegisterPage() {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Stack direction={'column'} justifyContent={{ xs: 'center', md: 'initial' }} alignItems={{ xs: 'center', md: 'initial' }} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100vh'} spacing={{ xs: 2, md: 4 }}>
+      <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100vh'} spacing={{ xs: 2, md: 4 }}>
         <Stack sx={{
           backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
           padding: customTheme.spacing(4),

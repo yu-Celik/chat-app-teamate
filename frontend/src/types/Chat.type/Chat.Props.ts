@@ -42,6 +42,7 @@ export type UserChats = {
     chats: Chat[];
     currentUser?: User;
     secondUsers?: User[];
+    onlineUsers: User[];
 }
 
 export type MessagesState = {
@@ -61,16 +62,27 @@ export type MessageState = {
     isLoading: boolean;
     error: string | null;
     warning: string | null;
-    isTyping: boolean;
     isEditing: boolean;
     editId: string | null;
     messageToEdit: string | null;
+    firstMessageSend: boolean;
 }
 
 export type DeleteMessage = {
     isLoading: boolean;
     error: string | null;
     message: string | null;
+}
+
+export type LastMessageSeen = {
+    isLoading: boolean;
+    error: string | null;
+    messages: Message[];
+}
+
+export type TypingState = {
+    isTyping: boolean;
+    userId: string | null;
 }
 
 export type UpdateMessagesParams = Partial<MessagesState>;

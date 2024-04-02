@@ -19,7 +19,7 @@ const StyledBox = styled(Box)({
     color: 'white',
     textDecoration: 'none',
     '&:hover': {
-        backgroundColor: 'rgba(243, 129, 99, 0.7)', // change color on hover
+        backgroundColor: 'rgba(243, 129, 99, 0.7)',
     },
 });
 

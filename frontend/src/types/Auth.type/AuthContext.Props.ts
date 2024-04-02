@@ -4,3 +4,6 @@ export type AuthContextProps = {
     currentUser: CurrentUser;
     setCurrentUser: (value: CurrentUser) => void;
 }
+
+
+

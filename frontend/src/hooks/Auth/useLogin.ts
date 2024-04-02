@@ -3,7 +3,7 @@ import { Login, LoginInfo } from "../../types/Auth.type/Auth.Props";
 import axios from "../../config/axiosConfig";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
 
- const useLogin = () => {
+const useLogin = () => {
     const { setCurrentUser } = useAuth();
 
     const [login, setLogin] = useState<Login>({
@@ -23,7 +23,7 @@ import useAuth from "../../contexts/AuthContext/useAuthContext";
             isLoggedLoading: true,
             loginError: null,
         }));
-        
+
         try {
 
             const response = await axios.post('/users/login', login.loginInfo);
@@ -37,13 +37,13 @@ import useAuth from "../../contexts/AuthContext/useAuthContext";
                 setLogin((prev) => ({ ...prev, loginError: errorMessage }));
             }
         } finally {
-            setLogin((prev) => ({ 
-                ...prev, 
+            setLogin((prev) => ({
+                ...prev,
                 loginInfo: {
                     email: "",
                     password: "",
                 },
-                isLoggedLoading: false 
+                isLoggedLoading: false
             }));
         }
     }, [login.loginInfo, setCurrentUser]);

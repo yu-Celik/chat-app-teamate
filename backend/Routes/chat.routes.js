@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { createChat, findUserChats, findChat, deleteChat, getChat, updateChatOrder } from '../Controllers/chat.controller.js';
+import { createChat, findUserChats, findChat, deleteChat, getChat } from '../Controllers/chat.controller.js';
 import protectRoute from '../middleware/protectRoute.js';
 
 const router = express.Router();
@@ -10,7 +10,6 @@ router.get('/findUserChats', protectRoute, findUserChats); // Find all chats of 
 router.get('/find/:secondUserId', protectRoute, findChat); // Find a chat between two users
 router.delete('/:chatId', protectRoute, deleteChat); // Delete a chat
 router.get('/:id', protectRoute, getChat); // Get a chat
-router.post('/updateOrder', updateChatOrder);
 
 
 export default router;

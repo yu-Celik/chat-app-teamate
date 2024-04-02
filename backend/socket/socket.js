@@ -8,61 +8,44 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST'],
+        origin: process.env.CLIENT_URL,
+        credentials: true,
     },
 });
 
-let onlineUsers = [];
+export const getReceiverSocketId = (receiverId) => {
+    return userSocketMap[receiverId];
+}
 
+let onlineUsers = [];
+const userSocketMap = {}; // Clé: userId, Valeur: socketId
 io.on('connection', (socket) => {
-    // console.log('a user connected', socket.id);
-    // écouté la connexion
-    socket.on('addNewUser', (userId) => {
+    console.log('a user connected', socket.id);
+
+    const userId = socket.handshake.query.userId;
+    if (userId) {
+        userSocketMap[userId] = socket.id;
+        // Ajouter l'utilisateur à la liste des utilisateurs en ligne s'il n'est pas déjà présent
         if (!onlineUsers.some((user) => user.userId === userId)) {
             onlineUsers.push({ userId, socketId: socket.id });
+            // Émettre la liste mise à jour des utilisateurs en ligne à tous les clients
+            io.emit('getOnlineUsers', onlineUsers);
         }
-        // console.log('onlineUsers', onlineUsers);
-        io.emit('getOnlineUsers', onlineUsers);
-    });
+    }
 
-    // add new message
-    socket.on('sendMessage', (message) => {
-        const user = onlineUsers.find((u) => u.userId === message.recipientId);
-        if (user !== undefined) {
-            io.to(user.socketId).emit('getMessage', message);
-            io.to(user.socketId).emit('getNotification', {
-                senderId: message.senderId,
-                isRead: false,
-                date: new Date(),
-            });
+    socket.on('typing', ({ receiverId }) => {
+        console.log('typing', receiverId);
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('userTyping', { from: socket.handshake.query.userId });
         }
     });
 
-    // edit message
-    socket.on('editMessage', (editedMessage) => {
-        const { messageId, newText, recipientId } = editedMessage;
-        const user = onlineUsers.find((u) => u.userId === recipientId);
-        if (user !== undefined) {
-            io.to(user.socketId).emit('messageEdited', { messageId, newText });
-        }
-    });
-
-    // delete message
-    socket.on('deleteMessage', (deletedMessage) => {
-        const { messageId, recipientId } = deletedMessage;
-        const user = onlineUsers.find((u) => u.userId === recipientId);
-        if (user !== undefined) {
-            io.to(user.socketId).emit('messageDeleted', messageId);
-        }
-    });
-
-    // delete image url
-    socket.on('deleteImageUrl', (deletedImageUrl) => {
-        const { recipientId } = deletedImageUrl;
-        const user = onlineUsers.find((u) => u.userId === recipientId);
-        if (user !== undefined) {
-            io.to(user.socketId).emit('imageUrlDeleted', deletedImageUrl);
+    socket.on('stopTyping', ({ receiverId }) => {
+        console.log('stopTyping', receiverId);
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('stopTyping', { from: socket.handshake.query.userId });
         }
     });
 
@@ -74,38 +57,3 @@ io.on('connection', (socket) => {
 });
 
 export  {app, server, io};
-
-
-
-
-// import { Server } from "socket.io";
-// const activeUsers = {}; // Clé: chatId, Valeur: Set d'userId
-
-// export default (server) => {
-//     const io = new Server(server);
-
-//     io.on('connection', (socket) => {
-//         socket.on('joinChat', ({ userId, chatId }) => {
-//             if (!activeUsers[chatId]) {
-//                 activeUsers[chatId] = new Set();
-//             }
-//             activeUsers[chatId].add(userId);
-//             console.log(`Utilisateur ${userId} a rejoint le chat ${chatId}`);
-//         });
-
-//         socket.on('leaveChat', ({ userId, chatId }) => {
-//             activeUsers[chatId]?.delete(userId);
-//             if (activeUsers[chatId]?.size === 0) {
-//                 delete activeUsers[chatId];
-//             }
-//             console.log(`Utilisateur ${userId} a quitté le chat ${chatId}`);
-//         });
-
-//         socket.on('disconnect', () => {
-//             // Gérer la déconnexion, potentiellement en parcourant activeUsers pour retirer cet utilisateur
-//             console.log('Un utilisateur s\'est déconnecté');
-//         });
-//     });
-
-//     return io;
-// };

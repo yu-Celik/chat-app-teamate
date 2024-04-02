@@ -53,7 +53,13 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
                         >
                             <KeyboardArrowRight />
                         </StyledIconButton>
-                        {selectedChat != null && <ProfileInHeader username={selectedChat?.members[1].username} profilePic={selectedChat?.members[1].profilePic} lastLogin={selectedChat?.members[1].lastLogin} />}
+                        {selectedChat != null && <ProfileInHeader
+                            userId={selectedChat.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
+                            username={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
+                            profilePic={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
+                            lastLogin={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
+                            onlineUsers={chatInfo.onlineUsersIds}
+                        />}
                         {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
                     </Toolbar>
                 </AppBar>

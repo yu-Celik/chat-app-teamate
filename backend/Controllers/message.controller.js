@@ -1,15 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import MessageModel from '../Models/message.model.js';
 import { S3, PutObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import s3 from '../config/s3.config.js';
-import { getUserNameById } from '../utils/userHelpers.js'; // Fonctions hypothétiques pour vérifier l'activité de l'utilisateur et obtenir le nom
-import NotificationModel from '../Models/notifications.model.js';
 import Chat from '../Models/chat.model.js';
-// import activeUsers from '../socket/socket.js';
+import { notifyDeleteMessage, notifyEditMessage, notifyNewMessage } from '../socket/socketService.js';
 
 
 dotenv.config();
@@ -26,7 +22,6 @@ const createMessage = async (req, res) => {
     if (!chatId || !senderId || !message) {
         return res.status(400).json({ message: 'L\'ID du chat, de l\'expéditeur et du message sont requis.' });
     }
-
     let chat;
     try {
         chat = await Chat.findById(chatId);
@@ -37,7 +32,9 @@ const createMessage = async (req, res) => {
         console.error('Error finding chat:', error);
         return res.status(500).json({ message: 'Erreur lors de la recherche du chat.', error });
     }
-
+    if (!chat.members.includes(senderId)) {
+        return res.status(400).json({ message: 'L\'expéditeur est invalide.' });
+    }
     // Déterminer le receiverId
     const receiverId = chat.members.find(member => member.toString() !== senderId.toString());
     if (!receiverId) {
@@ -78,8 +75,10 @@ const createMessage = async (req, res) => {
         imageUrls,
     });
 
+
     try {
         const savedMessage = await newMessage.save();
+        notifyNewMessage(receiverId, savedMessage);
         return res.status(200).json(savedMessage);
     } catch (error) {
         console.error('Error saving message:', error);
@@ -108,48 +107,96 @@ const getMessages = async (req, res) => {
     }
 };
 
+const getLastMessageSeen = async (req, res) => {
+    console.log('getLastMessageSeen');
+
+    try {
+        // Récupère tous les messages où l'utilisateur est soit l'expéditeur soit le destinataire
+        const messages = await MessageModel.find({
+            $or: [
+                // Si l'utilisateur est l'expéditeur
+                { senderId: req.user._id },
+                // Si l'utilisateur est le destinataire
+                { receiverId: req.user._id }
+            ]
+        })
+            .sort({ createdAt: -1 }) // Tri par date de création décroissante
+            .exec();
+
+        // Crée un objet pour stocker le dernier message de chaque chat
+        let lastMessagesByChat = {};
+
+        messages.forEach(message => {
+            // Si le chat n'est pas déjà dans l'objet, ou si le message est plus récent, l'ajoute/mise à jour
+            if (!lastMessagesByChat[message.chatId] || lastMessagesByChat[message.chatId].createdAt < message.createdAt) {
+                lastMessagesByChat[message.chatId] = message;
+            }
+        });
+
+        // Convertit l'objet en tableau de messages
+        const lastMessages = Object.values(lastMessagesByChat);
+
+        return res.status(200).json(lastMessages);
+    } catch (error) {
+        console.error('Error retrieving messages:', error);
+        return res.status(500).json({ message: 'Erreur lors de la récupération des messages.', error });
+    }
+}
+
 
 // editMessage
 const editMessage = async (req, res) => {
-    console.log('editMessage');
     const { id } = req.params;
-    const { message } = req.body;
+    const { message: newContent } = req.body;
+    const senderId = req.user._id;
+
+
+    if (!newContent.trim()) {
+        return res.status(400).json({ message: 'Le contenu du message ne peut pas être vide.' });
+    }
+
     try {
-        // Mise à jour du message avec le nouveau contenu et marquage comme édité
-        const updatedMessage = await MessageModel.findByIdAndUpdate(
-            id, 
-            { 
-                message, 
-                edited: true, 
-                editedAt: new Date() // Ajout de la date de modification
-            }, 
-            { new: true } // Retourne le document modifié
+        const updatedMessage = await MessageModel.findOneAndUpdate(
+            { _id: id, senderId: senderId }, // Critères de recherche
+            { message: newContent, edited: true, editedAt: new Date() }, // Mise à jour
+            { new: true } // Options pour retourner le document mis à jour
         );
 
-        if (updatedMessage) {
-            res.status(200).json(updatedMessage);
-        } else {
-            res.status(404).json({ message: 'Message not found' });
+        if (!updatedMessage) {
+            return res.status(404).json({ message: 'Message non trouvé ou vous n\'êtes pas l\'expéditeur.' });
         }
+
+        const receiverId = updatedMessage.receiverId;
+
+        notifyEditMessage(receiverId, updatedMessage);
+        res.status(200).json(updatedMessage);
     } catch (error) {
-        console.error('Error updating message:', error);
-        res.status(500).json({ message: 'Error updating message', error });
+        console.error('Erreur lors de la mise à jour du message:', error);
+        res.status(500).json({ message: 'Erreur lors de la mise à jour du message', error });
     }
 };
 
 const deleteMessage = async (req, res) => {
     console.log('deleteMessage');
     const { id } = req.params;
+    const senderId = req.user._id;
     try {
-        const message = await MessageModel.findOneAndDelete({ _id: id });
-        if (message !== null) {
-            res.status(200).json({ message: 'Message deleted successfully', data: message });
-        } else {
-            res.status(404).json({ message: 'Message not found' });
+        // Tente de supprimer le message. Si le message n'existe pas ou si l'expéditeur ne correspond pas,
+        const message = await MessageModel.findOneAndDelete({
+            _id: id,
+            senderId: senderId // Assure que seul l'expéditeur peut supprimer le message
+        });
+
+        // Si aucun message n'a été supprimé, renvoie un message d'erreur.
+        if (!message) {
+            return res.status(404).json({ message: 'Message non trouvé ou action non autorisée.' });
         }
+        const receiverId = message.receiverId;
+        notifyDeleteMessage(receiverId, message);
+        res.status(200).json({ message: 'Message supprimé avec succès.' });
     } catch (error) {
-        console.error('Error deleting message:', error);
-        res.status(500).json(error);
+        console.error('Erreur lors de la suppression du message:', error);
+        res.status(500).json({ message: 'Erreur lors de la suppression du message', error });
     }
 };
 
@@ -236,6 +283,7 @@ export {
     deleteImageUrl,
     markMessageAsRead,
     searchMessages,
+    getLastMessageSeen
 };
 
 

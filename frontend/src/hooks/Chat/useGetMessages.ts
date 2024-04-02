@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { handleError } from "./handleErrorFunc";
 
 const useGetMessages = () => {
-    const { updateMessages } = useChat()
+    const { updateMessages, updateSendMessageStatus } = useChat()
 
     const getMessages = useCallback(async (chatId: string) => {
         console.log('getMessages');
@@ -21,8 +21,10 @@ const useGetMessages = () => {
             handleError(error, updateMessages);
         } finally {
             updateMessages(prevState => ({ ...prevState, isLoading: false }));
+            updateSendMessageStatus(prevState => ({ ...prevState, firstMessageSend: false }));
+
         }
-    }, [updateMessages]); // Ajoutez ici toutes les dépendances nécessaires
+    }, [updateMessages, updateSendMessageStatus]); // Ajoutez ici toutes les dépendances nécessaires
 
     return { getMessages }
 }

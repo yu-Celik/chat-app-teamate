@@ -7,11 +7,25 @@ import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDe
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
 import useGetAllUsers from "../hooks/Chat/useGetAllUsers";
 import useUserChats from "../hooks/Chat/useUserChats";
+import useGetLastMessageSeen from "../hooks/Chat/useGetLastMessageSeen";
+import useListenMessages from "../hooks/Socket/useListenMessages";
+import useListenEditMessage from "../hooks/Socket/useListenEditMessage";
+import useListenDeleteMessage from "../hooks/Socket/useListenDeleteMessage";
+import useListenTyping from "../hooks/Socket/useListenTyping";
+import useListenNewChat from "../hooks/Socket/useListenNewChat";
+import useListenDeleteChat from "../hooks/Socket/useListenDeleteChat";
 
 export default function ChatPage() {
     const [open, setOpen] = useState(false);
     useGetAllUsers();
     useUserChats();
+    useGetLastMessageSeen();
+    useListenMessages();
+    useListenEditMessage();
+    useListenDeleteMessage();
+    useListenTyping();
+    useListenNewChat();
+    useListenDeleteChat();
 
 
 

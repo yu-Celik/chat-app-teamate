@@ -43,16 +43,16 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
         const storedOrder = localStorage.getItem('chatsOrder');
         const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : [];
         const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id);
-    
+
         const validStoredOrderIds = storedOrderIds.filter((id: string) => currentChatIds.includes(id));
         const chatIdsChanged = !storedOrderIds.every((id: string) => currentChatIds.includes(id)) || !currentChatIds.every((id: string) => storedOrderIds.includes(id));
         const hasChatIdsChanged = storedOrderIds.length !== currentChatIds.length;
-    
+
         if (hasChatIdsChanged || chatIdsChanged) {
             setItems([...chatInfo.userChats.chats]);
             return;
         }
-    
+
         // Réordonnez les chats selon l'ordre stocké, s'il existe
         if (validStoredOrderIds.length > 0) {
             const reorderedChats = validStoredOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined);
@@ -86,33 +86,44 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                         {items.map((item) => (
                             <Reorder.Item key={item._id} value={item}>
                                 <ProfileInDrawer
-                                    chatId={chatInfo.chatId as string}
-                                    username={item.members[1].username}
-                                    profilePic={item.members[1].profilePic}
-                                    isLoadingUserChat={chatInfo.userChats?.isLoading}
-                                    isLoadingCreateChat={chatInfo.createChat?.isLoading}
-                                    isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                    lastLogin={item.members[1].lastLogin}
+                                            chatId={item._id}
+                                            username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
+                                            profilePic={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
+                                            isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                            isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                            isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                                            lastLogin={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
+                                            lastMessageOfChat={chatInfo.lastMessageSeen.messages}
+                                            Reorder={true}
+                                            userId={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
+                                            currentUserId={chatInfo.userChats.currentUser?._id}
+                                            onlineUsers={chatInfo.onlineUsersIds}
+
                                 />
                             </Reorder.Item>
                         ))}
                     </Reorder.Group>
                 ) : (
                     // Affichage normal sans possibilité de réordonnancement
-                    <List
+                    <List 
                         sx={{
                             ...styleListDrawer,
                         }}>
                         {items.map((item) => (
                             <ProfileInDrawer
-                                key={item._id}
-                                chatId={item._id}
-                                username={item.members[1].username}
-                                profilePic={item.members[1].profilePic}
-                                isLoadingUserChat={chatInfo.userChats?.isLoading}
-                                isLoadingCreateChat={chatInfo.createChat?.isLoading}
-                                isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                lastLogin={item.members[1].lastLogin}
+                            key={item._id}
+                            chatId={item._id}
+                            lastMessageOfChat={chatInfo.lastMessageSeen.messages}
+                            username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
+                            profilePic={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
+                            userId={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
+                            isLoadingUserChat={chatInfo.userChats?.isLoading}
+                            isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                            isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                            lastLogin={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
+                            currentUserId={chatInfo.userChats.currentUser?._id}
+                            onlineUsers={chatInfo.onlineUsersIds}
+                            onClick={onClose}
                             />
                         ))}
                     </List>
@@ -141,8 +152,12 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                 }}
             >
                 <DrawerHeader>
-                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" sx={{
+
+                    <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
                         width: '100%',
+                        '& .MuiTabs-flexContainer': {
+                            justifyContent: 'flex-end',
+                        },
                         '& .MuiTab-root': {
                             flexGrow: 1,
                         },

@@ -1,5 +1,6 @@
 import axios from "../../config/axiosConfig";
 import { useChat } from "../../contexts/ChatContext/useChatContext";
+import { User } from "../../types/Auth.type/Auth.Props";
 import { handleError } from "./handleErrorFunc";
 
 const useCreateChat = () => {
@@ -16,9 +17,9 @@ const useCreateChat = () => {
 
                 // Créer une nouvelle liste de chats en ajoutant le nouveau chat
                 const newUserChats = [...(chatInfo.userChats.chats || []), chat];
-                const secondUsers = [...(chatInfo.userChats.secondUsers || []), chat.members[1]];
+                const secondUsers = [...(chatInfo.userChats.secondUsers || []), chat.members.find((member: User) => member._id !== chatInfo.userChats.currentUser?._id)];
 
-                updateUserChats(prevState => ({ ...prevState, chats: newUserChats, currentUser: chat.members[0], secondUsers: secondUsers }));
+                updateUserChats(prevState => ({ ...prevState, chats: newUserChats, secondUsers: secondUsers }));
                 updateChatId(chat._id);
                 // Gestion du localStorage
                 const storedOrder = localStorage.getItem('chatsOrder');

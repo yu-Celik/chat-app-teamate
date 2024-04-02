@@ -1,16 +1,15 @@
-// createChat
-
 import ChatModel from '../Models/chat.model.js';
 import MessageModel from '../Models/message.model.js';
 import UserModel from '../Models/user.model.js';
+import { notifyDeleteChat, notifyNewChat } from '../socket/socketService.js';
 
 // Créer un chat entre deux utilisateurs grace a leurs id
 const createChat = async (req, res) => {
     console.log('createChat');
 
-    const userId = req.user._id; 
+    const userId = req.user._id;
     const { secondUserId } = req.body;
-    
+
 
     if (!userId || !secondUserId) {
         return res.status(400).json({ error: 'L\'ID de l\'utilisateur ou de son second utilisateur est requis.' });
@@ -37,7 +36,7 @@ const createChat = async (req, res) => {
         // Récupérer le chat sauvegardé avec les informations des membres peuplées
         chat = await ChatModel.findById(savedChat._id).populate('members', '-password');
 
-        // Retourner le chat nouvellement créé
+        notifyNewChat(secondUserId, chat);
         res.status(201).json(chat);
     } catch (error) {
         // Gérer les erreurs potentielles lors de la création du chat
@@ -61,19 +60,36 @@ const findUserChats = async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de la recherche des chats de l\'utilisateur', error });
     }
 };
-// Supprimé un chat grace a son id
+
+// Supprimé un chat grâce à son id
 const deleteChat = async (req, res) => {
     console.log('deleteChat');
     const { chatId } = req.params;
+    const currentUserId = req.user._id.toString(); // Assurez-vous que c'est une chaîne pour la comparaison
+
     try {
-        const chat = await ChatModel.findByIdAndDelete(chatId);
-        const messages = await MessageModel.find({ chat: chatId });
-        messages.forEach(async (message) => {
-            await MessageModel.findByIdAndDelete(message._id);
-        });
-        res.status(200).json(chat);
+        const chat = await ChatModel.findById(chatId);
+        if (!chat) {
+            return res.status(404).json({ message: "Chat non trouvé." });
+        }
+
+        // Vérifie si l'utilisateur actuel est un membre du chat
+        if (!chat.members.map(member => member.toString()).includes(currentUserId)) {
+            return res.status(401).json({ message: "Vous n'êtes pas autorisé à supprimer ce chat." });
+        }
+
+        // Trouve l'ID du second utilisateur
+        const secondUserId = chat.members.find(member => member.toString() !== currentUserId);
+
+        // Supprime le chat et tous les messages associés
+        await ChatModel.findByIdAndDelete(chatId);
+        await MessageModel.deleteMany({ chatId: chat._id });
+
+        notifyDeleteChat(secondUserId, chat);
+        res.status(200).json({ message: "Chat et tous ses messages supprimés avec succès." });
     } catch (error) {
-        res.status(500).json(error);
+        console.error('Erreur lors de la suppression du chat et de ses messages:', error);
+        res.status(500).json({ message: 'Erreur lors de la suppression du chat et de ses messages', error });
     }
 };
 
@@ -112,26 +128,4 @@ const findChat = async (req, res) => {
     }
 };
 
-const updateChatOrder = async (req, res) => {
-    const { chatId, newOrder } = req.body;
-    console.log(chatId, newOrder);
-    // Validation simple des données d'entrée
-    if (!chatId || newOrder === undefined) {
-        return res.status(400).json({ message: "chatId et newOrder sont requis" });
-    }
-
-    try {
-        const chat = await ChatModel.findByIdAndUpdate(chatId, { order: newOrder }, { new: true });
-
-        if (!chat) {
-            // Si aucun chat n'est trouvé avec l'ID fourni
-            return res.status(404).json({ message: "Chat non trouvé" });
-        }
-
-        res.status(200).json(chat);
-    } catch (error) {
-        res.status(500).json({ message: "Erreur lors de la mise à jour de l'ordre du chat", error });
-    }
-};
-
-export { createChat, findUserChats, findChat, deleteChat, getChat, updateChatOrder };
+export { createChat, findUserChats, findChat, deleteChat, getChat };

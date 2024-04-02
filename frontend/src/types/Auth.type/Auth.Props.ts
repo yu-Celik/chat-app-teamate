@@ -5,7 +5,6 @@ export type User = {
     password?: string | null; // Mot de passe de l'utilisateur
     gender?: string | "male" | "female"; // Genre de l'utilisateur
     profilePic?: string | null; // Photo de profil de l'utilisateur
-    isOnline?: boolean | null; // Statut de l'utilisateur
     lastSeen?: string | null; // Dernière connexion de l'utilisateur
     notifications?: number | null; // Nombre de notifications
     lastNotificationSeen?: string | null; // Date de la dernière notification vue

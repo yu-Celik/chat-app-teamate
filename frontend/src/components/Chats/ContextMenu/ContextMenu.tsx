@@ -16,6 +16,8 @@ interface ContextMenuProps {
     anchorReference: string;
     anchorPosition: { top: number, left: number } | null;
     chatId?: string;
+    senderId?: string;
+    currentUserId?: string | null;
 }
 
 export const StyledMenu = styled((props: MenuProps) => (
@@ -62,7 +64,7 @@ export const StyledMenu = styled((props: MenuProps) => (
     },
 }));
 
-const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, message, menuPosition, handleCloseMenu, handleContextMenu, chatId, messageId }) => {
+const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, message, senderId, currentUserId, menuPosition, handleCloseMenu, handleContextMenu, chatId, messageId }) => {
 
     return (
         <div onContextMenu={handleContextMenu}>
@@ -83,14 +85,14 @@ const ContextMenu: FC<ContextMenuProps> = ({ onEdit, onDelete, onReply, onCopy, 
                     },
                 }}
             >
-                {onEdit && (
+                {onEdit && senderId === currentUserId && (
                     <MenuItem onClick={(event) => {
                         event.stopPropagation();
                         onEdit(messageId as string, message);
                         handleCloseMenu();
                     }}>Modifier</MenuItem>
                 )}
-                {onDelete && (
+                {onDelete && senderId === currentUserId && (
                     <MenuItem onClick={(event) => {
                         event.stopPropagation();
                         onDelete(chatId as string);

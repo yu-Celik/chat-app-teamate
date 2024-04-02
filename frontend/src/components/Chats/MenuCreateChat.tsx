@@ -112,6 +112,8 @@ export default function MenuCreateChat() {
                 profilePic={potentialChat.profilePic}
                 onClick={() => handleCreateChat(potentialChat._id as string)}
                 lastLogin={potentialChat.lastLogin}
+                onlineUsers={chatInfo.onlineUsersIds}
+                userId={potentialChat._id ?? ''}
               />
               <Divider variant='fullWidth'
                 sx={{
