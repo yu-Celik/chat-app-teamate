@@ -7,8 +7,10 @@ import messageRoutes from './routes/message.routes.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
 import { app, server } from './socket/socket.js';
+import path from 'path';
 
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
 dotenv.config();
 
 // Configuration CORS
@@ -26,8 +28,9 @@ app.use('/api/users', userRoutes); // pour les routes liées aux utilisateurs
 app.use('/api/chats', chatRoutes); // pour les routes liées aux chats
 app.use('/api/messages', messageRoutes); // pour les routes liées aux messages
 
-app.get('/', (req, res) => {
-  res.send('Bienvenue sur le serveur !');
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 });
 
 server.listen(PORT,'0.0.0.0', () => {
