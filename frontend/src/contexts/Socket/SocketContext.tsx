@@ -15,7 +15,7 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
 
     useEffect(() => {
         if (currentUser) {
-            const newSocket = io(import.meta.env.VITE_SOCKET_URL as string, {
+            const newSocket = io("https://chat-app-teamate.onrender.com", {
                 withCredentials: true,
                 query: {
                     userId: currentUser.data?._id,

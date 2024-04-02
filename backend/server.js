@@ -15,7 +15,7 @@ dotenv.config();
 
 // Configuration CORS
 const corsOptions = {
-  origin: process.env.CLIENT_URL, // Autorise les requêtes provenant de ce domaine
+  origin: ["http://localhost:3000"], // Autorise les requêtes provenant de ce domaine
   credentials: true, // Autorise les cookies et les en-têtes d'authentification
 };
 
