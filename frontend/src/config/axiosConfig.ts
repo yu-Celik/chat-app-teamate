@@ -5,7 +5,7 @@ axios.defaults.withCredentials = true;
 
 // Vous pouvez également configurer d'autres paramètres par défaut ici
 // Par exemple, définir une URL de base pour toutes les requêtes
-axios.defaults.baseURL = "http://localhost:5000/";
-    
+axios.defaults.baseURL = "http://localhost:5000/api";
+
 // Exporter l'instance Axios configurée pour une utilisation dans toute l'application
 export default axios;
