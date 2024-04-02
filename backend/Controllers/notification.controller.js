@@ -1,4 +1,4 @@
-import { find, findByIdAndUpdate } from '../models/notification.model';
+import { find, findByIdAndUpdate } from '../Models/notification.model';
 
 const getNotifications = async (req, res) => {
   const userId = req.user.id; // Assumant que vous avez un middleware d'authentification qui définit req.user

@@ -1,6 +1,6 @@
 import UserModel from '../Models/user.model.js';
 import bcrypt from 'bcrypt';
-import generateTokenAndSetCookie from '../utils/generateToken.js';
+import generateTokenAndSetCookie from '../Utils/generateToken.js';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
 

@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 import connectToMongoDB from './DB/connectToMongoDB.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import userRoutes from './routes/user.routes.js';
-import chatRoutes from './routes/chat.routes.js';
-import messageRoutes from './routes/message.routes.js';
+import userRoutes from './Routes/user.routes.js';
+import chatRoutes from './Routes/chat.routes.js';
+import messageRoutes from './Routes/message.routes.js';
 import { app, server } from './socket/socket.js';
 import path from 'path';
 
