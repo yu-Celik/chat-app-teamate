@@ -10,12 +10,12 @@ import { app, server } from './socket/socket.js';
 import path from 'path';
 
 const PORT = process.env.PORT || 5000;
-// const __dirname = path.resolve();
+const __dirname = path.resolve();
 dotenv.config();
 
 // Configuration CORS
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://chat-app-teamate.onrender.com", "http://localhost:5000", "http://192.168.1.103:3000"], // Autorise les requêtes provenant de ce domaine
+  origin: ["http://localhost:3000", "https://chat-app-teamate.onrender.com", "http://localhost:5000"], // Autorise les requêtes provenant de ce domaine
   credentials: true, // Autorise les cookies et les en-têtes d'authentification
 };
 
@@ -28,10 +28,10 @@ app.use('/api/users', userRoutes); // pour les routes liées aux utilisateurs
 app.use('/api/chats', chatRoutes); // pour les routes liées aux chats
 app.use('/api/messages', messageRoutes); // pour les routes liées aux messages
 
-// app.use(express.static(path.join(__dirname, '/frontend/dist')));
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
-// });
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+});
 
 server.listen(PORT,'0.0.0.0', () => {
   connectToMongoDB();
