@@ -103,8 +103,7 @@ export default function ProfileInDrawer({ username, profilePic, isLoadingUserCha
                     boxShadow: customTheme.shadows[1],
 
                 }}
-                onClick={(e) => { handleProfileClick(Reorder ? chatInfo.chatId as string : chatId); onClick && onClick(e) }}
-            >
+                onClick={(e) => { if (menuPosition === null) { handleProfileClick(Reorder ? chatInfo.chatId as string : chatId); onClick && onClick(e) } }}            >
                 {!isLoadingUserChat && !isLoadingCreateChat && !isLoadingDeleteChat ? (
                     <ListItemButton alignItems="flex-start" sx={{
                         padding: customTheme.spacing(0, 1),

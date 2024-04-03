@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000", "https://chat-app-teamate.onrender.com", "http://localhost:5000"],
+        origin: ["http://localhost:3000", "https://chat-app-teamate.onrender.com", "http://localhost:5000", "http://192.168.1.103:3000"],
         credentials: true,
     },
 });

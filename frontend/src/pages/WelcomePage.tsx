@@ -39,7 +39,7 @@ export default function Welcome(): JSX.Element {
         },
         {
             text: 'Teamate.',
-            className: 'text-orangePV-900 dark:text-orangePV-900',
+            className: 'text-orangePV-900 ',
         },
     ];
     return (
@@ -51,7 +51,7 @@ export default function Welcome(): JSX.Element {
                     marginBottom: '1rem',
                 }}
             />
-            <p className="text-neutral-600 dark:text-neutral-200 text-base sm:text-lg md:text-xl text-center mb-4">
+            <p className="text-neutral-200 text-base sm:text-lg md:text-xl text-center mb-4">
                 Votre aventure de jeu commence ici
             </p>
             <TypewriterEffectSmooth words={words} />

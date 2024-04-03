@@ -15,7 +15,8 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
 
     useEffect(() => {
         if (currentUser) {
-            const newSocket = io("https://chat-app-teamate.onrender.com", {
+            // const newSocket = io("https://chat-app-teamate.onrender.com", {
+            const newSocket = io("http://192.168.1.103:3000", {
                 withCredentials: true,
                 query: {
                     userId: currentUser.data?._id,

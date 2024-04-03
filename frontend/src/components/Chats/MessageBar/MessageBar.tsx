@@ -173,7 +173,7 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
                         onChange={handleTextChange as unknown as ChangeEventHandler}
                         type="text"
                         color="primary"
-                        placeholder={`Ecrivez un message à ${username}`}
+                        placeholder={`Écrivez un message à ${username}`}
                         hiddenLabel
                         multiline
                         maxRows={3}
@@ -183,8 +183,8 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
 
                             startAdornment: (
                                 <motion.div
-                                    whileHover={{ rotate: 360 }} // Rotation de 360 degrés au clic
-                                    transition={spinTransition} // Utilisation de l'animation de rotation définie
+                                    whileHover={{ rotate: 360 }}
+                                    transition={spinTransition} 
                                 >
                                     <StyledIconButton title="Emoji" onClick={() => {
                                         setTimeout(() => {
