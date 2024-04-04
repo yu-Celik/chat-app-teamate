@@ -26,7 +26,7 @@ export const notifyNewChat = (receiverId, chat) => {
     if (receiverSocketId) {
         io.to(receiverSocketId).emit('newChat', chat);
     }
-};  
+};
 
 export const notifyDeleteChat = (receiverId, chat) => {
     const receiverSocketId = getReceiverSocketId(receiverId);

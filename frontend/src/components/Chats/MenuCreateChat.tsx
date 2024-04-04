@@ -77,7 +77,6 @@ export default function MenuCreateChat() {
           Créer un chat
         </Typography>
         <SearchBar placeholder='Rechercher un utilisateur' inputProps={{
-          autoFocus: true,
           autoComplete: 'off',
           autoCorrect: 'off',
           autoCapitalize: 'off',
@@ -111,7 +110,7 @@ export default function MenuCreateChat() {
                 username={potentialChat.username}
                 profilePic={potentialChat.profilePic}
                 onClick={() => handleCreateChat(potentialChat._id as string)}
-                lastLogin={potentialChat.lastLogin}
+                lastLogout={potentialChat.lastLogout}
                 onlineUsers={chatInfo.onlineUsersIds}
                 userId={potentialChat._id ?? ''}
               />

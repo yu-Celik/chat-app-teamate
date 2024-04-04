@@ -3,7 +3,7 @@ import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, Skeleton, al
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
-import formatLastLogin from '../../../utils/dateUtils';
+import formatLastLogout from '../../../utils/dateUtils';
 
 type UserProfileProps = User & {
     isOnline?: boolean,
@@ -11,13 +11,13 @@ type UserProfileProps = User & {
     onDelete?: (chatId: string) => void,
     isLoadingUserChat?: boolean,
     isLoadingAllUsers?: boolean,
-    lastLogin?: string | null,
+    lastLogout?: string | null,
     onClick?: () => void
     onlineUsers: string[]
     userId: string
 }
 
-export default function ProfileInMenu({ username, profilePic, onClick, lastLogin, isLoadingUserChat, isLoadingAllUsers, onlineUsers, userId }: UserProfileProps) {
+export default function ProfileInMenu({ username, profilePic, onClick, lastLogout, isLoadingUserChat, isLoadingAllUsers, onlineUsers, userId }: UserProfileProps) {
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation(); // Empêche le menu contextuel par défaut du navigateur
@@ -116,7 +116,7 @@ export default function ProfileInMenu({ username, profilePic, onClick, lastLogin
                                             color={customTheme.palette.slate[200]}
                                             noWrap
                                         >
-                                            {username && `Dernière connexion : ${formatLastLogin(lastLogin as string)}`}
+                                            {username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`}
                                         </Typography>)}
                                 </Box>
                             }

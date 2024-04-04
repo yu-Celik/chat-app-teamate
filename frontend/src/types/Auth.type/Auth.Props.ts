@@ -9,7 +9,7 @@ export type User = {
     notifications?: number | null; // Nombre de notifications
     lastNotificationSeen?: string | null; // Date de la dernière notification vue
     token?: string | null; // Token de l'utilisateur
-    lastLogin?: string | null; // Dernière connexion de l'utilisateur
+    lastLogout?: string | null; // Dernière connexion de l'utilisateur
 };
 
 export type RegisterInfo = {

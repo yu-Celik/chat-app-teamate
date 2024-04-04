@@ -3,7 +3,7 @@ import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, alpha } from
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
-import formatLastLogin from '../../../utils/dateUtils';
+import formatLastLogout from '../../../utils/dateUtils';
 
 
 type UserProfileProps = User & {
@@ -13,7 +13,7 @@ type UserProfileProps = User & {
     userId: string
 }
 
-export default function ProfileInHeader({ username, profilePic, lastLogin, onlineUsers, userId }: UserProfileProps) {
+export default function ProfileInHeader({ username, profilePic, lastLogout, onlineUsers, userId }: UserProfileProps) {
 
     const isUserOnline = onlineUsers.includes(userId);
     return (
@@ -91,7 +91,7 @@ export default function ProfileInHeader({ username, profilePic, lastLogin, onlin
                                     fontStyle="italic"
                                     noWrap
                                 >
-                                    {username && `Dernière connexion : ${formatLastLogin(lastLogin as string)}`}
+                                    {username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`}
                                 </Typography>
                             )}
                         </Box>

@@ -1,5 +1,5 @@
 import { CurrentUser, User } from "../Auth.type/Auth.Props";
-import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat, LastMessageSeen, TypingState } from "./Chat.Props";
+import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat, LastMessageSeen, TypingState, UserDisconnected } from "./Chat.Props";
 
 export type ChatContextProps = {
     chatInfo: ChatInfo;
@@ -34,6 +34,7 @@ export type ChatInfo = {
     lastMessageSeen: LastMessageSeen
     onlineUsersIds: string[]
     typingState: TypingState;
+    userDisconnected: { userId: string; lastLogout: Date; }[]
 
 };
 export type UpdateSendMessageStatus = (updateFunction: (prevState: MessageState) => MessageState) => void;

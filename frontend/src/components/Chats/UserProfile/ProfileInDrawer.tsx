@@ -1,15 +1,17 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Badge, ListItemAvatar, ListItemButton, ListItemText, PopoverPosition, Skeleton, Stack, Tooltip, alpha } from '@mui/material';
+import { Avatar, Badge, ClickAwayListener, ListItemAvatar, ListItemButton, ListItemText, PopoverPosition, Skeleton, Stack, Tooltip, alpha, useMediaQuery } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
 import ContextMenu from '../ContextMenu/ContextMenu';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useChat } from '../../../contexts/ChatContext/useChatContext';
 import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
 import { motion } from 'framer-motion';
 import { Message } from '../../../types/Chat.type/Chat.Props';
 import { formatDateMessage } from '../../../utils/dateUtils';
+import Zoom from '@mui/material/Zoom';
+
 
 type UserProfileProps = User & {
     isOnline?: boolean,
@@ -29,10 +31,19 @@ export default function ProfileInDrawer({ username, profilePic, isLoadingUserCha
     const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
     const { updateChatId, chatInfo } = useChat();
     const { deleteChat } = useDeleteChat();
-    // console.log(messages);
-    // const lastMessageSeen = getLastMessageSeen(messages as Message[], currentUserId as number);
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+
+    const handleTooltipClose = () => {
+        setTooltipOpen(false);
+    };
+
+    const handleTooltipOpen = () => {
+        setTooltipOpen(true);
+    };
 
     const isUserOnline = onlineUsers.includes(userId);
+
+
 
 
     const handleContextMenuOnChat = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -83,141 +94,167 @@ export default function ProfileInDrawer({ username, profilePic, isLoadingUserCha
 
     const lastMessageSeen = lastMessageOfChat?.find(message => message.chatId === chatId);
     const lastMessageDate = lastMessageSeen ? formatDateMessage(lastMessageSeen.updatedAt) : null;
+    const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
 
     return (
-        <Tooltip title={Reorder ? `Terminer le rangement pour ouvrir le chat avec ${username}` : username}>
-            <motion.div
-                whileDrag={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                onContextMenu={handleContextMenuOnChat}
-                variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1 },
-                }}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                transition={{ duration: 0.3 }}
-                style={{
-                    flexGrow: 1,
-                    boxShadow: customTheme.shadows[1],
+        <ClickAwayListener onClickAway={handleTooltipClose}>
+            <div>
+                <Tooltip
+                    title={Reorder ? `Terminer le rangement pour ouvrir le chat avec ${username}` : username}
+                    arrow
+                    TransitionComponent={Zoom}
+                    PopperProps={{
+                        disablePortal: true,
+                    }}
+                    onClose={handleTooltipClose}
+                    {...(!isSmUp ? { open: tooltipOpen } : {})}
+                    disableHoverListener={!isSmUp}
+                    disableFocusListener={!isSmUp}
+                    disableTouchListener={!isSmUp}
+                >
 
-                }}
-                onClick={(e) => { if (menuPosition === null) { handleProfileClick(Reorder ? chatInfo.chatId as string : chatId); onClick && onClick(e) } }}            >
-                {!isLoadingUserChat && !isLoadingCreateChat && !isLoadingDeleteChat ? (
-                    <ListItemButton alignItems="flex-start" sx={{
-                        padding: customTheme.spacing(0, 1),
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        '&:hover': {
-                            backgroundColor: alpha(customTheme.palette.slate[100], 0.1),
-                        }
-                    }}>
-                        <ListItemAvatar
-                            sx={{
-                                margin: '0px',
-                            }}
-                        >
-                            <StyledBadge
-                                overlap="circular"
-                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                variant="dot"
-                                isOnline={isUserOnline}
-                            >
-                                <Avatar alt="Remy Sharp" src={profilePic || ''} />
-                            </StyledBadge>
-                        </ListItemAvatar>
-                        <ListItemText
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                height: '70px',
-                                margin: '0px',
-                                gap: '1px',
-                            }}
-                            primary={<Typography
-                                sx={{
-                                    display: 'block',
-                                    width: '100%',
-                                }}
-                                fontSize={customTheme.typography.body1.fontSize}
-                                textTransform={'capitalize'}
-                                component="span"
-                                variant="body2"
-                                color={customTheme.palette.slate[200]}
-                                noWrap
-                            >
-                                {username}
-                            </Typography>}
-                            secondary={
-                                <Typography
-                                    sx={{
-                                        display: 'inline-block',
-                                        width: '100%',
-                                    }}
-                                    component="span"
-                                    variant="body2"
-                                    fontSize={customTheme.typography.body2.fontSize}
-                                    color={customTheme.palette.slate[200]}
-                                    noWrap
-                                >
-                                    {lastMessageSeen ? lastMessageSeen.message : 'Commencer un nouveau chat ! '}
-                                </Typography>
+                    <motion.div
+                        whileDrag={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
+                        onContextMenu={handleContextMenuOnChat}
+                        variants={{
+                            hidden: { opacity: 0 },
+                            visible: { opacity: 1 },
+                        }}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        transition={{ duration: 0.3 }}
+                        style={{
+                            flexGrow: 1,
+                            boxShadow: customTheme.shadows[1],
+
+                        }}
+                        onClick={(e) => {
+                            if (menuPosition === null) {
+                                handleProfileClick(Reorder ? chatInfo.chatId as string : chatId);
+                                onClick && onClick(e);
+                                handleTooltipOpen(); // Ajoutez cette ligne pour ouvrir le Tooltip lors du clic
                             }
-                        />
-
-                        <Stack flexGrow={1} spacing={0.5} pt={0.5} pr={1} direction={'column'} alignItems={'flex-end'} justifyContent={'center'}>
-                            <Typography
-                                variant='caption'
-                                noWrap
-                                color={customTheme.palette.slate[200]}
-                                fontSize={customTheme.typography.caption.fontSize}
-                                sx={{
-                                    display: 'block',
-                                }}>
-                                {lastMessageDate}
-                            </Typography>
-                            <Badge
-                                badgeContent={4}
-                                showZero={false}
-                                color="error"
-                                sx={{
-                                    '& .MuiBadge-colorWarning': {
-                                        backgroundColor: '#FF7300',
-                                        color: '#FFFFE6',
-                                    },
-                                    '& .MuiBadge-badge': {
-                                        fontWeight: 'bold',
-                                        position: 'static',
-                                        transform: 'translate(0%, 0%)',
-                                    },
-
-                                }}
-                            />
-                            {menuPosition !== null && (
-                                <ContextMenu
-
-                                    open={menuPosition !== null}
-                                    chatId={chatId as string}
-                                    anchorReference="anchorPosition"
-                                    anchorPosition={menuPosition as PopoverPosition}
-                                    onDelete={() => handleDeleteChat(chatId as string)}
-                                    message={'Votre message ici'}
-                                    menuPosition={menuPosition}
-                                    handleCloseMenu={handleCloseMenu}
-                                    handleContextMenu={handleContextMenuOnChat}
+                        }}
+                    >
+                        {!isLoadingUserChat && !isLoadingCreateChat && !isLoadingDeleteChat ? (
+                            <ListItemButton alignItems="flex-start" sx={{
+                                padding: customTheme.spacing(0, 1),
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                '&:hover': {
+                                    backgroundColor: alpha(customTheme.palette.slate[100], 0.1),
+                                }
+                            }}>
+                                <ListItemAvatar
+                                    sx={{
+                                        margin: '0px',
+                                    }}
+                                >
+                                    <StyledBadge
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                        variant="dot"
+                                        isOnline={isUserOnline}
+                                    >
+                                        <Avatar alt="Remy Sharp" src={profilePic || ''} />
+                                    </StyledBadge>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        height: '70px',
+                                        margin: '0px',
+                                        gap: '1px',
+                                    }}
+                                    primary={<Typography
+                                        sx={{
+                                            display: 'block',
+                                            width: '100%',
+                                        }}
+                                        fontSize={customTheme.typography.body1.fontSize}
+                                        textTransform={'capitalize'}
+                                        component="span"
+                                        variant="body2"
+                                        color={customTheme.palette.slate[200]}
+                                        noWrap
+                                    >
+                                        {username}
+                                    </Typography>}
+                                    secondary={
+                                        <Typography
+                                            sx={{
+                                                display: 'inline-block',
+                                                width: '100%',
+                                            }}
+                                            component="span"
+                                            variant="body2"
+                                            fontSize={customTheme.typography.body2.fontSize}
+                                            color={customTheme.palette.slate[200]}
+                                            noWrap
+                                        >
+                                            {lastMessageSeen ? lastMessageSeen.message : 'Commencer un nouveau chat ! '}
+                                        </Typography>
+                                    }
                                 />
-                            )}
-                        </Stack>
-                    </ListItemButton>) : (
-                    <Skeleton variant="rectangular" width={'100%'} height={'86px'} />
-                )}
 
-            </motion.div>
-        </Tooltip>
+                                <Stack flexGrow={1} spacing={0.5} pt={0.5} pr={1} direction={'column'} alignItems={'flex-end'} justifyContent={'center'}>
+                                    <Typography
+                                        variant='caption'
+                                        noWrap
+                                        color={customTheme.palette.slate[200]}
+                                        fontSize={customTheme.typography.caption.fontSize}
+                                        sx={{
+                                            display: 'block',
+                                        }}>
+                                        {lastMessageDate}
+                                    </Typography>
+                                    <Badge
+                                        badgeContent={0}
+                                        showZero={false}
+                                        color="error"
+                                        sx={{
+                                            '& .MuiBadge-colorWarning': {
+                                                backgroundColor: '#FF7300',
+                                                color: '#FFFFE6',
+                                            },
+                                            '& .MuiBadge-badge': {
+                                                fontWeight: 'bold',
+                                                position: 'static',
+                                                // transform: 'translate(0%, 0%)',
+                                            },
+
+                                        }}
+                                    />
+                                    {menuPosition !== null && (
+                                        <ContextMenu
+
+                                            open={menuPosition !== null}
+                                            chatId={chatId as string}
+                                            anchorReference="anchorPosition"
+                                            anchorPosition={menuPosition as PopoverPosition}
+                                            onDelete={() => handleDeleteChat(chatId as string)}
+                                            message={'Votre message ici'}
+                                            menuPosition={menuPosition}
+                                            handleCloseMenu={handleCloseMenu}
+                                            handleContextMenu={handleContextMenuOnChat}
+                                        />
+                                    )}
+                                </Stack>
+                            </ListItemButton>) : (
+                            <Skeleton variant="rectangular" width={'100%'} height={'86px'} />
+                        )}
+
+                    </motion.div>
+                </Tooltip>
+            </div>
+        </ClickAwayListener>
+
     )
 }
 

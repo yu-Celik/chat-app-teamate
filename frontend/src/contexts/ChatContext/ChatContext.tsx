@@ -7,7 +7,8 @@ import { Message } from '../../types/Chat.type/Chat.Props';
 export const ChatContext = createContext<ChatContextProps>({} as ChatContextProps);
 
 export const ChatProvider = ({ children, currentUser }: { children: React.ReactNode, currentUser: CurrentUser }) => {
-    const { onlineUsers } = useSocket()
+    const { onlineUsers, userDisconnected } = useSocket()
+
     // Remplisage de chatInfo par allUsers en 1er
     // Remplisage de chatInfo par userChats en 2e
     // Remplisage de chatInfo par potentialChats en envoyant tous les users de allUsers 
@@ -64,6 +65,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
             messages: []
         },
         onlineUsersIds: [],
+        userDisconnected: [],
         typingState: { isTyping: false, userId: null },
 
     });
@@ -180,7 +182,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
     }, []);
 
     const updateTypingState: updateTypingState = useCallback((updateFunction) => {
-    setChatInfo(prev => ({
+        setChatInfo(prev => ({
             ...prev,
             typingState: updateFunction(prev.typingState)
         }));
@@ -221,6 +223,14 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
             onlineUsersIds: ids
         }));
     }, [onlineUsers]);
+
+    useEffect(() => {
+        setChatInfo(prev => ({
+            ...prev,
+            userDisconnected: userDisconnected // Assurez-vous que ceci est de type { userId: string; lastLogout: Date; }[]
+        }));
+    }, [userDisconnected]);
+
 
     useEffect(() => {
         // Set est utilisé pour éviter les doublons dans les ids

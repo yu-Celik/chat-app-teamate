@@ -85,6 +85,7 @@ export type TypingState = {
     userId: string | null;
 }
 
+
 export type UpdateMessagesParams = Partial<MessagesState>;
 
 

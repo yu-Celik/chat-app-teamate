@@ -165,10 +165,10 @@ const editMessage = async (req, res) => {
         if (!updatedMessage) {
             return res.status(404).json({ message: 'Message non trouvé ou vous n\'êtes pas l\'expéditeur.' });
         }
-
+        const chatId = updatedMessage.chatId;
         const receiverId = updatedMessage.receiverId;
 
-        notifyEditMessage(receiverId, updatedMessage);
+        notifyEditMessage(receiverId, updatedMessage, chatId);
         res.status(200).json(updatedMessage);
     } catch (error) {
         console.error('Erreur lors de la mise à jour du message:', error);
@@ -191,8 +191,9 @@ const deleteMessage = async (req, res) => {
         if (!message) {
             return res.status(404).json({ message: 'Message non trouvé ou action non autorisée.' });
         }
+        const chatId = message.chatId;
         const receiverId = message.receiverId;
-        notifyDeleteMessage(receiverId, message);
+        notifyDeleteMessage(receiverId, message, chatId);
         res.status(200).json({ message: 'Message supprimé avec succès.' });
     } catch (error) {
         console.error('Erreur lors de la suppression du message:', error);

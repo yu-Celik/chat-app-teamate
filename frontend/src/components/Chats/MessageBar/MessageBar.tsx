@@ -4,7 +4,7 @@ import data from '@emoji-mart/data'
 import customTheme from "../../../styles/customTheme";
 import { AttachFile, Mood, Mic, Send, EditOutlined, Done, Close } from '@mui/icons-material';
 import { StyledIconButton } from "../../IconButton/IconButton";
-import { ChangeEvent, ChangeEventHandler, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSendMessage from "../../../hooks/Chat/useSendMessage";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import { StyledTextField } from "./styleMessageBar";
@@ -15,10 +15,9 @@ import { useSocket } from "../../../contexts/Socket/useSocketContext";
 import { Chat } from "../../../types/Chat.type/Chat.Props";
 import { User } from "../../../types/Auth.type/Auth.Props";
 import { ChatInfo } from "../../../types/Chat.type/ChatContext.Props";
+import { debounce } from 'lodash';
 
-
-
-export default function ChatBar({ username, chatInfo, receiverUser }: { username: string, selectedChat: Chat | null, chatInfo: ChatInfo, receiverUser: User | null }) {
+export default function ChatBar({ username, selectedChat, chatInfo, receiverUser }: { username: string, selectedChat: Chat | null, chatInfo: ChatInfo, receiverUser: User | null }) {
     const [icon, setIcon] = useState({ icon: <Mic />, key: "mic", title: "Enregistrer" });
     const [secondaryIcon, setSecondaryIcon] = useState({ icon: <AttachFile />, key: "file", title: "Fichier" });
     const [openPicker, setOpenPicker] = useState(false);
@@ -28,9 +27,22 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
     const { updateSendMessageStatus } = useChat();
     const { editMessage } = useEditMessage();
     const [messageText, setMessageText] = useState<string>('');
-        const chatInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-    const typingTimeoutDuration = 3000;
-    const typingTimeoutId = useRef<NodeJS.Timeout | null>(null);
+    const chatInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+    const [isTyping, setIsTyping] = useState(false);
+
+
+    const emitTypingDebounced = useMemo(() => debounce(() => {
+        if (selectedChat && socket) {
+            socket.emit('typing', { receiverId: receiverUser?._id, chatId: selectedChat?._id });
+        }
+    }, 500), [selectedChat, socket, receiverUser?._id]);
+
+    const emitStopTypingDebounced = useMemo(() => debounce(() => {
+        if (selectedChat && socket) {
+            socket.emit('stopTyping', { receiverId: receiverUser?._id, chatId: selectedChat?._id });
+            setIsTyping(false);
+        }
+    }, 1000), [selectedChat, socket, receiverUser?._id]);
 
     const handleSendMessage = useCallback(async (event: React.FormEvent) => {
         event.preventDefault();
@@ -43,12 +55,12 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
 
         actionPromise.finally(() => {
             updateSendMessageStatus(prevState => ({ ...prevState, isEditing: false, editId: null, messageToEdit: null }));
-                if (chatInfo.chatId && socket) {
-                    socket.emit('stopTyping', { receiverId: receiverUser?._id });
-                }
+            if (chatInfo.chatId && socket) {
+                socket.emit('stopTyping', { receiverId: receiverUser?._id, chatId: selectedChat?._id });
+            }
             setMessageText('');
         });
-    }, [chatInfo.chatId, chatInfo.sendMessageStatus.editId, editMessage, messageText, receiverUser?._id, sendMessage, socket, updateSendMessageStatus]);
+    }, [chatInfo.chatId, chatInfo.sendMessageStatus.editId, editMessage, messageText, receiverUser?._id, selectedChat?._id, sendMessage, socket, updateSendMessageStatus]);
 
     useEffect(() => {
         if (chatInfo.chatId == null) {
@@ -77,45 +89,40 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
         }
     }, [chatInfo.sendMessageStatus.isEditing, messageText]);
 
-
     const handleTextChange = useCallback((e: ChangeEvent<HTMLInputElement> | { native: string }) => {
         if ('target' in e) {
             setMessageText(e.target.value);
         } else if ('native' in e) {
             setMessageText((prevMessage) => (prevMessage ? prevMessage : '') + e.native);
         }
-
-        if (chatInfo.chatId && socket) {
-            socket.emit('typing', { receiverId: receiverUser?._id });
-        }
-    
-        if (typingTimeoutId.current) {
-            clearTimeout(typingTimeoutId.current);
-        }
-        typingTimeoutId.current = setTimeout(() => {
-            if (chatInfo.chatId && socket) {
-                socket.emit('stopTyping', { receiverId: receiverUser?._id });
+        if (socket) {
+            if (!isTyping) {
+                socket.emit('typing', { receiverId: receiverUser?._id, chatId: selectedChat?._id });
+                setIsTyping(true);
             }
+        }
 
-        }, typingTimeoutDuration);
-    }, [chatInfo.chatId, receiverUser?._id, socket]);
+        // Redémarrez le debounce chaque fois que l'utilisateur tape
+        emitStopTypingDebounced();
+
+        // Réinitialisez et démarrez le debounce pour "stop typing" à chaque frappe
+        emitStopTypingDebounced.cancel(); // Annulez le debounce précédent pour s'assurer qu'il s'exécute après la dernière frappe
+        emitStopTypingDebounced(); // Démarrez un nouveau debounce pour "stop typing"
+    }, [socket, emitStopTypingDebounced, isTyping, receiverUser?._id, selectedChat?._id]);
 
     useEffect(() => {
-        // Nettoyage du timeout lors du démontage du composant
+        // Nettoyage: Annulez les debounces lors du démontage du composant
         return () => {
-            if (typingTimeoutId.current) {
-                clearTimeout(typingTimeoutId.current);
-            }
+            emitTypingDebounced.cancel();
+            emitStopTypingDebounced.cancel();
         };
-    }, []);
+    }, [emitTypingDebounced, emitStopTypingDebounced]);
 
     const spinTransition = {
         loop: Infinity,
         duration: 1,
         ease: "easeInOut"
     };
-
-
 
     return (
         <>
@@ -184,7 +191,7 @@ export default function ChatBar({ username, chatInfo, receiverUser }: { username
                             startAdornment: (
                                 <motion.div
                                     whileHover={{ rotate: 360 }}
-                                    transition={spinTransition} 
+                                    transition={spinTransition}
                                 >
                                     <StyledIconButton title="Emoji" onClick={() => {
                                         setTimeout(() => {

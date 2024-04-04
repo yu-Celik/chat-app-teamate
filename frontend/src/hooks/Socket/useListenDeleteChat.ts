@@ -1,30 +1,27 @@
 import { useEffect } from "react";
 import { useChat } from "../../contexts/ChatContext/useChatContext";
 import { useSocket } from "../../contexts/Socket/useSocketContext";
-import { User } from "../../types/Auth.type/Auth.Props";
+import { Chat } from "../../types/Chat.type/Chat.Props";
 
 const useListenDeleteChat = () => {
     const { updateDeleteChat, chatInfo, updateUserChats, updateChatId } = useChat();
     const { socket } = useSocket();
 
     useEffect(() => {
-
         if (socket) {
-            socket.on('deleteChat', (chat) => {
+            socket.on('deleteChat', (chat: Chat) => {
                 updateDeleteChat(prevState => ({ ...prevState, chat: chat }));
                 updateUserChats(prevState => ({
                     ...prevState,
-                    chats: prevState.chats?.filter(chatItem => chatItem._id !== chat._id),
+                    chats: prevState.chats.filter(chatItem => chatItem._id !== chat._id),
                     secondUsers: prevState.secondUsers?.filter(user =>
-                        Array.isArray(chat.members) &&
-                        user._id !== chat.members.find((member: User) => member._id !== chatInfo.userChats.currentUser?._id)?._id)
+                        chat.members.some(member => member._id === user._id) && user._id !== chatInfo.userChats.currentUser?._id)
                 }));
                 if (chatInfo.chatId === chat._id) {
                     updateChatId(null);
                 }
             });
 
-            // Nettoyer l'écouteur d'événements lors du démontage du composant
             return () => {
                 socket.off('deleteChat');
             };
@@ -33,4 +30,3 @@ const useListenDeleteChat = () => {
 }
 
 export default useListenDeleteChat;
-

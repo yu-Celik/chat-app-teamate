@@ -1,6 +1,6 @@
 import { styled, IconButton, type IconButtonProps, Tooltip } from '@mui/material';
 import customTheme from '../../styles/customTheme';
-
+import Zoom from '@mui/material/Zoom';
 interface StyledIconButtonProps extends IconButtonProps {
     menustyle?: 'true' | 'false'
     barStyle?: 'true' | 'false'
@@ -9,7 +9,7 @@ interface StyledIconButtonProps extends IconButtonProps {
 }
 
 const IconButtonWithProps = ({ title, ...props }: StyledIconButtonProps): JSX.Element => (
-    <Tooltip title={title}>
+    <Tooltip title={title} arrow TransitionComponent={Zoom}>
         <IconButton {...props} />
     </Tooltip>
 );

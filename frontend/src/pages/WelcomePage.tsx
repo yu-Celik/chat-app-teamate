@@ -58,14 +58,14 @@ export default function Welcome(): JSX.Element {
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 mt-10">
                 <RouterLink to="/login">
                     <StyledBox>
-                        Login !
+                        Connexion
                     </StyledBox>
                 </RouterLink>
                 <Button as={RouterLink} to="/register"
                     borderRadius="0.75rem"
                     className="rounded-xl bg-transparant text-white border border-bluePV-100 text-sm hover:bg-purplePV-100"
                 >
-                    Join now
+                    Inscription
                 </Button>
             </div>
         </div>

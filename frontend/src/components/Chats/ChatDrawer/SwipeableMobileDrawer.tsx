@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
+import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
 import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
@@ -11,6 +11,7 @@ import { Reorder } from "framer-motion";
 import { styleListDrawer } from "./styleListDrawer";
 import MenuCreateChat from "../MenuCreateChat";
 import { StyledIconButton } from "../../IconButton/IconButton";
+import { TransitionGroup } from 'react-transition-group';
 
 
 interface SwipeableMobileDrawerProps {
@@ -83,49 +84,58 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                         className="list-drawer-order"
 
                     >
-                        {items.map((item) => (
-                            <Reorder.Item key={item._id} value={item}>
-                                <ProfileInDrawer
+                        <TransitionGroup>
+                            {items.map((item) => (
+                                <Reorder.Item key={item._id} value={item}>
+                                    <Collapse>
+                                        <ProfileInDrawer
                                             chatId={item._id}
                                             username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
                                             profilePic={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
                                             isLoadingUserChat={chatInfo.userChats?.isLoading}
                                             isLoadingCreateChat={chatInfo.createChat?.isLoading}
                                             isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                            lastLogin={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
+                                            lastLogout={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
                                             lastMessageOfChat={chatInfo.lastMessageSeen.messages}
                                             Reorder={true}
                                             userId={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
                                             currentUserId={chatInfo.userChats.currentUser?._id}
                                             onlineUsers={chatInfo.onlineUsersIds}
 
-                                />
-                            </Reorder.Item>
-                        ))}
+                                        />
+                                    </Collapse>
+                                </Reorder.Item>
+                            ))}
+                        </TransitionGroup>
+
                     </Reorder.Group>
                 ) : (
                     // Affichage normal sans possibilité de réordonnancement
-                    <List 
+                    <List
                         sx={{
                             ...styleListDrawer,
                         }}>
-                        {items.map((item) => (
-                            <ProfileInDrawer
-                            key={item._id}
-                            chatId={item._id}
-                            lastMessageOfChat={chatInfo.lastMessageSeen.messages}
-                            username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
-                            profilePic={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
-                            userId={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
-                            isLoadingUserChat={chatInfo.userChats?.isLoading}
-                            isLoadingCreateChat={chatInfo.createChat?.isLoading}
-                            isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                            lastLogin={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
-                            currentUserId={chatInfo.userChats.currentUser?._id}
-                            onlineUsers={chatInfo.onlineUsersIds}
-                            onClick={onClose}
-                            />
-                        ))}
+                        <TransitionGroup>
+                            {items.map((item) => (
+                                <Collapse key={item._id}>
+                                    <ProfileInDrawer
+                                        key={item._id}
+                                        chatId={item._id}
+                                        lastMessageOfChat={chatInfo.lastMessageSeen.messages}
+                                        username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
+                                        profilePic={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
+                                        userId={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
+                                        isLoadingUserChat={chatInfo.userChats?.isLoading}
+                                        isLoadingCreateChat={chatInfo.createChat?.isLoading}
+                                        isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
+                                        lastLogout={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
+                                        currentUserId={chatInfo.userChats.currentUser?._id}
+                                        onlineUsers={chatInfo.onlineUsersIds}
+                                        onClick={onClose}
+                                    />
+                                </Collapse>
+                            ))}
+                        </TransitionGroup>
                     </List>
                 )
             }

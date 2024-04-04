@@ -1,8 +1,8 @@
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-export default function formatLastLogin(lastLogin: string): string {
-    const date = parseISO(lastLogin);
+export default function formatLastLogout(lastLogout: string): string {
+    const date = parseISO(lastLogout);
     if (isToday(date)) {
         return `aujourd'hui à ${format(date, 'HH:mm', { locale: fr })}`;
     } else if (isYesterday(date)) {

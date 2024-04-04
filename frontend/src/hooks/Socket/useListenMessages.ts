@@ -3,37 +3,49 @@ import { useChat } from "../../contexts/ChatContext/useChatContext";
 import { useSocket } from "../../contexts/Socket/useSocketContext";
 import ReceiveMessage from './../../assets/sounds/ReceiveMessage.mp3';
 import useAuth from "../../contexts/AuthContext/useAuthContext";
+import { Message } from "../../types/Chat.type/Chat.Props";
 
 const useListenMessages = () => {
-    const { updateMessages, updateLastMessageSeen, updateSendMessageStatus } = useChat();
+    const { updateMessages, updateLastMessageSeen, updateSendMessageStatus, chatInfo } = useChat();
     const { socket } = useSocket();
-    const {currentUser} = useAuth()
+    const { currentUser } = useAuth()
+
 
     useEffect(() => {
-        // Vérifiez si socket n'est pas null avant de s'abonner aux événements
         if (socket) {
-            socket.on('newMessage', (message) => {
-                updateMessages(prevState => ({
-                    ...prevState,
-                    messagesList: [message, ...prevState.messagesList]
-                }));
-                updateLastMessageSeen(prevState => ({
-                    ...prevState,
-                    messages: [message, ...prevState.messages]
-                }));
-                updateSendMessageStatus(prevState => ({ ...prevState, firstMessageSend: true }));
-                if(currentUser.data?._id !== message.senderId){
-                    const sound = new Audio(ReceiveMessage);
-                    sound.play();
+            socket.on('newMessage', (message: Message) => {
+                // Mettre à jour les messages de la conversation actuelle
+                if (chatInfo.chatId === message.chatId) {
+                    updateMessages(prevState => ({
+                        ...prevState,
+                        messagesList: [message, ...prevState.messagesList]
+                    }));
+                    if (currentUser.data?._id !== message.senderId) {
+                        const sound = new Audio(ReceiveMessage);
+                        sound.play();
+                    }
                 }
+                // Mettre à jour le dernier message vu pour toutes les conversations
+                updateLastMessageSeen(prevState => {
+                    const existingMessageIndex = prevState.messages.findIndex(m => m.chatId === message.chatId);
+                    if (existingMessageIndex !== -1) {
+                        // Remplacer le message existant par le nouveau si la conversation est déjà dans la liste
+                        const updatedMessages = [...prevState.messages];
+                        updatedMessages[existingMessageIndex] = message;
+                        return { ...prevState, messages: updatedMessages };
+                    } else {
+                        // Ajouter le nouveau message à la liste si la conversation n'est pas déjà présente
+                        return { ...prevState, messages: [...prevState.messages, message] };
+                    }
+                });
+                updateSendMessageStatus(prevState => ({ ...prevState, firstMessageSend: true }));
             });
 
-            // Nettoyer l'écouteur d'événements lors du démontage du composant
             return () => {
                 socket.off('newMessage');
             };
         }
-    }, [socket, updateMessages, updateLastMessageSeen, updateSendMessageStatus]);
+    }, [socket, updateMessages, updateLastMessageSeen, updateSendMessageStatus, currentUser.data?._id, chatInfo.chatId]);
 }
 
 export default useListenMessages;

@@ -15,7 +15,8 @@ dotenv.config();
 
 // Configuration CORS
 const corsOptions = {
-  origin: ["https://chat-app-teamate.onrender.com"], // Autorise les requêtes provenant de ce domaine
+  origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
+  // origin: ["http://192.168.1.103:3000"], // En local
   credentials: true, // Autorise les cookies et les en-têtes d'authentification
 };
 
@@ -33,7 +34,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 });
 
-server.listen(PORT,'0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   connectToMongoDB();
   console.log(`Le serveur fonctionne sur le port : ${PORT}`);
 });

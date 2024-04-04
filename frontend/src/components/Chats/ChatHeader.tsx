@@ -57,7 +57,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
                             userId={selectedChat.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
                             username={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
                             profilePic={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
-                            lastLogin={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogin}
+                            lastLogout={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
                             onlineUsers={chatInfo.onlineUsersIds}
                         />}
                         {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}

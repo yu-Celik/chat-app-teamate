@@ -65,7 +65,7 @@ const registerUser = async (req, res) => {
                 profilePic: newUser.profilePic,
                 gender: newUser.gender,
                 createdAt: newUser.createdAt,
-                lastLogin: newUser.lastLogin    
+                lastLogout: newUser.lastLogout    
             });
 
         } else {
@@ -85,7 +85,7 @@ const loginUser = async (req, res) => {
         const isValidPassword = await bcrypt.compare(password, user.password || '');
         if (!isValidPassword) return res.status(400).json({ error: 'Invalid email or password' });
         generateTokenAndSetCookie(user._id, res);
-        user.lastLogin = new Date();
+        user.lastLogout = new Date();
         await user.save();
         res.status(200).json({
             _id: user._id,
@@ -94,7 +94,7 @@ const loginUser = async (req, res) => {
             profilePic: user.profilePic,
             gender: user.gender,
             createdAt: user.createdAt,
-            lastLogin: user.lastLogin
+            lastLogout: user.lastLogout
         });
     } catch (error) {
         console.log(error);

@@ -2,13 +2,15 @@
 import { Server } from 'socket.io';
 import http from 'http';
 import express from 'express';
+import UserModel from '../Models/user.model.js';
 
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["https://chat-app-teamate.onrender.com"],
+        origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
+        // origin: ["http://192.168.1.103:3000"], // En local
         credentials: true,
     },
 });
@@ -33,27 +35,38 @@ io.on('connection', (socket) => {
         }
     }
 
-    socket.on('typing', ({ receiverId }) => {
-        console.log('typing', receiverId);
+    socket.on('typing', ({ receiverId, chatId }) => { // Ajoutez chatId ici
+        console.log('typing', receiverId, chatId);
         const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit('userTyping', { from: socket.handshake.query.userId });
+            io.to(receiverSocketId).emit('userTyping', { from: socket.handshake.query.userId, chatId: chatId });
         }
     });
 
-    socket.on('stopTyping', ({ receiverId }) => {
-        console.log('stopTyping', receiverId);
+    socket.on('stopTyping', ({ receiverId, chatId }) => { // Ajoutez chatId ici
+        console.log('stopTyping', receiverId, chatId);
         const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit('stopTyping', { from: socket.handshake.query.userId });
+            io.to(receiverSocketId).emit('stopTyping', { from: socket.handshake.query.userId, chatId: chatId });
         }
     });
 
     // disconnect
-    socket.on('disconnect', () => {
-        onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-        io.emit('getOnlineUsers', onlineUsers);
+    socket.on('disconnect', async() => {
+        const user = onlineUsers.find((user) => user.socketId === socket.id);
+        if (user) {
+            try {
+                // Mettre à jour le champ lastLogout pour cet utilisateur
+                await UserModel.findByIdAndUpdate(user.userId, { lastLogout: new Date() });
+                console.log(`Last logout updated for user ${user.userId}`);
+            } catch (error) {
+                console.error('Error updating lastLogout', error);
+            }
+            io.emit('userDisconnected', { userId: user.userId, lastLogout: new Date() });    
+            onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+            io.emit('getOnlineUsers', onlineUsers);
+        }
     });
 });
 
-export  {app, server, io};
+export { app, server, io };

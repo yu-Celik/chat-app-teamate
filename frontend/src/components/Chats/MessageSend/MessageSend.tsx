@@ -103,9 +103,9 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                     variants={{
-                        hidden: { translateX: 100, scale: 0.5, borderRadius: '0px' },
-                        visible: { translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
-                        off: { translateX: 0, scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
+                        hidden: { scale: 0.5, borderRadius: '0px' },
+                        visible: { scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
+                        off: { scale: 1, borderRadius: `${currentUser.data?._id === senderId ? '10px 0px 10px 10px' : '0px 10px 10px 10px'}` },
                     }}
                     initial={chatInfo.sendMessageStatus.firstMessageSend ? 'hidden' : 'off'}
                     animate={chatInfo.sendMessageStatus.firstMessageSend ? 'visible' : 'off'}
@@ -125,7 +125,7 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
                 >
                     <Fragment>
                         <Typography paragraph width={'100%'} textAlign={'left'} m={0} fontSize={customTheme.typography.body1.fontSize} sx={{
-                            wordBreak: 'break-all',
+                            wordBreak: 'break-word',
                             letterSpacing: '0.3px',
                             lineHeight: '1.5',
                         }}>

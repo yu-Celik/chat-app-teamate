@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, useTheme, Stack, Divider, MenuList, styled } from '@mui/material';
-import { AccountCircle, Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon } from '@mui/icons-material';
+import { AppBar, Box, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, useTheme, Stack, Divider, MenuList, styled, Avatar } from '@mui/material';
+import { Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon } from '@mui/icons-material';
 import customTheme from "../../styles/customTheme";
 import { StyledIconButton } from "../IconButton/IconButton";
 import { SearchBarInDialog } from "../SearchBar/SearchBarInDialog";
@@ -176,7 +176,7 @@ export default function Header() {
                     ria-label="show 4 new mails"
                     menustyle='true'
                 >
-                    <Badge badgeContent={4} color="error">
+                    <Badge badgeContent={0} color="error">
                         <MailIcon />
                     </Badge>
                 </StyledIconButton>
@@ -186,10 +186,10 @@ export default function Header() {
                 <StyledIconButton
                     title="Notifications"
                     size="large"
-                    aria-label={`show ${4} new notifications`}
+                    aria-label={`show ${0} new notifications`}
                     menustyle='true'
                 >
-                    <Badge badgeContent={4} color="error">
+                    <Badge badgeContent={0} color="error">
                         <NotificationsIcon />
                     </Badge>
                 </StyledIconButton>
@@ -205,7 +205,11 @@ export default function Header() {
                     menustyle='true'
 
                 >
-                    <AccountCircle />
+                    <Avatar sx={{
+                        width: '1.75rem',
+                        height: '1.75rem',
+                        cursor: 'pointer',
+                    }} alt={currentUser.data?.username || ''} src={currentUser.data?.profilePic || ''} />
                 </StyledIconButton>
                 <p>Mon Compte</p>
             </MenuItem>
@@ -458,37 +462,39 @@ export default function Header() {
                         </StyledStack>
                         <Box sx={{ flexGrow: 1 }} />
                         {isSmUp ? (<SearchBar placeholder="Rechercher un utilisateur" inputProps={{ 'aria-label': 'Rechercher un utilisateur' }}></SearchBar>) : (<SearchIconOnly onClick={handleOpen} />)}
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center' } }}>
                             <StyledIconButton
                                 title="Messages"
                                 size="large"
                                 aria-label="show 4 new mails"
                             >
-                                <Badge badgeContent={4} color="error">
+                                <Badge badgeContent={0} color="error">
                                     <MailIcon />
                                 </Badge>
                             </StyledIconButton>
                             <StyledIconButton
                                 title="Notifications"
                                 size="large"
-                                aria-label={`show ${4} new notifications`}
+                                aria-label={`show ${0} new notifications`}
                                 onClick={handleNoticationsMenuOpen}
                             >
-                                <Badge badgeContent={4} color="error">
+                                <Badge badgeContent={0} color="error">
                                     <NotificationsIcon />
                                 </Badge>
                             </StyledIconButton>
-                            <StyledIconButton
-                                title="Mon Compte"
-                                size="large"
-                                edge="end"
+                            <Avatar
                                 aria-label="account of current user"
                                 aria-controls={menuId}
                                 aria-haspopup="true"
+                                alt={currentUser.data?.username || ''} src={currentUser.data?.profilePic || ''}
                                 onClick={handleProfileMenuOpen}
-                            >
-                                <AccountCircle />
-                            </StyledIconButton>
+                                sx={{
+                                    marginLeft: '0.5rem',
+                                    width: '1.75rem',
+                                    height: '1.75rem',
+                                    cursor: 'pointer',
+                                }}
+                            />
                         </Box>
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                             <StyledIconButton
