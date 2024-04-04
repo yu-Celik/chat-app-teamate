@@ -32,7 +32,7 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
             });
 
             newSocket.on("userDisconnected", ({ userId, lastLogout }) => {
-                setUserDisconnected({ userId, lastLogout });
+                setUserDisconnected((prev) => [...prev, { userId, lastLogout }]);
             });
 
             // La fonction de nettoyage ferme le socket sans rien retourner

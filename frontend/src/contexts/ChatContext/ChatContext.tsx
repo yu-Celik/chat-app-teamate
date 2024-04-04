@@ -227,7 +227,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
     useEffect(() => {
         setChatInfo(prev => ({
             ...prev,
-            userDisconnected: userDisconnected // Assurez-vous que ceci est de type { userId: string; lastLogout: Date; }[]
+            userDisconnected: userDisconnected
         }));
     }, [userDisconnected]);
 

@@ -4,7 +4,7 @@ import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
 import ContextMenu from '../ContextMenu/ContextMenu';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useChat } from '../../../contexts/ChatContext/useChatContext';
 import useDeleteChat from "../../../hooks/Chat/useDeleteChat";
 import { motion } from 'framer-motion';

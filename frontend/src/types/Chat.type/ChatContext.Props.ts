@@ -1,5 +1,5 @@
 import { CurrentUser, User } from "../Auth.type/Auth.Props";
-import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat, LastMessageSeen, TypingState, UserDisconnected } from "./Chat.Props";
+import { ChatState, MessagesState, UserChats, AllUsers, MessageState, Message, DeleteMessage, Chat, LastMessageSeen, TypingState } from "./Chat.Props";
 
 export type ChatContextProps = {
     chatInfo: ChatInfo;
