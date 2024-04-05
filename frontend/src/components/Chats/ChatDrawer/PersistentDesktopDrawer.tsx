@@ -94,34 +94,26 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                     open={true}
                 >
                     <DrawerHeader>
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            aria-label="Chats"
-                            sx={{
+                        <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
+                            width: '100%',
+                            '& .MuiTabs-flexContainer': {
+                                justifyContent: 'flex-end',
+                            },
+                            '& .MuiTab-root': {
                                 flexGrow: 1,
-                                '& .MuiTab-root': {
-                                    flexGrow: 1,
-                                    minHeight: '67.5px',
-                                },
-                                '& .MuiTab-textColorPrimary': {
-                                    color: customTheme.palette.slate[200],
-                                },
-                                '& .MuiTabs-indicator': {
-                                    backgroundColor: customTheme.palette.orangePV.dark,
-                                },
-                            }}
-                        >
-                            <Tab sx={{
-                                '&.Mui-selected': {
-                                    color: customTheme.palette.orangePV.dark,
-                                },
-                            }} label="Chat privé" onClick={() => setShowGroupe(false)} />
-                            <Tab sx={{
-                                '&.Mui-selected': {
-                                    color: customTheme.palette.orangePV.dark,
-                                },
-                            }} label="Groupe" onClick={() => setShowGroupe(true)} />
+                            },
+                            '& .MuiTab-textColorPrimary': {
+                                color: customTheme.palette.slate[200],
+                            },
+                            '& .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: customTheme.palette.orangePV.dark,
+                            },
+                        }}>
+                            <Tab label="Chat privé" onClick={() => setShowGroupe(false)} />
+                            <Tab label="Groupe" onClick={() => setShowGroupe(true)} />
                         </Tabs>
                     </DrawerHeader>
                     {
