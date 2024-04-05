@@ -6,8 +6,10 @@ import { useLocation } from 'react-router-dom'; // Importez useLocation
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
     const location = useLocation();
-    const isChatPage = location.pathname === '/Chat';
+    const isChatPage = location.pathname.toLowerCase() === '/chat';
 
+    console.log(isChatPage);
+    
     useEffect(() => {
         if (isChatPage) {
             document.body.style.overflow = 'hidden';
