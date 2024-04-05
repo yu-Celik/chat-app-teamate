@@ -35,7 +35,6 @@ export type ChatInfo = {
     onlineUsersIds: string[]
     typingState: TypingState;
     userDisconnected: { userId: string; lastLogout: Date; }[]
-
 };
 export type UpdateSendMessageStatus = (updateFunction: (prevState: MessageState) => MessageState) => void;
 export type UpdateDeleteMessage = (updateFunction: (prevState: DeleteMessage) => DeleteMessage) => void;

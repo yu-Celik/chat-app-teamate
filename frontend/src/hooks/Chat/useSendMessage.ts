@@ -27,7 +27,7 @@ const useSendMessage = () => {
                 updateMessages(prevState => ({ ...prevState, messagesList: newMessage }));
                 updateLastMessageSeen(prevState => ({
                     ...prevState,
-                    messages: [messageSent, ...prevState.messages] // Correction ici
+                    messages: [messageSent, ...prevState.messages]
                 }));
                 updateSendMessageStatus(prevState => ({ ...prevState, isLoading: false, error: null, warning: null, isEditing: false, editId: null, messageToEdit: null, firstMessageSend: true }));
                 

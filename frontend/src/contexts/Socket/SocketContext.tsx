@@ -34,20 +34,16 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
             newSocket.on("userDisconnected", ({ userId, lastLogout }) => {
                 setUserDisconnected((prev) => [...prev, { userId, lastLogout }]);
             });
-
-            // La fonction de nettoyage ferme le socket sans rien retourner
-            return () => {
-                newSocket.close();
-            };
-        } else {
-            if (socket) {
-                socket.close();
-                setSocket(null);
-            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
+    useEffect(() => {
+        return () => {
+            if (socket) {
+                socket.close();
+            }
+        };
+    }, [socket]);
 
 
     return <SocketContext.Provider value={{ socket, onlineUsers, userDisconnected }}>

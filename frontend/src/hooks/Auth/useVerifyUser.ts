@@ -1,9 +1,12 @@
 import { useCallback } from "react";
 import axios from "../../config/axiosConfig";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
+import { useNavigate } from "react-router-dom";
 
 const useVerifyUser = () => {
     const { setCurrentUser } = useAuth()
+    const navigate = useNavigate();
+
     const verifyUser = useCallback(async () => {
         try {
             await axios.get('/users/verify');
@@ -14,10 +17,11 @@ const useVerifyUser = () => {
                     setCurrentUser({ data: null });
                     localStorage.removeItem('chat-user');
                     localStorage.removeItem('chatsOrder');
+                    navigate('/');
                 }
             }
         }
-    }, [setCurrentUser]);
+    }, [navigate, setCurrentUser]);
 
     return { verifyUser };
 }

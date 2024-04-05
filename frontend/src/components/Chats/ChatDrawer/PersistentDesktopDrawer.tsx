@@ -3,7 +3,6 @@ import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader, drawerWidth, heightHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search, ViewListOutlined } from "@mui/icons-material";
-import { groupes, users } from "../../../data/userData";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
 import MenuCreateChat from "../MenuCreateChat";
@@ -21,8 +20,6 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const [items, setItems] = useState([...chatInfo.userChats.chats]); // Initialisez items avec les chats de l'utilisateur
     const [isRearrangeMode, setIsRearrangeMode] = useState(false);
 
-    console.log(chatInfo.userDisconnected);
-
     // Mettre à jour l'état lorsque les éléments sont réordonnés
     const handleReorder = (newOrder: Chat[]) => {
         setItems(newOrder);
@@ -33,27 +30,25 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
     useEffect(() => {
-        const storedOrder = localStorage.getItem('chatsOrder');
-        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : [];
-        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id);
+        const storedOrder = localStorage.getItem('chatsOrder'); // On récupère l'ordre des chats stocké dans le localStorage
+        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : []; // On récupère l'ordre des chats actuellement dans le drawer
+        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id); // On récupère l'ordre des chats actuellement dans le drawer
 
-        const validStoredOrderIds = storedOrderIds.filter((id: string) => currentChatIds.includes(id));
-        const chatIdsChanged = !storedOrderIds.every((id: string) => currentChatIds.includes(id)) || !currentChatIds.every((id: string) => storedOrderIds.includes(id));
-        const hasChatIdsChanged = storedOrderIds.length !== currentChatIds.length;
+        const arraysHaveSameElements = storedOrderIds.length === currentChatIds.length && // Si la taille des deux tableaux est la même
+            storedOrderIds.every((id: string) => currentChatIds.includes(id)) && // Si tous les éléments de storedOrderIds sont dans currentChatIds
+            currentChatIds.every((id: string) => storedOrderIds.includes(id)); // Si tous les éléments de currentChatIds sont dans storedOrderIds
 
-        if (hasChatIdsChanged || chatIdsChanged) {
+        if (!arraysHaveSameElements) {
             setItems([...chatInfo.userChats.chats]);
             return;
         }
 
         // Réordonnez les chats selon l'ordre stocké, s'il existe
-        if (validStoredOrderIds.length > 0) {
-            const reorderedChats = validStoredOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined);
-            setItems(reorderedChats);
-        } else {
-            // Si aucun ordre n'est stocké, utilisez l'ordre par défaut
-            setItems([...chatInfo.userChats.chats]);
+        if (arraysHaveSameElements) { // Si les deux tableaux ont les mêmes éléments
+            const reorderedChats = storedOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined); // On récupère les chats dans l'ordre stocké
+            setItems(reorderedChats); // On met à jour les chats
         }
     }, [chatInfo.userChats.chats]);
 
@@ -99,25 +94,34 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                     open={true}
                 >
                     <DrawerHeader>
-                        <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
-                            flexGrow: 1,
-                            '& .MuiTab-root': {
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="Chats"
+                            sx={{
                                 flexGrow: 1,
-                                minHeight: '67.5px',
-                            },
-                            '& .MuiTab-textColorPrimary': {
-                                color: customTheme.palette.slate[200],
-                            },
-                            '& .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected': {
-                                color: customTheme.palette.orangePV.dark,
-                            },
-                            '& .MuiTabs-indicator': {
-                                bottom: '',
-                                backgroundColor: customTheme.palette.orangePV.dark,
-                            },
-                        }}>
-                            <Tab label="Chat privé" {...users} onClick={() => setShowGroupe(false)} />
-                            <Tab label="Groupe" {...groupes} onClick={() => setShowGroupe(true)} />
+                                '& .MuiTab-root': {
+                                    flexGrow: 1,
+                                    minHeight: '67.5px',
+                                },
+                                '& .MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: customTheme.palette.orangePV.dark,
+                                },
+                            }}
+                        >
+                            <Tab sx={{
+                                '&.Mui-selected': {
+                                    color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Chat privé" onClick={() => setShowGroupe(false)} />
+                            <Tab sx={{
+                                '&.Mui-selected': {
+                                    color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Groupe" onClick={() => setShowGroupe(true)} />
                         </Tabs>
                     </DrawerHeader>
                     {
@@ -132,7 +136,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                                 <TransitionGroup>
                                     {items.map((item) => (
                                         <Reorder.Item key={item._id} value={item}>
-                                            <Collapse>
+                                            <Collapse in={true}>
                                                 <ProfileInDrawer
                                                     chatId={item._id}
                                                     username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
@@ -214,7 +218,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         )}
                     </DrawerFooter>
                 </Drawer>
-                <Box flexGrow={1} height={'100%'}>
+                <>
                     {chatInfo?.chatId != null ? children : (
                         <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'}>
                             <Typography variant="h6" sx={{ color: customTheme.palette.slate[300] }}>
@@ -222,7 +226,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                             </Typography>
                         </Stack>
                     )}
-                </Box>
+                </>
             </Box >
         </>
     );

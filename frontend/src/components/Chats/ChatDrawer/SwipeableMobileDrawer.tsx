@@ -3,7 +3,6 @@ import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, KeyboardArrowLeft, Search, ViewListOutlined } from "@mui/icons-material";
-import { groupes, users } from "../../../data/userData";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import { Chat } from "../../../types/Chat.type/Chat.Props";
@@ -19,10 +18,11 @@ interface SwipeableMobileDrawerProps {
     open: boolean;
     onClose: ReactEventHandler;
     onOpen: ReactEventHandler;
+    children: React.ReactNode;
 }
 type Anchor = 'left';
 
-export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobileDrawerProps) {
+export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: SwipeableMobileDrawerProps) {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
     const { chatInfo, updateChatOrder } = useChat();
@@ -41,26 +41,23 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
     };
 
     useEffect(() => {
-        const storedOrder = localStorage.getItem('chatsOrder');
-        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : [];
-        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id);
+        const storedOrder = localStorage.getItem('chatsOrder'); // On récupère l'ordre des chats stocké dans le localStorage
+        const storedOrderIds = storedOrder ? JSON.parse(storedOrder) : []; // On récupère l'ordre des chats actuellement dans le drawer
+        const currentChatIds = chatInfo.userChats.chats.map(chat => chat._id); // On récupère l'ordre des chats actuellement dans le drawer
 
-        const validStoredOrderIds = storedOrderIds.filter((id: string) => currentChatIds.includes(id));
-        const chatIdsChanged = !storedOrderIds.every((id: string) => currentChatIds.includes(id)) || !currentChatIds.every((id: string) => storedOrderIds.includes(id));
-        const hasChatIdsChanged = storedOrderIds.length !== currentChatIds.length;
+        const arraysHaveSameElements = storedOrderIds.length === currentChatIds.length && // Si la taille des deux tableaux est la même
+            storedOrderIds.every((id: string) => currentChatIds.includes(id)) && // Si tous les éléments de storedOrderIds sont dans currentChatIds
+            currentChatIds.every((id: string) => storedOrderIds.includes(id)); // Si tous les éléments de currentChatIds sont dans storedOrderIds
 
-        if (hasChatIdsChanged || chatIdsChanged) {
+        if (!arraysHaveSameElements) {
             setItems([...chatInfo.userChats.chats]);
             return;
         }
 
         // Réordonnez les chats selon l'ordre stocké, s'il existe
-        if (validStoredOrderIds.length > 0) {
-            const reorderedChats = validStoredOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined);
-            setItems(reorderedChats);
-        } else {
-            // Si aucun ordre n'est stocké, utilisez l'ordre par défaut
-            setItems([...chatInfo.userChats.chats]);
+        if (arraysHaveSameElements) { // Si les deux tableaux ont les mêmes éléments
+            const reorderedChats = storedOrderIds.map((id: string) => chatInfo.userChats.chats.find(chat => chat._id === id)).filter((chat: Chat | undefined) => chat !== undefined); // On récupère les chats dans l'ordre stocké
+            setItems(reorderedChats); // On met à jour les chats
         }
     }, [chatInfo.userChats.chats]);
 
@@ -87,7 +84,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                         <TransitionGroup>
                             {items.map((item) => (
                                 <Reorder.Item key={item._id} value={item}>
-                                    <Collapse>
+                                    <Collapse in={true}>
                                         <ProfileInDrawer
                                             chatId={item._id}
                                             username={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
@@ -181,8 +178,8 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                             backgroundColor: customTheme.palette.orangePV.dark,
                         },
                     }}>
-                        <Tab label="Chat privé" {...users} onClick={() => setShowGroupe(false)} />
-                        <Tab label="Groupe" {...groupes} onClick={() => setShowGroupe(true)} />
+                        <Tab label="Chat privé" onClick={() => setShowGroupe(false)} />
+                        <Tab label="Groupe" onClick={() => setShowGroupe(true)} />
                     </Tabs>
                     <StyledIconButton
                         title="Fermer le menu"
@@ -196,6 +193,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                     </StyledIconButton>
                 </DrawerHeader>
                 {list()}
+
                 <DrawerFooter >
                     <List>
                         {showGroupe ? (
@@ -223,7 +221,9 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                                         <ListItemIcon>
                                             <ViewListOutlined />
                                         </ListItemIcon>
-                                        <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} />
+                                        <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} sx={{
+                                            textAlign: 'center',
+                                        }} />
                                     </ListItemButton>
                                 </ListItem>
                             </>
@@ -231,6 +231,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen }: SwipeableMobile
                     </List>
                 </DrawerFooter>
             </SwipeableDrawer>
+            {children}
         </>
     );
 }

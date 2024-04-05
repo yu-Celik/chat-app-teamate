@@ -18,6 +18,7 @@ export type RegisterInfo = {
     gender: string;
     password: string;
     confirmPassword: string;
+    general?: string;
 }
 
 export type LoginInfo = {

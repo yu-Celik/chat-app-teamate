@@ -3,15 +3,12 @@ import customTheme from "../../styles/customTheme";
 import MessageSend from "./MessageSend/MessageSend";
 import useGetMessages from "../../hooks/Chat/useGetMessages";
 import { useEffect } from "react";
-import { useChat } from "../../contexts/ChatContext/useChatContext";
-import useAuth from "../../contexts/AuthContext/useAuthContext";
 import { Message } from "../../types/Chat.type/Chat.Props";
 import { TransitionGroup } from 'react-transition-group';
+import { ChatInfo } from "../../types/Chat.type/ChatContext.Props";
 
-export default function ChatList() {
-    const { chatInfo } = useChat();
+export default function ChatList({ chatInfo, currentUserId }: { chatInfo: ChatInfo, currentUserId: string | null }) {
     const { getMessages } = useGetMessages();
-    const { currentUser } = useAuth();
 
     useEffect(() => {
         if (chatInfo?.chatId) {
@@ -50,9 +47,13 @@ export default function ChatList() {
                 }}>
                     <>
                         {/* Affiche le skeleton si le chat n'est pas en cours d'édition et si isTyping ou isLoading sont true */}
-                        {((chatInfo.typingState.isTyping && chatInfo.typingState.userId !== currentUser.data?._id) && chatInfo.sendMessageStatus.isEditing === false) && (
-                            <Stack marginTop={1} alignItems={'flex-start'}>
-                                <Skeleton variant="rectangular" width={'40%'} height={'3rem'} />
+                        {((chatInfo.typingState.isTyping && chatInfo.typingState.userId !== currentUserId) && chatInfo.sendMessageStatus.isEditing === false) && (
+                            <Stack marginTop={1} marginBottom={{xs: 1, sm: 0}} alignItems={'flex-start'}>
+                                <Skeleton variant="rectangular" width={'40%'} height={'3rem'} sx={{ 
+                                    borderRadius: '0px 10px 10px 10px', 
+                                    marginLeft: '10px'
+
+                                    }}/>
                             </Stack>
                         )}
                         {chatInfo.messages.isLoading ? (

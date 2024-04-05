@@ -1,6 +1,6 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { CssBaseline } from '@mui/material';
 import useAuth from './contexts/AuthContext/useAuthContext';
 import useVerifyUser from './hooks/Auth/useVerifyUser';
@@ -15,12 +15,25 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
 
 const App = () => {
-  const { currentUser } = useAuth();
+  const { isAuthenticated, currentUser } = useAuth();
+  const navigate = useNavigate();
   useVerifyUser();
 
+  useEffect(() => {
+    // Obtenez le chemin actuel
+    const path = window.location.pathname;
+    // Si l'utilisateur est authentifié et tente d'accéder à /login ou /register, redirigez-le vers /Chat
+    if (isAuthenticated && (path.toLowerCase() === '/login' || path.toLowerCase() === '/register')) {
+      navigate('/chat');
+    }
+    // Si l'utilisateur est authentifié et se trouve sur la page d'accueil, vous pouvez choisir de le rediriger ou non
+    else if (isAuthenticated && path === '/') {
+      navigate('/chat');
+    }
+  }, [isAuthenticated, navigate]);
 
   const renderPageBasedOnAuth = (loggedInPage: JSX.Element, loggedOutPage: JSX.Element) => {
-    return currentUser.data ? loggedInPage : loggedOutPage;
+    return isAuthenticated ? loggedInPage : loggedOutPage;
   };
 
   return (
@@ -34,7 +47,7 @@ const App = () => {
                 <Route path="/" element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
                 <Route path="/login" element={renderPageBasedOnAuth(<ChatPage />, <LoginPage />)} />
                 <Route path="/register" element={renderPageBasedOnAuth(<ChatPage />, <RegisterPage />)} />
-                <Route path='/Chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
+                <Route path='/chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
               </Routes>
             </Suspense>
           </MainLayout>

@@ -15,6 +15,7 @@ const useListenMessages = () => {
         if (socket) {
             socket.on('newMessage', (message: Message) => {
                 // Mettre à jour les messages de la conversation actuelle
+                 // Les nouveaux messages sont ajoutés au début de la liste pour correspondre à l'ordre d'affichage avec flex-direction: column-reverse
                 if (chatInfo.chatId === message.chatId) {
                     updateMessages(prevState => ({
                         ...prevState,

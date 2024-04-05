@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import { AppBar, useMediaQuery } from '@mui/material';
 import customTheme from '../../styles/customTheme';
@@ -10,6 +9,7 @@ import { StyledIconButton } from '../IconButton/IconButton';
 import { KeyboardArrowRight } from '@mui/icons-material';
 import ProfileInHeader from './UserProfile/ProfileInHeader';
 import { useChat } from '../../contexts/ChatContext/useChatContext';
+import { DrawerHeader } from './ChatDrawer/stylesDrawers';
 
 export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: () => void }) {
     const { chatInfo } = useChat();
@@ -25,14 +25,17 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
     const handleClose = () => {
         setOpen(false);
     };
+
+    // Trouvez un membre qui n'est pas l'utilisateur actuel
+    const nonCurrentUserMember = selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id);
+
     return (
         <>
-            {(selectedChat != null || isMdDown) && <Box sx={{ flexGrow: 1 }}>
+            {(selectedChat != null || isMdDown) && <DrawerHeader>
                 <AppBar position="relative" sx={{
                     backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
                     boxShadow: 'none',
                     borderColor: 'rgba(255, 255, 255, 0.0)',
-
                 }}>
                     <Toolbar sx={{
                         display: 'flex',
@@ -53,11 +56,11 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
                         >
                             <KeyboardArrowRight />
                         </StyledIconButton>
-                        {selectedChat != null && <ProfileInHeader
-                            userId={selectedChat.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?._id ?? ''}
-                            username={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.username}
-                            profilePic={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.profilePic}
-                            lastLogout={selectedChat?.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
+                        {selectedChat != null && nonCurrentUserMember != null && <ProfileInHeader
+                            userId={nonCurrentUserMember._id ?? ''}
+                            username={nonCurrentUserMember.username}
+                            profilePic={nonCurrentUserMember.profilePic}
+                            lastLogout={nonCurrentUserMember.lastLogout}
                             onlineUsers={chatInfo.onlineUsersIds}
                         />}
                         {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
@@ -69,7 +72,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
                     onClose={handleClose}
                     open={open}
                 />
-            </Box>}
+            </DrawerHeader>}
         </>
     );
 }

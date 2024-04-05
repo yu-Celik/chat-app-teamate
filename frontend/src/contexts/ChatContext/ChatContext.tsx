@@ -67,7 +67,6 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
         onlineUsersIds: [],
         userDisconnected: [],
         typingState: { isTyping: false, userId: null },
-
     });
     useEffect(() => {
         setChatInfo(prev => ({
@@ -212,7 +211,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
             // Retourne les nouveaux chats potentiels ou l'état précédent si aucun changement
             return newPotentialChats ?? prevState;
         });
-    }, [chatInfo.allUsers, chatInfo.userChats, updatePotentialChats]);
+    }, [chatInfo.allUsers.users, chatInfo.userChats.chats, updatePotentialChats]);
 
 
     useEffect(() => {

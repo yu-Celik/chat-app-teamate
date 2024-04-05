@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, IconButton, InputAdornment, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
 import { RegisterInfo } from '../types/Auth.type/Auth.Props';
 import useRegister from '../hooks/Auth/useRegister';
+import useAuth from '../contexts/AuthContext/useAuthContext';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const StyledTypography = styled(Typography)(() => ({
     color: customTheme.palette.slate[200],
@@ -75,7 +77,7 @@ const StyledTextField = styled(TextField)(() => ({
 const StyledButton = styled(Button)(() => ({
     '&.MuiButton-root': {
         color: customTheme.palette.slate[200],
-        margin: customTheme.spacing(4, 0),
+        margin: customTheme.spacing(4, 15),
         width: '30ch',
         fontWeight: 600,
         '&:hover': {
@@ -83,6 +85,7 @@ const StyledButton = styled(Button)(() => ({
         },
         [customTheme.breakpoints.down('md')]: {
             width: '100%',
+            margin: customTheme.spacing(4, 0),
             fontSize: customTheme.typography.body2.fontSize,
             lineHeight: customTheme.typography.body2.lineHeight,
             '&:hover': {
@@ -95,22 +98,31 @@ const StyledButton = styled(Button)(() => ({
 
 
 export default function RegisterPage() {
-    const { register, updateRegisterInfo, registerUser } = useRegister();
+    const { isAuthenticated } = useAuth()
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { register, updateRegisterInfo, registerUser } = useRegister();
     const [registerError, setRegisterError] = useState<RegisterInfo>({
         email: '',
         username: '',
         gender: '',
         password: '',
         confirmPassword: '',
+        general: ''
     });
 
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
+
     useEffect(() => {
-        if (register.isRegistered) {
+        if (isAuthenticated) {
             navigate('/');
         }
-    }, [register.isRegistered, navigate]);
-
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
         const { name, value } = e.target as { name: string, value: string };
@@ -127,6 +139,7 @@ export default function RegisterPage() {
             gender: '',
             password: '',
             confirmPassword: '',
+            general: ''
         };
 
         // Vérifier tous les champs et mettre à jour la copie locale des erreurs
@@ -146,7 +159,9 @@ export default function RegisterPage() {
             errors.confirmPassword = 'Les mots de passe ne correspondent pas';
         }
         if (register.registerInfo.gender === '') {
-            errors.gender = 'Veuillez saisir votre genre';
+            errors.gender = 'Veuillez sélectionner votre genre';
+        } else if (!['male', 'female', 'non-binary'].includes(register.registerInfo.gender)) {
+            errors.gender = 'Valeur de genre invalide';
         }
 
         // Mettre à jour l'état des erreurs avec les nouvelles erreurs
@@ -156,18 +171,17 @@ export default function RegisterPage() {
         const formIsValid = Object.values(errors).every(error => error === '');
 
         if (formIsValid) {
-            if (registerUser === undefined) { console.error('registerUser is undefined'); return; }
-            registerUser().then(() => {
-
-                // Vider les champs d'entrée
-                if (register.isRegistered === true) {
-                    updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
-                    console.log('Inscription réussie');
-                    navigate('/');
-                }
+            registerUser(register.registerInfo).then(() => {
+                updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
             }).catch((error) => {
-                // Gérer l'erreur
-                console.error('catcheur', error);
+                let errorMsg = 'Erreur lors de l\'inscription. Veuillez réessayer.';
+                if (error.response && error.response.data && error.response.data.error) {
+                    errorMsg = error.response.data.error;
+                }
+                setRegisterError(prevState => ({
+                    ...prevState,
+                    general: errorMsg,
+                }));
             });
         }
     };
@@ -225,44 +239,71 @@ export default function RegisterPage() {
                     <StyledTypography gutterBottom variant="h1">Créez un compte</StyledTypography>
                     <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
                         <Stack spacing={2}>
-                            {formField.map(step => (
-                                step.name === 'gender' ? (
-                                    <StyledTextField
-                                        key={step.name}
-                                        color="primary"
-                                        label={step.label}
-                                        variant='filled'
-                                        name={step.name}
-                                        value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
-                                        onChange={handleChange}
-                                        error={registerError[step.name as keyof typeof registerError] !== ''}
-                                        helperText={registerError[step.name as keyof typeof registerError]}
-                                        select
-                                    >
-                                        <MenuItem value=""><em>Genre</em></MenuItem>
-                                        <MenuItem value="male">Homme</MenuItem>
-                                        <MenuItem value="female">Femme</MenuItem>
-                                    </StyledTextField>
-                                ) : (
-                                    <StyledTextField
-                                        key={step.name}
-                                        color="primary"
-                                        label={step.label}
-                                        variant="filled"
-                                        name={step.name}
-                                        value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
-                                        onChange={handleChange}
-                                        error={registerError[step.name as keyof typeof registerError] !== ''}
-                                        helperText={registerError[step.name as keyof typeof registerError]}
-                                    />
-                                )
-                            ))}
+                            {formField.map((step) => {
+                                // Champ spécifique pour 'gender'
+                                if (step.name === 'gender') {
+                                    return (
+                                        <StyledTextField
+                                            key={step.name}
+                                            color="primary"
+                                            label={step.label}
+                                            variant='filled'
+                                            name={step.name}
+                                            value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
+                                            onChange={handleChange}
+                                            error={registerError[step.name as keyof typeof registerError] !== ''}
+                                            helperText={registerError[step.name as keyof typeof registerError]}
+                                            select
+                                        >
+                                            <MenuItem value=""><em>None</em></MenuItem>
+                                            <MenuItem value="male">Male</MenuItem>
+                                            <MenuItem value="female">Female</MenuItem>
+                                        </StyledTextField>
+                                    );
+                                } else {
+                                    // Champs de mot de passe avec la possibilité de basculer la visibilité
+                                    const isPasswordField = step.name === 'password' || step.name === 'confirmPassword';
+                                    return (
+                                        <StyledTextField
+                                            key={step.name}
+                                            type={isPasswordField ? (step.name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password')) : 'text'}
+                                            label={step.label}
+                                            name={step.name}
+                                            value={register.registerInfo[step.name as keyof typeof register.registerInfo]}
+                                            onChange={handleChange}
+                                            error={registerError[step.name as keyof typeof registerError] !== ''}
+                                            helperText={registerError[step.name as keyof typeof registerError]}
+                                            InputProps={isPasswordField ? {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={step.name === 'password' ? handleClickShowPassword : handleClickShowConfirmPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end"
+                                                        >
+                                                            {(step.name === 'password' ? showPassword : showConfirmPassword) ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            } : {}}
+                                            variant="filled"
+                                        />
+                                    );
+                                }
+                            })}
                         </Stack>
                         {register.registerError !== null && (
                             <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
                                 {register.registerError}
                             </Alert>
                         )}
+                        {registerError.general && (
+                            <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+                                {registerError.general}
+                            </Alert>
+                        )
+                        }
                         {register.isRegistered === true && (
                             <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
                                 Inscription réussie !

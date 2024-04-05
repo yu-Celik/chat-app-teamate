@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, Link, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, IconButton, InputAdornment, Link, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
 import useLogin from '../hooks/Auth/useLogin';
+import useAuth from '../contexts/AuthContext/useAuthContext';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const StyledTypography = styled(Typography)(() => ({
   color: customTheme.palette.slate[200],
@@ -72,7 +74,7 @@ const StyledTextField = styled(TextField)(() => ({
 const StyledButton = styled(Button)(() => ({
   '&.MuiButton-root': {
     color: customTheme.palette.slate[200],
-    margin: customTheme.spacing(4, 0),
+    margin: customTheme.spacing(4),
     width: '30ch',
     fontWeight: 600,
     '&:hover': {
@@ -80,6 +82,8 @@ const StyledButton = styled(Button)(() => ({
     },
     [customTheme.breakpoints.down('md')]: {
       width: '100%',
+    margin: customTheme.spacing(4, 0),
+
       fontSize: customTheme.typography.body2.fontSize,
       lineHeight: customTheme.typography.body2.lineHeight,
       '&:hover': {
@@ -89,20 +93,27 @@ const StyledButton = styled(Button)(() => ({
   },
 }));
 
-export default function RegisterPage() {
-  const { login, updateLoginInfo, loginUser } = useLogin();
+export default function LoginPage() {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const { login, updateLoginInfo, loginUser } = useLogin();
   const [loginError, setLoginError] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
+    general: ''
   });
 
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   useEffect(() => {
-    if (login.isLogged === true) {
+    if (isAuthenticated) {
       navigate('/');
     }
-  }, [login.isLogged, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const { name, value } = e.target as { name: string, value: string };
@@ -115,10 +126,8 @@ export default function RegisterPage() {
     // Préparer un objet pour les erreurs potentielles
     const errors = {
       email: '',
-      username: '',
-      gender: '',
       password: '',
-      confirmPassword: '',
+      general: ''
     };
 
     // Vérifier tous les champs
@@ -137,18 +146,17 @@ export default function RegisterPage() {
     const formIsValid = Object.values(errors).every(error => error === '');
 
     if (formIsValid) {
-      if (loginUser === undefined) { console.error('loginUser is undefined'); return; }
-      loginUser().then(() => {
-
-        // Vider les champs d'entrée
-        if (login.isLogged === true) {
-          updateLoginInfo({ email: '', password: '' });
-          console.log('Inscription réussie');
-          navigate('/');
-        }
+      loginUser(login.loginInfo).then(() => {
+        updateLoginInfo({ email: '', password: '' });
       }).catch((error) => {
-        // Gérer l'erreur
-        console.error('catcheur', error);
+        let errorMsg = 'Erreur lors de la connexion. Veuillez réessayer.';
+        if (error.response && error.response.data && error.response.data.error) {
+          errorMsg = error.response.data.error;
+        }
+        setLoginError(prevState => ({
+          ...prevState,
+          general: errorMsg,
+        }));
       });
     }
   }
@@ -205,18 +213,31 @@ export default function RegisterPage() {
           <StyledTypography gutterBottom variant="h1">Se connecter</StyledTypography>
           <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
             <Stack spacing={2}>
-              {formField.map(step => (
-
+              {formField.map((field) => (
                 <StyledTextField
-                  key={step.name}
-                  color="primary"
-                  label={step.label}
-                  variant="filled"
-                  name={step.name}
-                  value={login.loginInfo[step.name as keyof typeof login.loginInfo]}
+                  key={field.name}
+                  label={field.label}
+                  type={field.name === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
+                  name={field.name}
+                  value={login.loginInfo[field.name as keyof typeof login.loginInfo]}
                   onChange={handleChange}
-                  error={loginError[step.name as keyof typeof loginError] !== ''}
-                  helperText={loginError[step.name as keyof typeof loginError]}
+                  error={loginError[field.name as keyof typeof loginError] !== ''}
+                  helperText={loginError[field.name as keyof typeof loginError]}
+                  InputProps={field.name === 'password' ? {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  } : undefined}
+                  variant="filled"
                 />
               ))}
             </Stack>
@@ -225,9 +246,15 @@ export default function RegisterPage() {
                 {login.loginError}
               </Alert>
             )}
+            {loginError.general && (
+              <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+                {loginError.general}
+              </Alert>
+            )
+            }
             {login.isLogged === true && (
               <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
-                Inscription réussie !
+                Connexion réussie !
               </Alert>
             )}
             <StyledButton

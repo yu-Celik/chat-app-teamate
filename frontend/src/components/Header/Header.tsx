@@ -359,7 +359,7 @@ export default function Header() {
 
     return (
         <>
-            <Stack height={68.5}>
+            <Stack component={'header'} height={68.5}>
                 <AppBar position="static" color="transparent">
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, py: 1, display: { xs: 'flex', md: 'none' } }}>
