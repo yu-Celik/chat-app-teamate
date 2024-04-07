@@ -11,11 +11,18 @@ type UserProfileProps = User & {
     isLoading?: boolean,
     onlineUsers: string[]
     userId: string
+    disconnectedUsersIds: {
+        userId: string,
+        disconnectedAt: string
+    }[]
+
 }
 
-export default function ProfileInHeader({ username, profilePic, lastLogout, onlineUsers, userId }: UserProfileProps) {
+export default function ProfileInHeader({ username, profilePic, lastLogout, onlineUsers, userId, disconnectedUsersIds }: UserProfileProps) {
 
     const isUserOnline = onlineUsers.includes(userId);
+    const isUserDisconnected = disconnectedUsersIds.find(id => id.userId === userId);
+
     return (
         <Typography
             variant="h6"
@@ -91,7 +98,7 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
                                     fontStyle="italic"
                                     noWrap
                                 >
-                                    {username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`}
+                                    {isUserDisconnected ? (username && `Dernière connexion : ${formatLastLogout(isUserDisconnected.disconnectedAt as string)}`) : (username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`)}
                                 </Typography>
                             )}
                         </Box>

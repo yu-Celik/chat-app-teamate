@@ -7,7 +7,7 @@ import { Message } from '../../types/Chat.type/Chat.Props';
 export const ChatContext = createContext<ChatContextProps>({} as ChatContextProps);
 
 export const ChatProvider = ({ children, currentUser }: { children: React.ReactNode, currentUser: CurrentUser }) => {
-    const { onlineUsers, userDisconnected } = useSocket()
+    const { onlineUsers, disconnectedUsers } = useSocket()
 
     // Remplisage de chatInfo par allUsers en 1er
     // Remplisage de chatInfo par userChats en 2e
@@ -65,7 +65,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
             messages: []
         },
         onlineUsersIds: [],
-        userDisconnected: [],
+        disconnectedUsersIds: [],
         typingState: { isTyping: false, userId: null },
     });
     useEffect(() => {
@@ -224,11 +224,16 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
     }, [onlineUsers]);
 
     useEffect(() => {
+        const updatedDisconnectedUsersIds = disconnectedUsers.map(user => ({
+            userId: user.userId,
+            disconnectedAt: user.disconnectedAt // Assurez-vous que cette propriété existe sur vos objets user
+        }));
+    
         setChatInfo(prev => ({
             ...prev,
-            userDisconnected: userDisconnected
+            disconnectedUsersIds: updatedDisconnectedUsersIds
         }));
-    }, [userDisconnected]);
+    }, [disconnectedUsers]);
 
 
     useEffect(() => {

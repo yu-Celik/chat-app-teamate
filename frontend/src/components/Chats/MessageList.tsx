@@ -26,7 +26,7 @@ export default function ChatList({ chatInfo, currentUserId }: { chatInfo: ChatIn
                     </Typography>
                 </Stack>) : (
 
-                <Stack direction={'column-reverse'} p={{ xs: 0.5, sm: 2, md: 3 }} flexGrow={1} sx={{ // maxHeight={'calc(100vh - 150px)'}
+                <Stack direction={'column-reverse'} p={{ xs: 0.5, sm: 2, md: 3 }} flexGrow={1} sx={{ // maxHeight={'calc(100dvh - 150px)'}
                     overflowY: 'auto',
                     overflowX: 'hidden',
                     scrollBehavior: 'smooth',

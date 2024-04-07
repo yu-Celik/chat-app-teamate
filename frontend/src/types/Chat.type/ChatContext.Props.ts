@@ -33,8 +33,8 @@ export type ChatInfo = {
     sendMessageStatus: MessageState
     lastMessageSeen: LastMessageSeen
     onlineUsersIds: string[]
+    disconnectedUsersIds: { userId: string, disconnectedAt: string }[]
     typingState: TypingState;
-    userDisconnected: { userId: string; lastLogout: Date; }[]
 };
 export type UpdateSendMessageStatus = (updateFunction: (prevState: MessageState) => MessageState) => void;
 export type UpdateDeleteMessage = (updateFunction: (prevState: DeleteMessage) => DeleteMessage) => void;
@@ -51,4 +51,5 @@ export type AddNewMessage = (newMessage: Message) => void;
 export type UpdateChatId = (chatId: string | null) => void;
 export type DeleteMessageFromList = (messageId: string) => void;
 export type UpdateChatOrder = (newChatsArray: Chat[]) => void;
+
 

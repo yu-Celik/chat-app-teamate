@@ -12,12 +12,11 @@ dotenv.config();
 
 // Création d'un message grâce à l'id du chat, de l'expéditeur et du message
 const createMessage = async (req, res) => {
-    const senderId = req.user._id;
+    const senderId = req.user._id.toString();
     const { chatId, message } = req.body;
     const replyTo = req.body.replyTo || null;
     const imageFiles = req.files; // Assurez-vous que votre middleware gère 'multipart/form-data'
     const imageUrls = [];
-
     console.log(chatId, senderId, message);
     if (!chatId || !senderId || !message) {
         return res.status(400).json({ message: 'L\'ID du chat, de l\'expéditeur et du message sont requis.' });
@@ -36,7 +35,7 @@ const createMessage = async (req, res) => {
         return res.status(400).json({ message: 'L\'expéditeur est invalide.' });
     }
     // Déterminer le receiverId
-    const receiverId = chat.members.find(member => member.toString() !== senderId.toString());
+    const receiverId = chat.members.find(member => member.toString() !== senderId);
     if (!receiverId) {
         return res.status(404).json({ message: 'Destinataire non trouvé.' });
     }

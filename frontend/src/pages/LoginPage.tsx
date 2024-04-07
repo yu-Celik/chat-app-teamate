@@ -170,7 +170,7 @@ export default function LoginPage() {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100vh'} spacing={{ xs: 2, md: 4 }}>
+      <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} padding={{ xs: 0, md: customTheme.spacing(4, 0, 0, 4) }} minHeight={'100dvh'} spacing={{ xs: 2, md: 4 }}>
         <Stack sx={{
           backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
           padding: customTheme.spacing(4),

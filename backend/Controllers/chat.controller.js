@@ -1,16 +1,14 @@
 import ChatModel from '../Models/chat.model.js';
 import MessageModel from '../Models/message.model.js';
-import UserModel from '../Models/user.model.js';
 import { notifyDeleteChat, notifyNewChat } from '../socket/socketService.js';
 
 // Créer un chat entre deux utilisateurs grace a leurs id
 const createChat = async (req, res) => {
     console.log('createChat');
 
-    const userId = req.user._id;
+    const userId = req.user._id.toString();
     const { secondUserId } = req.body;
-
-
+    console.log(userId, secondUserId);
     if (!userId || !secondUserId) {
         return res.status(400).json({ error: 'L\'ID de l\'utilisateur ou de son second utilisateur est requis.' });
     }
@@ -21,7 +19,7 @@ const createChat = async (req, res) => {
         }).populate('members', '-password'); // Exclut le champ mot de passe dans les informations retournées
 
         if (chat) {
-            chat = JSON.parse(JSON.stringify(chat)); // Convertir le document en JSON
+            console.log('Chat déjà existant');
             return res.status(200).json(chat);
         }
 

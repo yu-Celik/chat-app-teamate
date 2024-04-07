@@ -3,9 +3,8 @@ export type User = {
     username?: string | null; // Nom d'utilisateur de l'utilisateur
     email?: string | null; // Email de l'utilisateur
     password?: string | null; // Mot de passe de l'utilisateur
-    gender?: string | "male" | "female"; // Genre de l'utilisateur
+    gender?: "male" | "female"; // Genre de l'utilisateur
     profilePic?: string | null; // Photo de profil de l'utilisateur
-    lastSeen?: string | null; // Dernière connexion de l'utilisateur
     notifications?: number | null; // Nombre de notifications
     lastNotificationSeen?: string | null; // Date de la dernière notification vue
     token?: string | null; // Token de l'utilisateur

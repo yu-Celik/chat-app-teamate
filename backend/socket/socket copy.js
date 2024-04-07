@@ -8,11 +8,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
-        // origin: ["http://192.168.1.103:3000"], // En local
+        // origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
+        origin: ["http://192.168.1.103:3000"], // En local
         credentials: true,
     },
-    transports: ['websocket'],
 });
 
 export const getReceiverSocketIds = (receiverId) => {
@@ -85,21 +84,14 @@ async function handleUserDisconnect(userId, socketId) {
     // Supprimer le socketId de userSocketMap pour l'utilisateur
     const userSockets = userSocketMap[userId];
     if (userSockets) {
-        const index = userSockets.indexOf(socketId);
-        if (index !== -1) {
-            userSockets.splice(index, 1);
-        }
-        if (userSockets.length === 0) {
+        userSocketMap[userId] = userSockets.filter(id => id !== socketId);
+        if (userSocketMap[userId].length === 0) {
             delete userSocketMap[userId];
-            // Puisque l'utilisateur n'a plus de sockets actifs, retirez-le de la liste des utilisateurs en ligne
-            onlineUsers = onlineUsers.filter(user => user.userId !== userId);
         }
-    } else {
-        // Si pour une raison quelconque, l'utilisateur n'est pas dans userSocketMap, assurez-vous qu'il est également retiré de onlineUsers
-        onlineUsers = onlineUsers.filter(user => user.userId !== userId);
     }
 
-    // Mettre à jour les listes d'utilisateurs déconnectés
+    // Mettre à jour les listes d'utilisateurs en ligne et déconnectés
+    onlineUsers = onlineUsers.filter(user => user.userId !== userId);
     const dateNow = new Date();
     const userIndex = disconnectedUsers.findIndex(user => user.userId === userId);
     if (userIndex !== -1) {

@@ -62,6 +62,7 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
                             profilePic={nonCurrentUserMember.profilePic}
                             lastLogout={nonCurrentUserMember.lastLogout}
                             onlineUsers={chatInfo.onlineUsersIds}
+                            disconnectedUsersIds={chatInfo.disconnectedUsersIds}
                         />}
                         {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
                     </Toolbar>

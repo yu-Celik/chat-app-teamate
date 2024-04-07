@@ -85,6 +85,16 @@ export type TypingState = {
     userId: string | null;
 }
 
+export type OnlineUsers = {
+    connectedAt: Date | string;
+    userId: string;
+    socketId: string;
+}
+
+export type DisconnectedUsers = {
+    disconnectedAt: Date | string;
+    userId: string;
+}
 
 export type UpdateMessagesParams = Partial<MessagesState>;
 

@@ -47,11 +47,13 @@ export default function ChatPage() {
     const chatInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
     const [icon, setIcon] = useState({ icon: <Mic />, key: "mic", title: "Enregistrer" });
     const [secondaryIcon, setSecondaryIcon] = useState({ icon: <AttachFile />, key: "file", title: "Fichier" });
+
     const emitTypingDebounced = useMemo(() => debounce(() => {
         if (chatInfo.chatId && socket) {
             socket.emit('typing', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });
         }
     }, 500), [chatInfo.chatId, receiverUser?._id, socket]);
+    
     const emitStopTypingDebounced = useMemo(() => debounce(() => {
         if (chatInfo.chatId && socket) {
             socket.emit('stopTyping', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });

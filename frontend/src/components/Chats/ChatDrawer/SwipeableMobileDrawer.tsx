@@ -65,8 +65,8 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
     const list = () => (
         <Box
             sx={{
-                width: '100vw',
-                height: '100vh',
+                width: '100dvw',
+                height: '100dvh',
 
             }}
             role="ChatDrawer"

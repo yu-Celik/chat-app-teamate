@@ -4,14 +4,13 @@ import { useChat } from "../../contexts/ChatContext/useChatContext";
 
 const useListenTyping = () => {
     const { socket } = useSocket();
-    const { chatInfo, updateTypingState } = useChat(); 
+    const { chatInfo, updateTypingState } = useChat();
 
     useEffect(() => {
         if (socket && chatInfo.chatId) {
             socket.on('userTyping', ({ from, chatId }) => {
-                console.log(chatId);
-                console.log(chatInfo.chatId);
-                
+                // console.log(`Typing event received from ${from} in chat ${chatId}`);
+
                 // Vérifiez si l'événement de frappe concerne la conversation ouverte actuelle
                 if (chatInfo.chatId === chatId) {
                     // Vérifiez si l'utilisateur qui tape est un membre de la conversation
@@ -21,7 +20,7 @@ const useListenTyping = () => {
                     }
                 }
             });
-            
+
             socket.on('stopTyping', ({ chatId }) => {
                 if (chatInfo.chatId === chatId) {
                     updateTypingState(prevState => ({ ...prevState, isTyping: false, userId: null }));
@@ -33,7 +32,7 @@ const useListenTyping = () => {
                 socket.off('stopTyping');
             };
         }
-    }, [socket, chatInfo.chatId, chatInfo.userChats.chats, updateTypingState]); 
+    }, [socket, chatInfo.chatId, chatInfo.userChats.chats, updateTypingState]);
 };
 
 export default useListenTyping;

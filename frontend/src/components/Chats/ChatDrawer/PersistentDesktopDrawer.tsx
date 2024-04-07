@@ -52,10 +52,12 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
         }
     }, [chatInfo.userChats.chats]);
 
+    // console.log(chatInfo.onlineUsersIds);
+
     return (
         <>
             <Box flexGrow={1} display={'flex'} sx={{
-                height: 'calc(100vh - 69.5px)',
+                height: 'calc(100dvh - 69.5px)',
                 overflow: 'hidden',
                 border: 'none',
             }}>
@@ -166,9 +168,9 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                                                 isLoadingUserChat={chatInfo.userChats?.isLoading}
                                                 isLoadingCreateChat={chatInfo.createChat?.isLoading}
                                                 isLoadingDeleteChat={chatInfo.deleteChat?.isLoading}
-                                                lastLogout={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
                                                 currentUserId={chatInfo.userChats.currentUser?._id}
                                                 onlineUsers={chatInfo.onlineUsersIds}
+                                                lastLogout={item.members.find(member => member._id !== chatInfo.userChats.currentUser?._id)?.lastLogout}
                                             />
                                         </Collapse>
                                     ))}

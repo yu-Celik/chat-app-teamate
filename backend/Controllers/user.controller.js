@@ -127,9 +127,18 @@ const getAllUsersExceptLoggedIn = async (req, res) => {
     }
 };
 
-const logout = (req, res) => {
+const logout = async (req, res) => {
     console.log('logout');
     try {
+        const userId = req.user._id.toString();
+        if (!userId) {
+            return res.status(400).json({ error: "User ID not found" });
+        }
+
+        // Mettre à jour le champ lastLogout pour l'utilisateur actuel
+        await UserModel.findByIdAndUpdate(userId, { lastLogout: new Date() });
+        console.log(`Last logout updated for user ${userId}`);
+
         res.clearCookie('jwt'); // Efface le cookie
         res.status(200).json({ message: "User logged out successfully" });
     } catch (error) {
