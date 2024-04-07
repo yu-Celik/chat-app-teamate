@@ -8,8 +8,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
-        // origin: ["http://192.168.1.103:3000"], // En local
+        // origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
+        origin: ["http://192.168.1.103:3000"], // En local
         credentials: true,
     },
     transports: ['websocket'],
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
 });
 
 
-async function handleUserDisconnect(userId, socketId) {
+export async function handleUserDisconnect(userId, socketId) {
     // Supprimer le socketId de userSocketMap pour l'utilisateur
     const userSockets = userSocketMap[userId];
     if (userSockets) {

@@ -2,7 +2,9 @@ import { getReceiverSocketIds, io } from './socket.js';
 
 export const notifyNewMessage = (receiverId, message) => {
     const receiverSocketIds = getReceiverSocketIds(receiverId);
+    console.log('receiverId', receiverId);
     receiverSocketIds.forEach(socketId => {
+        console.log('receiverSocketIdsMessage', receiverSocketIds);
         io.to(socketId).emit('newMessage', message);
     });
 };
@@ -41,3 +43,9 @@ export const notifyReadMessage = (receiverId, message) => {
         io.to(socketId).emit('readMessage', message);
     });
 };
+
+export const notifyCreateUser = (user) => {
+    // Émettre à tous les clients connectés
+    io.emit('createUser', user);
+};
+

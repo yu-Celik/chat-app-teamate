@@ -1,14 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { CurrentUser } from '../../types/Auth.type/Auth.Props';
+import { SocketContextProps } from '../../types/Socket.type/SocketContext.Props';
 
-interface SocketContextType {
-    socket: Socket | null;
-    onlineUsers: { socketId: string, userId: string }[];
-    disconnectedUsers: { userId: string, disconnectedAt: string }[];
-}
-
-export const SocketContext = createContext<SocketContextType>({} as SocketContextType);
+export const SocketContext = createContext<SocketContextProps>({} as SocketContextProps);
 
 export const SocketProvider = ({ children, currentUser }: { children: React.ReactNode, currentUser: CurrentUser }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -18,8 +13,8 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
     useEffect(() => {
         if (!currentUser.data) return;
 
-        const newSocket = io("https://chat-app-teamate.onrender.com", { // Pour le site chat-app-teamate.onrender.com
-        // const newSocket = io("http://192.168.1.103:5000", { // Pour le site local
+        // const newSocket = io("https://chat-app-teamate.onrender.com", { // Pour le site chat-app-teamate.onrender.com
+        const newSocket = io("http://192.168.1.103:5000", { // Pour le site local
             withCredentials: true,
             query: { userId: currentUser.data?._id },
             transports: ['websocket'],
@@ -81,6 +76,10 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
     useEffect(() => {
         // console.log('disconnectedUsers', disconnectedUsers);
     }, [disconnectedUsers]);
+
+    useEffect(() => {
+        // console.log('socket', socket);
+    }, [socket]);
 
     return <SocketContext.Provider value={{ socket, onlineUsers, disconnectedUsers }}>
         {children}

@@ -200,8 +200,8 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
 
 
 
-    // Mise à jour de potentialChats basée sur allUsers et userChats
-    useEffect(() => {
+    
+    useEffect(() => { // Mise à jour de potentialChats basée sur allUsers et userChats
         updatePotentialChats(prevState => {
             const newPotentialChats = chatInfo.allUsers.users?.filter(user =>
                 !chatInfo.userChats.chats?.some(chat =>
@@ -214,7 +214,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
     }, [chatInfo.allUsers.users, chatInfo.userChats.chats, updatePotentialChats]);
 
 
-    useEffect(() => {
+    useEffect(() => { // Mettre à jour onlineUsersIds
         // Mettre à jour onlineUsersIds chaque fois que onlineUsers change
         const ids = onlineUsers.map(user => user.userId);
         setChatInfo(prev => ({
@@ -223,7 +223,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
         }));
     }, [onlineUsers]);
 
-    useEffect(() => {
+    useEffect(() => { // Mettre à jour disconnectedUsersIds
         const updatedDisconnectedUsersIds = disconnectedUsers.map(user => ({
             userId: user.userId,
             disconnectedAt: user.disconnectedAt // Assurez-vous que cette propriété existe sur vos objets user
@@ -236,7 +236,7 @@ export const ChatProvider = ({ children, currentUser }: { children: React.ReactN
     }, [disconnectedUsers]);
 
 
-    useEffect(() => {
+    useEffect(() => { // Mettre à jour lastMessageSeen
         // Set est utilisé pour éviter les doublons dans les ids
         const idsChats = new Set(chatInfo.userChats.chats.map(chat => chat._id));
         // has est utilisé pour vérifier si l'id existe dans le Set

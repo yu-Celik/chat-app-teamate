@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import generateTokenAndSetCookie from '../Utils/generateToken.js';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
+import { notifyCreateUser } from '../socket/socketService.js';
+import { getReceiverSocketIds, handleUserDisconnect } from '../socket/socket.js';
 
 const registerUser = async (req, res) => {
     console.log('registerUser');
@@ -57,7 +59,6 @@ const registerUser = async (req, res) => {
             // generate JWT token
             generateTokenAndSetCookie(newUser._id, res);
             await newUser.save();
-
             res.status(200).json({
                 _id: newUser._id,
                 email: newUser.email,
@@ -67,7 +68,14 @@ const registerUser = async (req, res) => {
                 createdAt: newUser.createdAt,
                 lastLogout: newUser.lastLogout    
             });
-
+            notifyCreateUser({
+                _id: newUser._id,
+                email: newUser.email,
+                username: newUser.username,
+                profilePic: newUser.profilePic,
+                gender: newUser.gender,
+                createdAt: newUser.createdAt,
+            });
         } else {
             res.status(400).json({ error: "Invalid user data" });
         }
@@ -128,7 +136,7 @@ const getAllUsersExceptLoggedIn = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-    console.log('logout');
+    // ...code existant...
     try {
         const userId = req.user._id.toString();
         if (!userId) {
@@ -138,6 +146,12 @@ const logout = async (req, res) => {
         // Mettre à jour le champ lastLogout pour l'utilisateur actuel
         await UserModel.findByIdAndUpdate(userId, { lastLogout: new Date() });
         console.log(`Last logout updated for user ${userId}`);
+
+        // Retirer l'utilisateur des sockets actifs
+        const userSockets = getReceiverSocketIds(userId);
+        userSockets.forEach(socketId => {
+            handleUserDisconnect(userId, socketId);
+        });
 
         res.clearCookie('jwt'); // Efface le cookie
         res.status(200).json({ message: "User logged out successfully" });

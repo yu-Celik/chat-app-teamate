@@ -24,8 +24,10 @@ import { debounce } from 'lodash';
 import { useSocket } from "../contexts/Socket/useSocketContext";
 import { AttachFile, Mic, Send, Done, Close } from '@mui/icons-material';
 import { drawerWidth, heightHeader } from "../components/Chats/ChatDrawer/stylesDrawers";
+import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
 
 export default function ChatPage() {
+    useListenCreateUser();
     useGetAllUsers();
     useUserChats();
     useGetLastMessageSeen();
@@ -53,7 +55,7 @@ export default function ChatPage() {
             socket.emit('typing', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });
         }
     }, 500), [chatInfo.chatId, receiverUser?._id, socket]);
-    
+
     const emitStopTypingDebounced = useMemo(() => debounce(() => {
         if (chatInfo.chatId && socket) {
             socket.emit('stopTyping', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });
