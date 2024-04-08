@@ -2,7 +2,6 @@ import { Stack, useMediaQuery } from "@mui/material"
 import { LayoutGrid } from "../components/LayoutGrid/LayoutGrid";
 import { InfinitScrollAccueil } from "../components/InfinitScroll/InfinitScrollAccueil";
 import LabelBottomNavigation from "../components/BottomNavigation/BottomNavigation";
-
 import SearchFast from "../components/SearchFast/SearchFast";
 const heightHeader = '68.5px';
 const valeurNavigation = '68.5px';
