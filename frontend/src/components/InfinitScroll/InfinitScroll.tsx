@@ -37,6 +37,6 @@ export const InfinitScroll = () => {
         { src: img14 },
     ];
     return (
-        <InfiniteMovingCards className='max-w-screen-2xl ' items={image} />
+        <InfiniteMovingCards className='max-w-screen-2xl xl:mx-auto ' items={image} />
     );
 };

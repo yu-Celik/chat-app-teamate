@@ -1,7 +1,6 @@
 import { Stack, useMediaQuery } from "@mui/material"
 import { LayoutGrid } from "../components/LayoutGrid/LayoutGrid";
 import { InfinitScrollAccueil } from "../components/InfinitScroll/InfinitScrollAccueil";
-import LabelBottomNavigation from "../components/BottomNavigation/BottomNavigation";
 import SearchFast from "../components/SearchFast/SearchFast";
 const heightHeader = '68.5px';
 const valeurNavigation = '68.5px';
@@ -16,7 +15,7 @@ export default function HomePage() {
             }}
         >
             <Stack
-                className="flex flex-col gap-2 overflow-scroll md:"
+                className="flex flex-col gap-2 overflow-y-scroll md:"
                 sx={{
                     maxHeight: `calc(100dvh - ${valeurNavigation})`,
                     padding: '1rem',
@@ -33,7 +32,6 @@ export default function HomePage() {
                 </Stack>
                 <InfinitScrollAccueil />
             </Stack>
-            <LabelBottomNavigation />
         </Stack>
     ) : (
         <Stack
@@ -52,7 +50,6 @@ export default function HomePage() {
                 <InfinitScrollAccueil />
                 <LayoutGrid />
             </Stack>
-            <LabelBottomNavigation />
         </Stack>
     );
 }

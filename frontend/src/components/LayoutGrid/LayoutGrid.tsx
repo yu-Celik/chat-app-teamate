@@ -27,14 +27,14 @@ import img11 from './../../assets/imgGames/destiny2.jpg';
 
 
 
+type Card = {
+  id: number;
+  content: React.ReactNode;
+  className: string;
+  thumbnail: string;
+};
 
 export const LayoutGrid = () => {
-  type Card = {
-    id: number;
-    content: React.ReactNode;
-    className: string;
-    thumbnail: string;
-  };
   const [cards, setCards] = useState<Card[]>([
     {
       id: 1,
@@ -217,7 +217,7 @@ export const LayoutGrid = () => {
     <div style={{
       // minHeight: `calc(100vh - ${heightHeader})`, 
     }}
-      className="mx-auto gap-3 min-h-96 w-full grid grid-rows-4 grid-cols-3 md:m-0 md:grid-cols-5 md:max-w-7xl flex-grow ">
+      className="mx-auto gap-3 min-h-96 w-full grid grid-rows-4 grid-cols-3 md:m-0 md:grid-cols-5 md:max-w-7xl flex-grow  ">
       {cards.map((card, i) => (
         <div key={i} className={cn(card.className, " w-full ")}>
           <motion.div

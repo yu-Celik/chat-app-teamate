@@ -25,25 +25,6 @@ const App = () => {
   // const navigate = useNavigate();
   useVerifyUser();
 
-  const Test = () => {
-    return <>
-      <h1>test</h1>
-      <LabelBottomNavigation />
-    </>
-  }
-  // useEffect(() => {
-  //   // Obtenez le chemin actuel
-  //   const path = window.location.pathname;
-  //   // Si l'utilisateur est authentifié et tente d'accéder à /login ou /register, redirigez-le vers /Chat
-  //   if (isAuthenticated && (path.toLowerCase() === '/login' || path.toLowerCase() === '/register')) {
-  //     navigate('/chat');
-  //   }
-  //   // Si l'utilisateur est authentifié et se trouve sur la page d'accueil, vous pouvez choisir de le rediriger ou non
-  //   else if (isAuthenticated && path === '/') {
-  //     navigate('/chat');
-  //   }
-  // }, [isAuthenticated, navigate]);
-
   const renderPageBasedOnAuth = (loggedInPage: JSX.Element, loggedOutPage: JSX.Element) => {
     return isAuthenticated ? loggedInPage : loggedOutPage;
   };
@@ -63,8 +44,6 @@ const App = () => {
                 <Route path='/chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
                 <Route path='/profil' element={renderPageBasedOnAuth(<ProfilPage />, <Welcome />)} />
                 <Route path='/jouer' element={renderPageBasedOnAuth(<GamePage />, <Welcome />)} />
-                <Route path='test' element={renderPageBasedOnAuth(<Test />, <Welcome />)}></Route>
-
               </Routes>
             </Suspense>
           </MainLayout>

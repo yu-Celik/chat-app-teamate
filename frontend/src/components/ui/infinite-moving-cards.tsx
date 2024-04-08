@@ -3,7 +3,7 @@ import customTheme from "../../styles/customTheme";
 import ClampLines from 'react-clamp-lines';
 import { cn } from "../../utils/cn.ts";
 import React, { useEffect, useState } from "react";
-import { Box, Stack } from "@mui/material"
+import { Box, Stack, useMediaQuery } from "@mui/material"
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Link } from "react-router-dom";
 import ImageAvatars from "../ImageAvatars/ImageAvatars.tsx";
@@ -72,42 +72,47 @@ export const InfiniteMovingCards = ({
          } else if (speed === "normal") {
             containerRef.current.style.setProperty("--animation-duration", "40s");
          } else {
-            containerRef.current.style.setProperty("--animation-duration", "500s");
+            containerRef.current.style.setProperty("--animation-duration", "60s");
          }
       }
    };
+
+   const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
    return (
       <Box
          sx={{
-            overflow: 'auto',
+            
             scrollSnapType: 'x mandatory',
             '& > *': {
                scrollSnapAlign: 'center',
             },
             '::-webkit-scrollbar': { display: 'none' },
+            ...(isSmUp && {
+               // maxHeight: 'calc(100dvh - 124.5px)',
+            }),
          }}
          ref={containerRef}
          className={cn(
-            `scroller relative z-20 py-2 overflow-hidden  [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]`,
+            `scroller relative z-20 py-2 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]`,
             className
          )}
       >
          <ul
             ref={scrollerRef}
             className={cn(
-               " flex gap-4 min-w-full shrink-0 h-full w-max flex-nowrap ",
+               " flex gap-4  shrink-0  flex-nowrap ",
                start && "animate-scroll ",
                pauseOnHover && "hover:[animation-play-state:paused]"
             )}
          >
             {items.map((item, idx) => (
                <li
-                  className="w-[200px]  sm:w-[230px] lg:w-[280px] xl:w-[450px] max-w-full relative rounded-2xl  min-h-full   border-b-0 flex-shrink-0 border-orangePV-300 xl:px-4  "
+                  className=" relative rounded-2xl flex-shrink-0  p-2 justify-center items-center m-auto "
                   key={idx}
                >
                   {item.quote ? (
                      <div style={{ boxShadow: customTheme.shadows[5] }} className="relative h-full rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px] p-4  overflow-hidden flex flex-col justify-between items-start">
-                        <div className="flex flex-col gap-1 max-w-full">
+                        <div className="flex flex-col gap-1">
                            <div className="h-2 w-2 rounded-full flex items-center justify-center  ">
                               <ImageAvatars 
                                  sx={{
@@ -122,7 +127,7 @@ export const InfiniteMovingCards = ({
                               {item.name}
                            </h1>
 
-                           <ClampLines className="font-normal max-h-[96px] max-w-full text-base text-slate-100 relative z-50 "
+                           <ClampLines className="font-normal text-base text-slate-100 relative z-50 "
                               text={item.quote}
                               id={item.quote}
                               lines={2}
@@ -148,9 +153,8 @@ export const InfiniteMovingCards = ({
 
                      </div>
                   ) : (
-                     <img onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="h-20 w-40 rounded sm:w-52 sm:h-28 lg:w-64 lg:h-36 xl:h-56 xl:w-full cover" />
+                     <img onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="rounded h-20 sm:h-28 md:h-32 lg:h-36" />
                   )}
-
                </li>
             ))}
          </ul>

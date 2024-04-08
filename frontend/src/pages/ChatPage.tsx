@@ -23,7 +23,7 @@ import useEditMessage from "../hooks/Chat/useEditMessage";
 import { debounce } from 'lodash';
 import { useSocket } from "../contexts/Socket/useSocketContext";
 import { AttachFile, Mic, Send, Done, Close } from '@mui/icons-material';
-import { drawerWidth, heightHeader } from "../components/Chats/ChatDrawer/stylesDrawers";
+import { drawerWidth, heightHeader } from "../styles/customTheme";
 import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
 
 export default function ChatPage() {

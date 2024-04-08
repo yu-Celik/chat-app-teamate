@@ -21,7 +21,7 @@ export default function HeaderProfil() {
 
    const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
       setUsername(event.target.value);
-  }, []);
+   }, []);
 
    const handleInputBlur = useCallback(() => {
       setIsEditing(false);
@@ -58,219 +58,241 @@ export default function HeaderProfil() {
          <Stack
             sx={{
                backgroundColor: alpha(customTheme.palette.slate[800], 0.1),
-               padding: customTheme.spacing(1),
+               padding: customTheme.spacing(2),
                display: 'flex',
                flexDirection: 'row',
                justifyContent: 'space-between',
                alignItems: 'center',
                boxShadow: customTheme.shadows[1],
+               width: '100%',
+               margin: '0 auto',
+
             }}
          >
             <Stack
                sx={{
                   flexDirection: 'row',
-                  display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  gap: '1rem',
-
+                  width: '100%',
+                  margin: '0 auto',
+                  maxWidth: '1536px',
+                  
                }}
             >
                <Stack
                   sx={{
-                     position: 'relative',
-                     width: 64,
-                     height: 64,
-                     '&:hover': {
-                        '& img': {
-                           filter: { md: 'blur(1px)' },
-                        },
-                     },
+                     flexDirection: 'row',
+                     display: 'flex',
+                     alignItems: 'center',
+                     gap: '1rem',
+
+
                   }}
                >
-                  <ImageAvatars
+                  <Stack
                      sx={{
-                        width: 58,
-                        height: 58,
-                     }}
-                  />
-                  <Button
-                     component="label"
-                     role={undefined}
-                     variant="contained"
-                     tabIndex={-1}
-                     sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         padding: 1,
-                        fontSize: '0.7rem',
-
-                        '&.MuiButtonBase-root': {
-                           backgroundColor: 'transparent',
-                           border: 'none',
-                           boxShadow: 'none',
-                           borderRadius: '9999px',
-                           height: 64,
-                           oppacity: 0,
-                           color: 'transparent',
-
-                           '&.MuiButtonBase-root:hover': {
-                              oppacity: { md: '1' },
-                              backgroundColor: { md: customTheme.palette.bluePV.main },
-                              color: { md: customTheme.palette.slate[100] },
-                           }
+                        position: 'relative',
+                        width: 64,
+                        height: 64,
+                        '&:hover': {
+                           '& img': {
+                              filter: { md: 'blur(1px)' },
+                           },
                         },
                      }}
                   >
-                     Modifier
-                     <VisuallyHiddenInput type="file" />
-                  </Button>
-               </Stack>
+                     <ImageAvatars
+                        sx={{
+                           width: 58,
+                           height: 58,
+                        }}
+                     />
+                     <Button
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        sx={{
+                           position: 'absolute',
+                           top: '50%',
+                           left: '50%',
+                           transform: 'translate(-50%, -50%)',
+                           padding: 1,
+                           fontSize: '0.7rem',
 
-               <Stack>
-                  <Stack direction={'row'}>
-                     {isEditing ? (
-                        <Input
-                        value={username}
-                        onChange={handleInputChange}
-                        onBlur={handleInputBlur}
-                        onKeyDown={(event) => {
-                           if (event.key === 'Enter') {
-                              handleInputBlur();
-                           }
-                        }}
-                        autoFocus
-                        sx={{
-                           color: customTheme.palette.slate[200],
-                           fontSize: '1rem',
-                           '&:focus': {
-                              color: customTheme.palette.slate[200],
-                           },
-                           '&::after': {
-                              borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
+                           '&.MuiButtonBase-root': {
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              boxShadow: 'none',
+                              borderRadius: '9999px',
+                              height: 64,
+                              oppacity: 0,
+                              color: 'transparent',
+
+                              '&.MuiButtonBase-root:hover': {
+                                 oppacity: { md: '1' },
+                                 backgroundColor: { md: customTheme.palette.bluePV.main },
+                                 color: { md: customTheme.palette.slate[100] },
+                              }
                            },
                         }}
-                     />
-                     ) : (
-                        <Typography
-                           color={customTheme.palette.slate[200]}
-                           variant="body1"
-                        >
-                           {username}
-                        </Typography>
-                     )}
-                     <EditRoundedIcon
-                        onClick={handleIconClick}
-                        sx={{
-                           marginLeft: 1,
-                           fontSize: '0.8rem',
-                           color: customTheme.palette.slate[200],
-                           '&:hover': {
-                              cursor: 'pointer',
-                           },
-                        }}
-                     />
+                     >
+                        Modifier
+                        <VisuallyHiddenInput type="file" />
+                     </Button>
                   </Stack>
 
-
-                  {isOnline ? (
-                     <Stack>
-                        <Typography
-                           component="span"
-                           variant="body2"
-                           color={customTheme.palette.slate[200]}
-                        >
-                           En ligne
-                        </Typography>
-                     </Stack>
-                  ) : (
-                     <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color={customTheme.palette.slate[200]}
-                     >
-                        Déconnecté
-                     </Typography>
-                  )}
-               </Stack>
-            </Stack>
-            <Stack>
-
-               {!modification ? (
-                  <Stack direction={'row'} alignItems={'center'} >
-                     <StyledIconButton title="Ajout d'image" >
-                        <AddPhotoAlternateRoundedIcon
+                  <Stack>
+                     <Stack direction={'row'}>
+                        {isEditing ? (
+                           <Input
+                              value={username}
+                              onChange={handleInputChange}
+                              onBlur={handleInputBlur}
+                              onKeyDown={(event) => {
+                                 if (event.key === 'Enter') {
+                                    handleInputBlur();
+                                 }
+                              }}
+                              autoFocus
+                              sx={{
+                                 color: customTheme.palette.slate[200],
+                                 fontSize: '1rem',
+                                 '&:focus': {
+                                    color: customTheme.palette.slate[200],
+                                 },
+                                 '&::after': {
+                                    borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
+                                 },
+                              }}
+                           />
+                        ) : (
+                           <Typography
+                              color={customTheme.palette.slate[200]}
+                              variant="body1"
+                           >
+                              {username}
+                           </Typography>
+                        )}
+                        <EditRoundedIcon
+                           onClick={handleIconClick}
                            sx={{
+                              marginLeft: 1,
+                              fontSize: '0.8rem',
                               color: customTheme.palette.slate[200],
                               '&:hover': {
                                  cursor: 'pointer',
                               },
                            }}
                         />
-                        <VisuallyHiddenInput type="file" />
-                     </StyledIconButton>
-                     <StyledIconButton title="Modifier le profil"
-                        sx={{
-                           padding: 1,
-                           backgroundColor: 'transparent',
-                           fontSize: '1rem',
-                           '&.MuiButtonBase-root': {
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              boxShadow: 'none',
-                              color: customTheme.palette.slate[200],
-                           },
-                        }}
-                        onClick={() => setModification(!modification)}
-                     >
-                        Modifier
-                     </StyledIconButton>
-                  </Stack>
-               ) :
-                  <Stack
-                     direction={'row'}
-                  >
-                     <StyledIconButton title='Annuler les modifications'
-                        sx={{
-                           marginRight: 2,
-                           padding: 1,
-                           backgroundColor: 'transparent',
-                           fontSize: '1rem',
+                     </Stack>
 
-                           '&.MuiButtonBase-root': {
+
+                     {isOnline ? (
+                        <Stack>
+                           <Typography
+                              component="span"
+                              variant="body2"
+                              color={customTheme.palette.slate[200]}
+                           >
+                              En ligne
+                           </Typography>
+                        </Stack>
+                     ) : (
+                        <Typography
+                           sx={{ display: 'inline' }}
+                           component="span"
+                           variant="body2"
+                           color={customTheme.palette.slate[200]}
+                        >
+                           Déconnecté
+                        </Typography>
+                     )}
+                  </Stack>
+               </Stack>
+               <Stack>
+
+                  {!modification ? (
+                     <Stack direction={'row'} alignItems={'center'} >
+                        <StyledIconButton title="Ajout d'image" >
+                           <AddPhotoAlternateRoundedIcon
+                              sx={{
+                                 color: customTheme.palette.slate[200],
+                                 '&:hover': {
+                                    cursor: 'pointer',
+                                 },
+                              }}
+                           />
+                           <VisuallyHiddenInput type="file" />
+                        </StyledIconButton>
+                        <StyledIconButton title="Modifier le profil"
+                           sx={{
+                              padding: 1,
                               backgroundColor: 'transparent',
-                              border: 'none',
-                              boxShadow: 'none',
-                              color: customTheme.palette.slate[200],
-                           },
-                        }}
-                        onClick={() => setModification(!modification)}
+                              fontSize: '1rem',
+                              '&.MuiButtonBase-root': {
+                                 backgroundColor: 'transparent',
+                                 border: 'none',
+                                 boxShadow: 'none',
+                                 color: customTheme.palette.slate[200],
+                              },
+                           }}
+                           onClick={() => setModification(!modification)}
+                        >
+                           Modifier
+                        </StyledIconButton>
+                     </Stack>
+                  ) :
+                     <Stack
+                        direction={'row'}
                      >
-                        Annuler
-                     </StyledIconButton>
-                     <StyledIconButton title='Enregistrer les modifications'
-                        sx={{
-                           marginRight: 2,
-                           padding: 1,
-                           backgroundColor: 'transparent',
-                           '&.MuiButtonBase-root': {
+                        <StyledIconButton title='Annuler les modifications'
+                           sx={{
+                              marginRight: 2,
+                              padding: 1,
                               backgroundColor: 'transparent',
                               fontSize: '1rem',
 
-                              border: 'none',
-                              boxShadow: 'none',
-                              color: customTheme.palette.slate[200],
-                           },
-                        }}
-                        onClick={() => setModification(!modification)}
-                     >
-                        Enregistrer
-                     </StyledIconButton>
-                  </Stack>
-               }
+                              '&.MuiButtonBase-root': {
+                                 backgroundColor: 'transparent',
+                                 border: 'none',
+                                 boxShadow: 'none',
+                                 color: customTheme.palette.slate[200],
+                              },
+                           }}
+                           onClick={() => setModification(!modification)}
+                        >
+                           Annuler
+                        </StyledIconButton>
+                        <StyledIconButton title='Enregistrer les modifications'
+                           sx={{
+                              marginRight: 2,
+                              padding: 1,
+                              backgroundColor: 'transparent',
+                              '&.MuiButtonBase-root': {
+                                 backgroundColor: 'transparent',
+                                 fontSize: '1rem',
+
+                                 border: 'none',
+                                 boxShadow: 'none',
+                                 color: customTheme.palette.slate[200],
+                              },
+                           }}
+                           onClick={() => setModification(!modification)}
+                        >
+                           Enregistrer
+                        </StyledIconButton>
+                     </Stack>
+                  }
+               </Stack>
+
             </Stack>
+
          </Stack>
       </Stack >
    )

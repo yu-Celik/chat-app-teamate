@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import Header from '../components/Header/Header';
 import { Box, Stack } from '@mui/material';
 import { User } from '../types/Auth.type/Auth.Props';
+import LabelBottomNavigation from '../components/BottomNavigation/BottomNavigation';
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
     return (
@@ -13,9 +14,10 @@ const MainLayout = ({ children, connected }: { children: ReactNode, connected: U
             position: 'relative',
         }}>
             {connected && <Header />}
-            <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'}>
+            <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'} >
                 {children}
             </Stack>
+            <LabelBottomNavigation />
         </Box>
     );
 };
