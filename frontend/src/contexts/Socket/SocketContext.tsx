@@ -14,7 +14,7 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
         if (!currentUser.data) return;
 
         // const newSocket = io("https://chat-app-teamate.onrender.com", { // Pour le site chat-app-teamate.onrender.com
-        const newSocket = io("http://192.168.1.103:5000", { // Pour le site local
+        const newSocket = io("http://192.168.1.150:5000", { // Pour le site local
             withCredentials: true,
             query: { userId: currentUser.data?._id },
             transports: ['websocket'],

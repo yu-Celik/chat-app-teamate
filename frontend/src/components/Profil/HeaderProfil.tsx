@@ -1,17 +1,35 @@
 import { Button, Stack, Typography, alpha, styled } from '@mui/material';
 import ImageAvatars from '../ImageAvatars/ImageAvatars.tsx';
-import { StyledBadge } from './../BadgeRipple/BadgeRipple.tsx';
-import { users } from './../../data/userData.ts';
 import customTheme from '../../styles/customTheme';
 import { ColorPicker } from '../ColorPicker/ColorPicker.tsx';
-import React from 'react';
+import React, { useCallback } from 'react';
 import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateRounded';
 import { StyledIconButton } from '../IconButton/IconButton.tsx';
+import useAuth from '../../contexts/AuthContext/useAuthContext.ts';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { useState } from 'react';
+import { Input } from '@mui/material';
 
 export default function HeaderProfil() {
+   const { currentUser } = useAuth();
+   const [isEditing, setIsEditing] = useState(false);
+   const [username, setUsername] = useState(currentUser.data?.username || '');
+
+   const handleIconClick = useCallback(() => {
+      setIsEditing(true);
+   }, []);
+
+   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+      setUsername(event.target.value);
+  }, []);
+
+   const handleInputBlur = useCallback(() => {
+      setIsEditing(false);
+      // Ici, vous pouvez également ajouter du code pour mettre à jour le nom d'utilisateur dans votre base de données
+   }, []);
 
    const [modification, setModification] = React.useState(false)
-   const isOnline = users[0].isOnline;
+   const isOnline = currentUser.data?.lastLogout || false;
 
    const VisuallyHiddenInput = styled('input')({
       display: 'none',
@@ -70,8 +88,6 @@ export default function HeaderProfil() {
                   }}
                >
                   <ImageAvatars
-                     username={users[0].username}
-                     profilePic={users[0].profilePic}
                      sx={{
                         width: 58,
                         height: 58,
@@ -113,12 +129,51 @@ export default function HeaderProfil() {
                </Stack>
 
                <Stack>
-                  <Typography
-                     color={customTheme.palette.slate[200]}
-                     variant="body1"
-                  >
-                     {users[0].username}
-                  </Typography>
+                  <Stack direction={'row'}>
+                     {isEditing ? (
+                        <Input
+                        value={username}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onKeyDown={(event) => {
+                           if (event.key === 'Enter') {
+                              handleInputBlur();
+                           }
+                        }}
+                        autoFocus
+                        sx={{
+                           color: customTheme.palette.slate[200],
+                           fontSize: '1rem',
+                           '&:focus': {
+                              color: customTheme.palette.slate[200],
+                           },
+                           '&::after': {
+                              borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
+                           },
+                        }}
+                     />
+                     ) : (
+                        <Typography
+                           color={customTheme.palette.slate[200]}
+                           variant="body1"
+                        >
+                           {username}
+                        </Typography>
+                     )}
+                     <EditRoundedIcon
+                        onClick={handleIconClick}
+                        sx={{
+                           marginLeft: 1,
+                           fontSize: '0.8rem',
+                           color: customTheme.palette.slate[200],
+                           '&:hover': {
+                              cursor: 'pointer',
+                           },
+                        }}
+                     />
+                  </Stack>
+
+
                   {isOnline ? (
                      <Stack>
                         <Typography
@@ -127,12 +182,6 @@ export default function HeaderProfil() {
                            color={customTheme.palette.slate[200]}
                         >
                            En ligne
-                           <StyledBadge
-                              overlap="circular"
-                              variant="dot"
-                              isOnline={isOnline}
-                              sx={{ ml: 1, mb: 1 }}
-                           />
                         </Typography>
                      </Stack>
                   ) : (

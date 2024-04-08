@@ -54,7 +54,7 @@ export default function Welcome(): JSX.Element {
             <p className="text-neutral-200 text-base sm:text-lg md:text-xl text-center mb-4">
                 Votre aventure de jeu commence ici
             </p>
-            <TypewriterEffectSmooth words={words} />
+            <TypewriterEffectSmooth speed={{ delay: 0.2, duration: 1 }} words={words} />
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 mt-10">
                 <RouterLink to="/login">
                     <StyledBox>

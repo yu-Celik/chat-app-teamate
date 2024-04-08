@@ -41,7 +41,7 @@ export default function ChatPage() {
     const { sendMessage } = useSendMessage();
     const { editMessage } = useEditMessage();
     const [isTyping, setIsTyping] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const { chatInfo, updateSendMessageStatus } = useChat();
     const { currentUser } = useAuth();
     const [receiverUser, setReceiverUser] = useState<User | null>(null);

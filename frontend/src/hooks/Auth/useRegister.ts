@@ -33,7 +33,7 @@ const useRegister = () => {
             setCurrentUser({ data: response.data });
             setRegister((prev) => ({ ...prev, isRegistered: true }));
             localStorage.setItem('chat-user', JSON.stringify(response.data));
-            navigate('/Chat');
+            navigate('/');
             console.log('Inscription réussie');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

@@ -1,4 +1,4 @@
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
+import {  Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
 import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
@@ -11,6 +11,7 @@ import { styleListDrawer } from "./styleListDrawer";
 import MenuCreateChat from "../MenuCreateChat";
 import { StyledIconButton } from "../../IconButton/IconButton";
 import { TransitionGroup } from 'react-transition-group';
+import LabelBottomNavigation from "../../BottomNavigation/BottomNavigation";
 
 
 interface SwipeableMobileDrawerProps {
@@ -149,6 +150,8 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                 sx={{
                     '& .MuiDrawer-paper': {
                         backgroundImage: 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',
+                    maxHeight: 'calc(100dvh)',
+
                     },
                     '& .MuiPaper-root': {
                         display: 'flex',
@@ -229,6 +232,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                             </>
                         )}
                     </List>
+                    <LabelBottomNavigation />
                 </DrawerFooter>
             </SwipeableDrawer>
             {children}

@@ -3,11 +3,10 @@ import customTheme from "../../styles/customTheme";
 import ClampLines from 'react-clamp-lines';
 import { cn } from "../../utils/cn.ts";
 import React, { useEffect, useState } from "react";
-import { Box, Stack} from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Link } from "react-router-dom";
 import ImageAvatars from "../ImageAvatars/ImageAvatars.tsx";
-import { users } from './../../data/userData.ts';
 
 
 export const InfiniteMovingCards = ({
@@ -109,15 +108,14 @@ export const InfiniteMovingCards = ({
                   {item.quote ? (
                      <div style={{ boxShadow: customTheme.shadows[5] }} className="relative h-full rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px] p-4  overflow-hidden flex flex-col justify-between items-start">
                         <div className="flex flex-col gap-1 max-w-full">
-                           <div className="h-8 w-8 rounded-full flex items-center justify-center  ">
-                           <ImageAvatars
-                     username={users[0].username}
-                     profilePic={users[0].profilePic}
-                     sx={{
-                        width: "100%",
-                        height: "100%",
-                     }}
-                  />
+                           <div className="h-2 w-2 rounded-full flex items-center justify-center  ">
+                              <ImageAvatars 
+                                 sx={{
+                                    width: '20px',
+                                    height: '20px',
+                                 
+                                 }}
+                              />
                            </div>
 
                            <h1 className="font-bold text-xl text-white relative z-50">
@@ -136,14 +134,14 @@ export const InfiniteMovingCards = ({
                         <Stack sx={{
                            width: '100%',
 
-                        
+
                         }} direction={'row'} justifyContent={'end'} alignItems={'end'}>
                            <Link to="/game">
                               <RemoveRedEyeIcon sx={{
                                  color: customTheme.palette.slate[200],
                                  width: "28px",
                                  height: "28px",
-                              
+
                               }} />
                            </Link>
                         </Stack>

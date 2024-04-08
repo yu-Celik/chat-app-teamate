@@ -31,7 +31,7 @@ const useLogin = () => {
             setCurrentUser({ data: response.data });
             setLogin((prev) => ({ ...prev, isLogged: true }));
             localStorage.setItem('chat-user', JSON.stringify(response.data));
-            navigate('/Chat');
+            navigate('/');
             console.log('Connexion réussie');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

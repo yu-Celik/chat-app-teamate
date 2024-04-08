@@ -1,13 +1,13 @@
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
+import useAuth from "../../contexts/AuthContext/useAuthContext";
 
-export default function ImageAvatars({ username, profilePic, sx }: { profilePic: string, username: string, sx?: SxProps<Theme> }) {
+
+export default function ImageAvatars({ sx }: { sx?: SxProps<Theme> }) {
+    const { currentUser } = useAuth();
     return (
-        <Stack>
-            <Avatar alt={`Image de ${username}`} src={profilePic} sx={sx} />
-        </Stack>
+                <Avatar alt={currentUser.data?.username || ''} src={currentUser.data?.profilePic || ''} sx={sx} />
+
     );
 }

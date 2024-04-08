@@ -1,6 +1,5 @@
-import { Stack } from "@mui/material"
+import { Stack, useMediaQuery } from "@mui/material"
 import { LayoutGrid } from "../components/LayoutGrid/LayoutGrid";
-
 import { InfinitScrollAccueil } from "../components/InfinitScroll/InfinitScrollAccueil";
 import LabelBottomNavigation from "../components/BottomNavigation/BottomNavigation";
 
@@ -10,26 +9,51 @@ const valeurNavigation = '68.5px';
 
 
 export default function HomePage() {
-    return (
+    const matches = useMediaQuery('(min-width:600px)');
+    return matches ? (
         <Stack
             sx={{
                 maxHeight: `calc(100dvh - ${heightHeader})`,
             }}
         >
             <Stack
-                direction={'column'}
-                gap={2}
+                className="flex flex-col gap-2 overflow-scroll md:"
                 sx={{
-                    overflow: 'scroll',
                     maxHeight: `calc(100dvh - ${valeurNavigation})`,
+                    padding: '1rem',
                 }}
             >
-                <SearchFast />
-                <InfinitScrollAccueil  />
-                <LayoutGrid />
+                <Stack
+                    direction={'row'}
+                    justifyContent={'center'}
 
+                    gap={2}
+                >
+                    <SearchFast />
+                    <LayoutGrid />
+                </Stack>
+                <InfinitScrollAccueil />
             </Stack>
             <LabelBottomNavigation />
         </Stack>
-    )
+    ) : (
+        <Stack
+            sx={{
+                maxHeight: `calc(100dvh - ${heightHeader})`,
+            }}
+        >
+            <Stack
+                className="flex flex-col gap-2 overflow-scroll md:"
+                sx={{
+                    maxHeight: `calc(100dvh - ${valeurNavigation})`,
+                    padding: '1rem',
+                }}
+            >
+                <SearchFast />
+                <InfinitScrollAccueil />
+                <LayoutGrid />
+            </Stack>
+            <LabelBottomNavigation />
+        </Stack>
+    );
 }

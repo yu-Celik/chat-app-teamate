@@ -9,6 +9,7 @@ const MainLayout = ({ children, connected }: { children: ReactNode, connected: U
             flexGrow: 1,
             backgroundImage: 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',
             minHeight: '100dvh',
+            minWidth: '100dvw',
             position: 'relative',
         }}>
             {connected && <Header />}
