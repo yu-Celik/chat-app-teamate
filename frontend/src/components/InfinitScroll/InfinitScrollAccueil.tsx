@@ -1,55 +1,52 @@
 
+import { useMediaQuery } from '@mui/material';
 import { InfiniteMovingCards } from '../ui/infinite-moving-cards';
-
+import customTheme from '../../styles/customTheme';
 
 
 export const InfinitScrollAccueil = () => {
-    const image = [
-        {
-          quote:
-            "Qui pour game ce soir ??? :)",
-          name: "HDZ",
-          title: "A Tale of Two Cities",
-        },
-        {
-          quote:
-            "Pourquoi non Véronique ? Pourquoi voooouus vous dites non ??",
-          name: "Farfromyu",
-          title: "Hamlet",
-        },
-        {
-          quote: "Je suis désolé d'avoir forcé pour qu'on passe sur VSCode...",
-          name: "Fatal.Xxl",
-          title: "A Dream Within a Dream",
-        },
-        {
-          quote:
-            "Vite samedi pour voir Jasmine... Je vais lui faire une syntaxe :P",
-          name: "Anthony",
-          title: "Pride and Prejudice",
-        },
-        {
-          quote:
-            "SVP ! Quelqu'un sait ce qu'on doit faire ?",
-          name: "Mohamed",
-          title: "Moby-Dick",
-        },
-        {
-          quote:
-            "Putains ! le chnoiw il est dead ! J'aurais préféré que ça soit Dom.... #twd",
-          name: "Aïmane",
-          title: "Moby-Dick",
-        },
-        {
-          quote:
-            "Bingo ! j'ai un axe d'amelioration ! BREF ! Il reste 18min et 42sec avant 16h00 :'( ",
-          name: "Cintre",
-          title: "Moby-Dick",
-        },
-        
+  const image = [
 
-      ];
-    return (
-        <InfiniteMovingCards  className='max-w-4xl min-h-64   ' items={image} />
-    );
+    {
+      id: 1,
+      quote: "Qui pour game ce soir ??? :)",
+      name: "HDZ",
+    },
+    {
+      id: 2,
+      quote: "Pourquoi non Véronique ? Pourquoi voooouus vous dites non ??",
+      name: "Farfromyu",
+    },
+    {
+      id: 3,
+      quote: "Je suis désolé d'avoir forcé pour qu'on passe sur VSCode...",
+      name: "Fatal.Xxl",
+    },
+    {
+      id: 4,
+      quote: "Vite samedi pour voir Jasmine... Je vais lui faire une syntaxe :P",
+      name: "Anthony",
+    },
+    {
+      id: 5,
+      quote: "SVP ! Quelqu'un sait ce qu'on doit faire ?",
+      name: "Mohamed",
+    },
+    {
+      id: 6,
+      quote: "Putains ! le chnoiw il est dead ! J'aurais préféré que ça soit Dom.... #twd",
+      name: "Aïmane",
+    },
+    {
+      id: 7,
+      quote: "Bingo ! j'ai un axe d'amelioration ! BREF ! Il reste 18min et 42sec avant 16h00 :'( ",
+      name: "Cintre",
+    },
+  ];
+  const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
+
+  return (
+    <InfiniteMovingCards direction="right" pauseOnHover={isSmUp} speed="slow" className='' items={image}  />
+  );
 };
+

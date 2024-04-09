@@ -25,7 +25,13 @@ module.exports = {
         custom: ['Roboto', 'sans-serif'],
       },
       screens: {
-        'xs': '480px',
+        'xss': '0px', // Tailwind ne définit pas ce breakpoint par défaut
+        'xs': '375px',
+        'sm': '600px',
+        'md': '900px',
+        'lg': '1200px',
+        'xl': '1536px',
+        // Tailwind définit également un breakpoint '2xl', vous pouvez choisir de l'ajuster ou de le laisser tel quel.
       },
       backgroundImage: {
         'gradient': 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',

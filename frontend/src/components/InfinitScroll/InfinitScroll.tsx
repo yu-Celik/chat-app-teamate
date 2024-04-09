@@ -13,30 +13,34 @@ import img12 from './../../assets/imgGames/nba.jpeg';
 import img13 from './../../assets/imgGames/nfs.jpg';
 import img14 from './../../assets/imgGames/red dead.jpg';
 import img15 from './../../assets/imgGames/Valorant.jpeg';
-
+import customTheme from '../../styles/customTheme';
 import { InfiniteMovingCards } from '../ui/infinite-moving-cards';
+import { useMediaQuery } from '@mui/material';
 
 
 
 export const InfinitScroll = () => {
     const image = [
-        { src: img1 },
-        { src: img15 },
-        { src: img11 },
-        { src: img2 },
-        { src: img9 },
-        { src: img10 },
-        { src: img3 },
-        { src: img4 },
-        { src: img5 },
-        { src: img6 },
-        { src: img7 },
-        { src: img8 },
-        { src: img12 },
-        { src: img13 },
-        { src: img14 },
+        { id: 1, src: img1 },
+        { id: 2, src: img15 },
+        { id: 3, src: img11 },
+        { id: 4, src: img2 },
+        { id: 5, src: img9 },
+        { id: 6, src: img10 },
+        { id: 7, src: img3 },
+        { id: 8, src: img4 },
+        { id: 9, src: img5 },
+        { id: 10, src: img6 },
+        { id: 11, src: img7 },
+        { id: 12, src: img8 },
+        { id: 13, src: img12 },
+        { id: 14, src: img13 },
+        { id: 15, src: img14 },
     ];
+
+    const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
     return (
-        <InfiniteMovingCards className='max-w-screen-2xl ' items={image} />
+        <InfiniteMovingCards className='max-w-screen-2xl xl:mx-auto' direction="right" pauseOnHover={isSmUp} speed="slow" items={image} />
     );
 };
+

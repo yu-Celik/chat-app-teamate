@@ -1,22 +1,19 @@
 "use client";
-import customTheme from "../../styles/customTheme";
-import ClampLines from 'react-clamp-lines';
-import { cn } from "../../utils/cn.ts";
-import React, { useEffect, useState } from "react";
-import { Box, Stack } from "@mui/material"
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Link } from "react-router-dom";
-import ImageAvatars from "../ImageAvatars/ImageAvatars.tsx";
 
+import { cn } from "../../utils/cn";
+import React, { useEffect, useState } from "react";
+import ImageAvatars from "../ImageAvatars/ImageAvatars";
+import ClampLines from 'react-clamp-lines';
 
 export const InfiniteMovingCards = ({
    items,
-   direction = "left",
-   speed = "slow",
-   pauseOnHover = true,
+   direction,
+   speed,
+   pauseOnHover,
    className,
 }: {
    items: {
+      id: number;
       src?: string;
       quote?: string;
       name?: string;
@@ -32,7 +29,9 @@ export const InfiniteMovingCards = ({
 
    useEffect(() => {
       addAnimation();
-   });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
+
    const [start, setStart] = useState(false);
    function addAnimation() {
       if (containerRef.current && scrollerRef.current) {
@@ -72,88 +71,76 @@ export const InfiniteMovingCards = ({
          } else if (speed === "normal") {
             containerRef.current.style.setProperty("--animation-duration", "40s");
          } else {
-            containerRef.current.style.setProperty("--animation-duration", "500s");
+            containerRef.current.style.setProperty("--animation-duration", "80s");
          }
       }
    };
+   const isImage = items.some(item => item.src);
+
    return (
-      <Box
-         sx={{
-            overflow: 'auto',
-            scrollSnapType: 'x mandatory',
-            '& > *': {
-               scrollSnapAlign: 'center',
-            },
-            '::-webkit-scrollbar': { display: 'none' },
-         }}
+      <div
          ref={containerRef}
          className={cn(
-            `scroller relative z-20 py-2 overflow-hidden  [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]`,
+            "scroller relative z-20 max-w-7xl overflow-hidden",
             className
          )}
+         style={{
+            scrollSnapType: 'x mandatory',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, white 20%, white 80%, transparent)',
+            maskImage: 'linear-gradient(to right, transparent, white 20%, white 80%, transparent)',
+            WebkitOverflowScrolling: 'touch',
+            overflowX: 'scroll',
+            scrollbarWidth: 'none',
+         }}
       >
          <ul
             ref={scrollerRef}
             className={cn(
-               " flex gap-4 min-w-full shrink-0 h-full w-max flex-nowrap ",
+               " flex min-w-full shrink-0 gap-4 py-4 w-max flex-nowrap",
                start && "animate-scroll ",
                pauseOnHover && "hover:[animation-play-state:paused]"
             )}
          >
-            {items.map((item, idx) => (
-               <li
-                  className="w-[200px]  sm:w-[230px] lg:w-[280px] xl:w-[450px] max-w-full relative rounded-2xl  min-h-full   border-b-0 flex-shrink-0 border-orangePV-300 xl:px-4  "
-                  key={idx}
-               >
-                  {item.quote ? (
-                     <div style={{ boxShadow: customTheme.shadows[5] }} className="relative h-full rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px] p-4  overflow-hidden flex flex-col justify-between items-start">
-                        <div className="flex flex-col gap-1 max-w-full">
-                           <div className="h-2 w-2 rounded-full flex items-center justify-center  ">
-                              <ImageAvatars 
-                                 sx={{
-                                    width: '20px',
-                                    height: '20px',
-                                 
-                                 }}
-                              />
-                           </div>
+            {isImage ? (
+               items.map((item) => (
+                  <img key={item.id} onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="rounded h-20 sm:h-28 md:h-32 lg:h-36" />
+               ))
 
-                           <h1 className="font-bold text-xl text-white relative z-50">
-                              {item.name}
-                           </h1>
-
-                           <ClampLines className="font-normal max-h-[96px] max-w-full text-base text-slate-100 relative z-50 "
-                              text={item.quote}
-                              id={item.quote}
-                              lines={2}
-                              ellipsis="..."
-                              buttons={false}
-                              innerElement="p"
+            ) : (
+               items.map((item) => (
+                  <li
+                     key={item.id}
+                     className="w-[350px] max-w-full relative rounded-2xl border border-none flex-shrink-0 px-8 py-6 md:w-[450px]"
+                  >
+                     <blockquote>
+                        <div aria-hidden="true" className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"></div>
+                        <ClampLines
+                           className="font-normal text-base text-slate-50 h-12 "
+                           id={item.id.toString()}
+                           text={item.quote || ''}
+                           lines={2}
+                           ellipsis="..."
+                           buttons={false}
+                           innerElement="p"
+                        />
+                        <div className="relative z-20 mt-6 flex flex-row items-center">
+                           <ImageAvatars
+                              sx={{
+                                 width: '20px',
+                                 height: '20px',
+                                 marginRight: '8px'
+                              }}
                            />
+                           <span className=" text-sm leading-[1.6] text-gray-400 font-normal">
+                              {item.name}
+                           </span>
                         </div>
-                        <Stack sx={{
-                           width: '100%',
-
-
-                        }} direction={'row'} justifyContent={'end'} alignItems={'end'}>
-                           <Link to="/game">
-                              <RemoveRedEyeIcon sx={{
-                                 color: customTheme.palette.slate[200],
-                                 width: "28px",
-                                 height: "28px",
-
-                              }} />
-                           </Link>
-                        </Stack>
-
-                     </div>
-                  ) : (
-                     <img onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="h-20 w-40 rounded sm:w-52 sm:h-28 lg:w-64 lg:h-36 xl:h-56 xl:w-full cover" />
-                  )}
-
-               </li>
-            ))}
+                     </blockquote>
+                     <div className="absolute inset-0 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-800 opacity-30"></div>
+                  </li>
+               ))
+            )}
          </ul>
-      </Box>
+      </div>
    );
 };

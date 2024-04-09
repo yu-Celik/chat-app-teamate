@@ -23,7 +23,7 @@ import useEditMessage from "../hooks/Chat/useEditMessage";
 import { debounce } from 'lodash';
 import { useSocket } from "../contexts/Socket/useSocketContext";
 import { AttachFile, Mic, Send, Done, Close } from '@mui/icons-material';
-import { drawerWidth, heightHeader } from "../components/Chats/ChatDrawer/stylesDrawers";
+import { drawerWidth, heightHeader } from '../styles/customTheme';
 import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
 
 export default function ChatPage() {
@@ -41,7 +41,7 @@ export default function ChatPage() {
     const { sendMessage } = useSendMessage();
     const { editMessage } = useEditMessage();
     const [isTyping, setIsTyping] = useState(false);
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const { chatInfo, updateSendMessageStatus } = useChat();
     const { currentUser } = useAuth();
     const [receiverUser, setReceiverUser] = useState<User | null>(null);

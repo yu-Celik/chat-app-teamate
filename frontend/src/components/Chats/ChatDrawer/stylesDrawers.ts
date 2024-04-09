@@ -4,12 +4,6 @@ import { styled } from '@mui/material/styles';
 import {  Box } from '@mui/material';
 import customTheme from '../../../styles/customTheme';
 
-export const drawerWidth = 360;
-export const heightHeader = 69.5;
-
-
-
-
 export const DrawerHeader = styled(Box)(() => ({
     display: 'flex',
     alignItems: 'center',

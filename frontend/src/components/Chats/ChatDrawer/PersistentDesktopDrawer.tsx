@@ -1,6 +1,6 @@
 import { Box, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { DrawerFooter, DrawerHeader, drawerWidth, heightHeader } from "./stylesDrawers";
+import { DrawerFooter, DrawerHeader} from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search, ViewListOutlined } from "@mui/icons-material";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
@@ -11,6 +11,7 @@ import { Chat } from "../../../types/Chat.type/Chat.Props";
 import { styleListDrawer } from "./styleListDrawer";
 import './list-drawer-order.css';
 import { TransitionGroup } from 'react-transition-group';
+import { drawerWidth, heightHeader } from "../../../styles/customTheme";
 
 
 const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {

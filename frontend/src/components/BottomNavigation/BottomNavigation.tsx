@@ -14,7 +14,7 @@ import DialogBox from '../DialoguePublication/DialoguePublication.tsx';
 export default function LabelBottomNavigation() {
 
     const location = useLocation();
-    const [valueNav, setValueNav] = React.useState(location.pathname.slice(1));
+    const [valueNav, setValueNav] = React.useState(location.pathname);
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -26,7 +26,7 @@ export default function LabelBottomNavigation() {
     };
 
     React.useEffect(() => {
-        setValueNav(location.pathname.slice(1));
+        setValueNav(location.pathname);
     }, [location]);
 
     const handleChangeNav = (_: React.SyntheticEvent, newValue: string) => {
@@ -35,8 +35,10 @@ export default function LabelBottomNavigation() {
 
     return (
         <>
-            <BottomNavigation // 
+            <BottomNavigation
+                component={'footer'}
                 sx={{
+                    margin: '0 auto',
                     width: '100dvw',
                     position: 'fixed',
                     bottom: 0,
@@ -50,7 +52,16 @@ export default function LabelBottomNavigation() {
                     },
                     "& .MuiButtonBase-root": {
                         minWidth: '0px',
-
+                    },
+                    [customTheme.breakpoints.up('xl')]: {
+                        height: '60px',
+                        "& .MuiSvgIcon-root": { // Doubler la taille des icônes
+                            width: "36px",
+                            height: "36px",
+                        },
+                        "& .MuiBottomNavigationAction-label": { // Doubler la taille du texte
+                            fontSize: '0.8rem',
+                        },
                     },
                 }}
                 value={valueNav}
@@ -60,66 +71,33 @@ export default function LabelBottomNavigation() {
                     component={RouterLink}
                     to="/accueil"
                     label="Accueil"
-                    value="accueil"
-                    icon={<HomeRounded
-
-                        sx={{
-                            color: customTheme.palette.slate[200],
-                            width: "28px",
-                            height: "28px",
-
-
-
-                        }}
-                    />}
+                    value="/accueil"
+                    icon={<HomeRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Jouer
                     component={RouterLink}
                     to="/jouer"
-                    label="jouer"
-                    value="jouer"
-                    icon={<SportsEsportsRounded
-                        sx={{
-                            color: customTheme.palette.slate[200],
-                            width: "28px",
-                            height: "28px",
-                        }}
-                    />}
+                    label="Jouer"
+                    value="/jouer"
+                    icon={<SportsEsportsRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Ajouter une publication
                     onClick={handleClickOpen}
-                    icon={<AddBoxRounded
-                        sx={{
-                            color: customTheme.palette.slate[200],
-                            width: "28px",
-                            height: "28px",
-                        }}
-                    />}
+                    icon={<AddBoxRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Messages
                     component={RouterLink}
-                    to="/test"
-                    label="Messages"
-                    value="test"
-                    icon={<Mail
-                        sx={{
-                            color: customTheme.palette.slate[200],
-                            width: "28px",
-                            height: "28px",
-                        }}
-                    />}
+                    to="/chat"
+                    label="Chat"
+                    value="/chat"
+                    icon={<Mail sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Profil
                     component={RouterLink}
                     to="/profil"
                     label="Profil"
-                    value="profil"
-                    icon={<ImageAvatars
-                        sx={{
-                            width: "26px",
-                            height: "26px",
-                        }}
-                    />}
+                    value="/profil"
+                    icon={<ImageAvatars sx={{ width: "26px", height: "26px", [customTheme.breakpoints.up('xl')]: { width: "32px", height: "32px" } }} />}
                 />
             </BottomNavigation>
             <DialogBox open={open} handleClose={handleClose} />
