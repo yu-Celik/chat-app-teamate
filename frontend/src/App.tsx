@@ -1,14 +1,12 @@
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import { Suspense, lazy, useEffect } from 'react';
-import { BottomNavigation, CssBaseline } from '@mui/material';
+import { Suspense, lazy } from 'react';
+import { CssBaseline } from '@mui/material';
 import useAuth from './contexts/AuthContext/useAuthContext';
 import useVerifyUser from './hooks/Auth/useVerifyUser';
 import { ChatProvider } from './contexts/ChatContext/ChatContext';
 import { User } from './types/Auth.type/Auth.Props';
 import { SocketProvider } from './contexts/Socket/SocketContext';
-import LabelBottomNavigation from './components/BottomNavigation/BottomNavigation';
-
 
 const LoadingPage = lazy(() => import('./pages/LoadingPage'));
 const Welcome = lazy(() => import('./pages/WelcomePage'));

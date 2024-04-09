@@ -4,7 +4,6 @@ export const drawerWidth = 360;
 export const heightHeader = 68.5;
 export const bottomNavigationHeight = 56;
 
-
 const theme = createTheme({
     breakpoints: {
         values: {

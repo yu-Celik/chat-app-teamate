@@ -4,10 +4,6 @@ import { styled } from '@mui/material/styles';
 import {  Box } from '@mui/material';
 import customTheme from '../../../styles/customTheme';
 
-
-
-
-
 export const DrawerHeader = styled(Box)(() => ({
     display: 'flex',
     alignItems: 'center',

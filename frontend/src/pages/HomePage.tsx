@@ -2,8 +2,7 @@ import { Stack, useMediaQuery } from "@mui/material"
 import { LayoutGrid } from "../components/LayoutGrid/LayoutGrid";
 import { InfinitScrollAccueil } from "../components/InfinitScroll/InfinitScrollAccueil";
 import SearchFast from "../components/SearchFast/SearchFast";
-const heightHeader = '68.5px';
-const valeurNavigation = '68.5px';
+import { heightHeader } from "../styles/customTheme";
 
 
 export default function HomePage() {
@@ -15,9 +14,9 @@ export default function HomePage() {
             }}
         >
             <Stack
-                className="flex flex-col gap-2 overflow-y-scroll md:"
+                className="flex flex-col gap-2 overflow-y-scroll"
                 sx={{
-                    maxHeight: `calc(100dvh - ${valeurNavigation})`,
+                    maxHeight: `calc(100dvh - ${heightHeader})`,
                     padding: '1rem',
                 }}
             >
@@ -40,9 +39,9 @@ export default function HomePage() {
             }}
         >
             <Stack
-                className="flex flex-col gap-2 overflow-scroll md:"
+                className="flex flex-col gap-2 overflow-scroll"
                 sx={{
-                    maxHeight: `calc(100dvh - ${valeurNavigation})`,
+                    maxHeight: `calc(100dvh - ${heightHeader})`,
                     padding: '1rem',
                 }}
             >

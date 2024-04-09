@@ -59,6 +59,16 @@ export default function LabelBottomNavigation() {
                     "& .MuiButtonBase-root": {
                         minWidth: '0px',
                     },
+                    [customTheme.breakpoints.up('xl')]: {
+                        height: '60px',
+                        "& .MuiSvgIcon-root": { // Doubler la taille des icônes
+                            width: "36px",
+                            height: "36px",
+                        },
+                        "& .MuiBottomNavigationAction-label": { // Doubler la taille du texte
+                            fontSize: '0.8rem',
+                        },
+                    },
                     [theme.breakpoints.up('xl')]: {
                         height: '60px',
                         "& .MuiSvgIcon-root": { // Doubler la taille des icônes
@@ -80,14 +90,7 @@ export default function LabelBottomNavigation() {
                     to="/accueil"
                     label="Accueil"
                     value="/accueil"
-                    icon={<HomeRounded
-                        sx={{
-                            color: customTheme.palette.slate[200],
-                            width: "28px",
-                            height: "28px"
-
-                        }}
-                    />}
+                    icon={<HomeRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Jouer
                     component={RouterLink}
@@ -113,16 +116,7 @@ export default function LabelBottomNavigation() {
                     to="/profil"
                     label="Profil"
                     value="/profil"
-                    icon={<ImageAvatars
-                        sx={{
-                            width: "26px",
-                            height: "26px",
-                            [theme.breakpoints.up('xl')]: {
-                                width: "32px",
-                                height: "32px",
-                            }
-                        }}
-                    />}
+                    icon={<ImageAvatars sx={{ width: "26px", height: "26px", [customTheme.breakpoints.up('xl')]: { width: "32px", height: "32px" } }} />}
                 />
             </BottomNavigation>
             <DialogBox open={open} handleClose={handleClose} />

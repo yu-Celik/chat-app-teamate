@@ -1,6 +1,6 @@
 import { Box, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
+import { DrawerFooter, DrawerHeader} from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search, ViewListOutlined } from "@mui/icons-material";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";

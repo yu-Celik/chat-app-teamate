@@ -131,11 +131,11 @@ export default function HeaderProfil() {
                               boxShadow: 'none',
                               borderRadius: '9999px',
                               height: 64,
-                              oppacity: 0,
+                              opacity: 0,
                               color: 'transparent',
 
                               '&.MuiButtonBase-root:hover': {
-                                 oppacity: { md: '1' },
+                                 opacity: { md: '1' },
                                  backgroundColor: { md: customTheme.palette.bluePV.main },
                                  color: { md: customTheme.palette.slate[100] },
                               }

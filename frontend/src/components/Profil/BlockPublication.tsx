@@ -57,7 +57,7 @@ export function BlockPublication() {
             display: 'none',
          },
          msOverflowStyle: 'none',
-         scrollbarWidth: 'none'  /* Firefox */
+         scrollbarWidth: 'none'
       }} className={`px-6`}>
          <div className="mx-auto max-w-80 xl:max-w-2xl antialiased pt-4 relative w-full">
             {dummyContent.map((item, index) => (
@@ -110,8 +110,6 @@ export function BlockPublication() {
                         <img
                            src={item.postImage}
                            alt="blog thumbnail"
-                           height="1000"
-                           width="1000"
                            className="rounded-lg object-cover h-48 w-full"
                         />
                      )}

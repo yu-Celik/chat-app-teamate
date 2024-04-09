@@ -1,9 +1,7 @@
 import { Stack } from '@mui/material';
 import { TypewriterEffectSmooth } from '../components/ui/typewriter-effect';
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
-const heightHeader = 200;
-const BOTTOM_NAVIGATION_HEIGHT = 56;
-
+import { bottomNavigationHeight, heightHeader } from '../styles/customTheme';
 
 export default function GamePage(): JSX.Element {
     const words = [
@@ -25,7 +23,7 @@ export default function GamePage(): JSX.Element {
 
         <Stack
             sx={{
-                minHeight: `calc(100dvh - ${heightHeader + BOTTOM_NAVIGATION_HEIGHT}px)`,
+                minHeight: `calc(100vh - ${heightHeader + bottomNavigationHeight})`,
             }} direction={"column"} alignItems={'center'} justifyContent={"center"}>
             <LogoTeamateIcon
                 sx={{

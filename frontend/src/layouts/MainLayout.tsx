@@ -7,10 +7,10 @@ import LabelBottomNavigation from '../components/BottomNavigation/BottomNavigati
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
     return (
         <Box id="mainLayout" sx={{
-            flexGrow: 1,
+            // flexGrow: 1,
             backgroundImage: 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',
             minHeight: '100dvh',
-            minWidth: '100dvw',
+            // minWidth: '100dvw',
             position: 'relative',
         }}>
             {connected && <Header />}

@@ -12,20 +12,9 @@ import img5 from './../../assets/imgGames/league.jpg';
 import img6 from './../../assets/imgGames/fornite.jpg';
 import img7 from './../../assets/imgGames/CS.jpg';
 import img8 from './../../assets/imgGames/Valorant.jpeg';
-import im9 from './../../assets/imgGames/warzone.jpg';
+import img9 from './../../assets/imgGames/warzone.jpg';
 import img10 from './../../assets/imgGames/red dead.jpg';
 import img11 from './../../assets/imgGames/destiny2.jpg';
-
-
-
-
-
-// const heightHeader = '68.5px';
-
-
-
-
-
 
 type Card = {
   id: number;
@@ -45,7 +34,7 @@ export const LayoutGrid = () => {
           Assassin's Creed est une série de jeux vidéo d'action-aventure qui se déroule à travers différentes époques historiques, mettant en scène un conflit ancestral entre les Assassins et les Templiers, avec un gameplay mêlant exploration, infiltration et combat.
         </p>
       </div>,
-      className: 'col-span-1',
+      className: 'col-span-2',
       thumbnail: img1,
     },
     {
@@ -58,7 +47,7 @@ export const LayoutGrid = () => {
           Apex Legends est un jeu vidéo de type battle royale développé par Respawn Entertainment, où des équipes de joueurs s'affrontent dans une arène futuriste en utilisant des personnages aux compétences uniques pour être la dernière équipe en vie.
         </p>
       </div>,
-      className: 'col-span-2',
+      className: 'col-span-3',
       thumbnail: img2,
     },
     {
@@ -145,7 +134,7 @@ export const LayoutGrid = () => {
         </p>
       </div>,
       className: 'col-span-3',
-      thumbnail: im9,
+      thumbnail: img9,
     
   },
 
@@ -170,35 +159,56 @@ export const LayoutGrid = () => {
           Destiny 2 est un jeu vidéo de tir à la première personne (FPS) en ligne développé par Bungie, offrant aux joueurs une expérience de jeu de tir coopératif et compétitif dans un univers de science-fiction riche et varié. Les joueurs peuvent explorer des mondes vastes, combattre des ennemis redoutables et participer à des événements multijoueurs pour gagner des récompenses et améliorer leur équipement.
         </p>
       </div>,
-      className: 'col-span-1',
+      className: 'col-span-3',
       thumbnail: img11,
     },
-
-
   ]);
-  
-  const shuffleArray = useCallback((array: Card[]): Card[] => {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
 
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
+  const TOTAL_COLUMNS = 5; // Pour md:grid-cols-5
+
+  const getColSpan = (className: string) => {
+    const match = className.match(/col-span-(\d)/);
+    return match ? parseInt(match[1], 10) : 1;
+  };
+
+  const shuffleAndDistributeCards = useCallback((array: Card[]): Card[] => {
+    // Mélangez les cartes
+    const shuffledArray = [...array];
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
-    return array;
+
+    // Distribuez les cartes dans la grille
+    const gridArray: Card[] = [];
+    let currentRowSpan = 0;
+
+    shuffledArray.forEach(card => {
+      const cardColSpan = getColSpan(card.className);
+      if (currentRowSpan + cardColSpan > TOTAL_COLUMNS) {
+        // Si l'ajout de cette carte dépasse le nombre total de colonnes, réinitialisez le compteur
+        currentRowSpan = cardColSpan;
+      } else {
+        // Sinon, ajoutez simplement le col-span de cette carte au compteur
+        currentRowSpan += cardColSpan;
+      }
+      gridArray.push(card);
+    });
+
+    if (currentRowSpan !== TOTAL_COLUMNS) {
+      currentRowSpan = 0; // Réinitialisez currentRowSpan si nécessaire
+    }
+
+    return gridArray;
   }, []);
 
   useEffect(() => {
+    // Mélangez et distribuez les cartes à intervalles réguliers
     const interval = setInterval(() => {
-      setCards(cards => shuffleArray([...cards]));
-    }, 600 + Math.random() * 10000);
+      setCards(cards => shuffleAndDistributeCards(cards));
+    }, 6000 + Math.random() * 10000);
     return () => clearInterval(interval);
-  }, [shuffleArray]);
-
-  
+  }, [shuffleAndDistributeCards]);
 
   const [selected, setSelected] = useState<Card | null>(null);
   const [lastSelected, setLastSelected] = useState<Card | null>(null);
@@ -214,12 +224,9 @@ export const LayoutGrid = () => {
   };
 
   return (
-    <div style={{
-      // minHeight: `calc(100vh - ${heightHeader})`, 
-    }}
-      className="mx-auto gap-3 min-h-96 w-full grid grid-rows-4 grid-cols-3 md:m-0 md:grid-cols-5 md:max-w-7xl flex-grow  ">
-      {cards.map((card, i) => (
-        <div key={i} className={cn(card.className, " w-full ")}>
+    <div className="mx-auto gap-3 min-h-96 w-full grid grid-cols-3 md:grid-cols-5 md:max-w-7xl flex-grow">
+      {cards.map((card, index) => (
+        <div key={index} className={`grid-item ${card.className}`}>
           <motion.div
             onClick={() => handleClick(card)}
             className={cn(

@@ -16,7 +16,7 @@ dotenv.config();
 // Configuration CORS
 const corsOptions = {
   // origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
-  origin: ["http://192.168.1.150:3000"], // En local
+  origin: ["http://192.168.1.103:3000"], // En local
   credentials: true, // Autorise les cookies et les en-têtes d'authentification
 };
 
