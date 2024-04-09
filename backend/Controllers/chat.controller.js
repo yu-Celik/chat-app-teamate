@@ -34,7 +34,7 @@ const createChat = async (req, res) => {
         // Récupérer le chat sauvegardé avec les informations des membres peuplées
         chat = await ChatModel.findById(savedChat._id).populate('members', '-password');
 
-        notifyNewChat(secondUserId, chat);
+        notifyNewChat(userId, secondUserId, chat);
         res.status(201).json(chat);
     } catch (error) {
         // Gérer les erreurs potentielles lors de la création du chat
@@ -62,6 +62,7 @@ const findUserChats = async (req, res) => {
 // Supprimé un chat grâce à son id
 const deleteChat = async (req, res) => {
     console.log('deleteChat');
+    const userId = req.user._id;
     const { chatId } = req.params;
     const currentUserId = req.user._id.toString(); // Assurez-vous que c'est une chaîne pour la comparaison
 
@@ -77,13 +78,15 @@ const deleteChat = async (req, res) => {
         }
 
         // Trouve l'ID du second utilisateur
+
         const secondUserId = chat.members.find(member => member.toString() !== currentUserId);
 
         // Supprime le chat et tous les messages associés
         await ChatModel.findByIdAndDelete(chatId);
         await MessageModel.deleteMany({ chatId: chat._id });
-
-        notifyDeleteChat(secondUserId, chat);
+        if (secondUserId) {
+            notifyDeleteChat(userId, secondUserId, chat);
+        }
         res.status(200).json({ message: "Chat et tous ses messages supprimés avec succès." });
     } catch (error) {
         console.error('Erreur lors de la suppression du chat et de ses messages:', error);

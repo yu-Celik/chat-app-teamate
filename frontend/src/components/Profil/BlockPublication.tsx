@@ -115,7 +115,6 @@ export function BlockPublication() {
                            className="rounded-lg object-cover h-48 w-full"
                         />
                      )}
-
                   </Stack>
                </Stack>
             ))}

@@ -77,7 +77,7 @@ const createMessage = async (req, res) => {
 
     try {
         const savedMessage = await newMessage.save();
-        notifyNewMessage(receiverId, savedMessage);
+        notifyNewMessage(senderId, receiverId, savedMessage);
         return res.status(200).json(savedMessage);
     } catch (error) {
         console.error('Error saving message:', error);
@@ -164,10 +164,9 @@ const editMessage = async (req, res) => {
         if (!updatedMessage) {
             return res.status(404).json({ message: 'Message non trouvé ou vous n\'êtes pas l\'expéditeur.' });
         }
-        const chatId = updatedMessage.chatId;
         const receiverId = updatedMessage.receiverId;
 
-        notifyEditMessage(receiverId, updatedMessage, chatId);
+        notifyEditMessage(senderId, receiverId, updatedMessage);
         res.status(200).json(updatedMessage);
     } catch (error) {
         console.error('Erreur lors de la mise à jour du message:', error);
@@ -190,9 +189,10 @@ const deleteMessage = async (req, res) => {
         if (!message) {
             return res.status(404).json({ message: 'Message non trouvé ou action non autorisée.' });
         }
-        const chatId = message.chatId;
         const receiverId = message.receiverId;
-        notifyDeleteMessage(receiverId, message, chatId);
+        if (receiverId) {
+            notifyDeleteMessage(senderId, receiverId, message);
+        }
         res.status(200).json({ message: 'Message supprimé avec succès.' });
     } catch (error) {
         console.error('Erreur lors de la suppression du message:', error);
