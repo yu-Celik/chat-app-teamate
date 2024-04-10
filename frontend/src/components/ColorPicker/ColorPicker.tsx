@@ -19,20 +19,22 @@ export const ColorPicker = ({ element }: { element: string }) => {
     return (
         <Stack
             direction={'column'}
+            justifyContent={'center'}
+            alignItems={'center'}
             sx={{
                 width: '50%',
                 boxShadow: customTheme.shadows[1],
             }}
         >
             <Typography
-                color={customTheme.palette.slate[200]}
+                color={customTheme.palette.orangePV.dark}
                 variant="body1"
                 sx={{
                     paddingTop: '0.5rem',
                     textAlign: 'center',
                 }}
             >
-                {element}
+                Couleur {element}
             </Typography>
             <MuiColorInput value={value} onChange={handleChange} format={format}
                 sx={{
