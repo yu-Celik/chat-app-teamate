@@ -24,6 +24,11 @@ export default function ChatList({ chatInfo, currentUserId, receiverId }: { chat
         }
     }, [chatInfo.chatId, getMessages, markAllMessagesAsRead, receiverId, socket]);
 
+    // useEffect(() => {
+    //     chatInfo.messages.messagesList.forEach(message => {
+    // console.log(message);
+    //     });
+    // }, [chatInfo.messages.messagesList]);
 
     return (
         <>

@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         // origin: ["https://chat-app-teamate.onrender.com"], // Pour le site chat-app-teamate.onrender.com
-        origin: ["http://192.168.1.150:3000"], // En local
+        origin: ["http://192.168.1.103:3000"], // En local
         credentials: true,
     },
     transports: ['websocket'],
@@ -70,26 +70,43 @@ io.on('connection', (socket) => {
     });
 
     socket.on('conversationOpened', ({ chatId, receiverId }) => {
-        if (!userOpenConversations[userId]) { // Si l'utilisateur n'est pas dans la map
-            userOpenConversations[userId] = []; // Créer une liste vide pour l'utilisateur
+        // Assurez-vous que l'utilisateur a une entrée dans userOpenConversations
+        if (!userOpenConversations[userId]) {
+            userOpenConversations[userId] = [];
         }
-        if (!userOpenConversations[userId].includes(chatId)) { // Si la conversation n'est pas dans la liste de l'utilisateur
-            userOpenConversations[userId].push(chatId); // Ajouter le chatId à la liste de chats de l'utilisateur
+    
+        // Identifier les conversations à fermer
+        const conversationsToClose = userOpenConversations[userId].filter(openChatId => openChatId !== chatId);
+    
+        // Fermer les conversations identifiées
+        conversationsToClose.forEach(openChatId => {
+            const index = userOpenConversations[userId].indexOf(openChatId);
+            if (index !== -1) {
+                // Émettre un événement pour indiquer que la conversation précédente a été fermée
+                io.to(socket.id).emit('conversationClosed', { chatId: openChatId });
+            }
+        });
+    
+        // Mettre à jour userOpenConversations[userId] pour ne contenir que la nouvelle conversation ouverte
+        userOpenConversations[userId] = userOpenConversations[userId].filter(chat => chat === chatId || !conversationsToClose.includes(chat));
+    
+        // Ajouter la nouvelle conversation si elle n'est pas déjà présente
+        if (!userOpenConversations[userId].includes(chatId)) {
+            userOpenConversations[userId].push(chatId);
         }
+    
         console.log('conversationOpened', userId, chatId);
-        const receiverSocketIds = getReceiverSocketIds(receiverId); // Récupérer les sockets du receiver
-        if (receiverSocketIds.length > 0) { // Si le receiver a des sockets
-            receiverSocketIds.forEach(socketId => { // Pour chaque socket du receiver
-                io.to(socketId).emit('conversationOpened', {from: userId, chatId }); // Émettre l'ouverture de la conversation aux clients
-            });
-        }
+        // Émettre l'ouverture de la nouvelle conversation aux clients
+        io.to(socket.id).emit('conversationOpened', { from: userId, chatId });
     });
-
+    
     socket.on('conversationClosed', ({ chatId }) => {
-        if (userOpenConversations[userId] && userOpenConversations[userId].includes(chatId)) { // Si la conversation est dans la liste de l'utilisateur
-            const index = userOpenConversations[userId].indexOf(chatId); // Trouver l'index de la conversation dans la liste
-            userOpenConversations[userId].splice(index, 1); // Supprimer la conversation de la liste
-            console.log('conversationClosed', userId, chatId);
+        if (userOpenConversations[userId] && userOpenConversations[userId].includes(chatId)) {
+            const index = userOpenConversations[userId].indexOf(chatId);
+            if (index !== -1) {
+                userOpenConversations[userId].splice(index, 1);
+                console.log('conversationClosed', userId, chatId);
+            }
         }
     });
 

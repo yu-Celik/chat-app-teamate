@@ -228,41 +228,33 @@ const deleteImageUrl = async (req, res) => {
 
 const markAllMessagesAsRead = async (req, res) => {
     const { chatId } = req.params;
-    const userId = req.user._id;
-    const updateTimestamp = new Date(); // Timestamp avant la mise à jour
+    const userId = req.user._id; 
 
     try {
-        // Met à jour tous les messages dans le chat spécifié où l'utilisateur est le destinataire pour les marquer comme lus
-        const updateResult = await MessageModel.updateMany(
-            { chatId: chatId, receiverId: userId, read: false },
-            { read: true, readAt: updateTimestamp }
-        );
+        // Récupère les messages non lus où l'utilisateur actuel est le destinataire
+        const unreadMessages = await MessageModel.find({
+            chatId: chatId,
+            receiverId: userId,
+            read: false
+        });
 
-        // Si aucun document n'a été modifié, cela signifie que tous les messages étaient déjà marqués comme lus
-        if (updateResult.nModified === 0) {
+        // Si aucun message non lu n'est trouvé, renvoie une réponse appropriée
+        if (unreadMessages.length === 0) {
             return res.status(200).json({ message: 'Tous les messages sont déjà marqués comme lus.' });
         }
 
-        // Récupère les messages mis à jour après le timestamp enregistré
-        const updatedMessages = await MessageModel.find({
-            chatId: chatId,
-            receiverId: userId,
-            read: true,
-            readAt: { $gte: updateTimestamp }
-        }).sort({ createdAt: -1 });
+        // Met à jour les messages non lus pour les marquer comme lus
+        await MessageModel.updateMany(
+            { _id: { $in: unreadMessages.map(message => message._id) } },
+            { read: true, readAt: new Date() }
+        );
+        const receiverId = unreadMessages[0].receiverId;
+        const senderId = unreadMessages[0].senderId;
+        // Émet un événement pour notifier le frontend que les messages ont été marqués comme lus
+        notifyMarkAllMessagesAsRead(chatId, unreadMessages.map(message => message._id.toString()), receiverId, senderId);
 
-        // Vérifie si au moins un message a été récupéré avant de continuer
-        if (updatedMessages.length > 0) {
-            const senderId = updatedMessages[0].senderId;
-            const receiverId = updatedMessages[0].receiverId;
-            console.log('senderId', senderId);
-            console.log('receiverId', receiverId);
-            notifyMarkAllMessagesAsRead(senderId, receiverId, updatedMessages);
-        } else {
-            console.log('Aucun message mis à jour trouvé.');
-        }
+        res.status(200).json({ message: 'Messages marqués comme lus avec succès.' });
 
-        res.status(201).json(updatedMessages);
     } catch (error) {
         console.error('Erreur lors de la mise à jour des messages:', error);
         res.status(500).json({ message: 'Erreur lors de la mise à jour des messages', error });
@@ -281,27 +273,6 @@ const searchMessages = async (req, res) => {
         res.status(500).json({ message: "Erreur lors de la recherche des messages", error });
     }
 };
-// const searchMessages = async (req, res) => {
-//     const { chatId } = req.params;
-//     const searchText = req.query.searchText || ''; // Récupère le texte de recherche depuis les paramètres de la requête, si présent
-
-//     try {
-//         // Utilise une expression régulière pour une recherche insensible à la casse
-//         const messages = await MessageModel.find({
-//             chatId,
-//             text: { $regex: searchText, $options: 'i' }
-//         });
-
-//         if (messages.length > 0) { // Vérifie si le tableau des messages n'est pas vide
-//             res.status(200).json(messages);
-//         } else {
-//             res.status(404).json({ message: 'Messages not found' });
-//         }
-//     } catch (error) {
-//         console.error('Error fetching messages:', error);
-//         res.status(500).json({ message: 'Error fetching messages', error });
-//     }
-// };
 
 export {
     createMessage,
@@ -327,28 +298,3 @@ export {
 // 9. Statut en ligne/Hors ligne des utilisateurs : Montrez le statut en ligne ou hors ligne des utilisateurs pour indiquer leur disponibilité.
 // 10. Messages éphémères : Implémentez des messages qui disparaissent après avoir été vus ou après un certain temps.
 // Pour implémenter ces fonctionnalités, vous devrez probablement étendre vos modèles de données, ajuster vos contrôleurs et peut-être utiliser des services supplémentaires pour la gestion des fichiers, les notifications, etc.
-
-// const getMessages = async (req, res) => {
-//     const { chatId } = req.params;
-//     const { page = 1, limit = 10 } = req.query; // Pagination
-//     try {
-//         const messages = await MessageModel.find({ chatId })
-//             .sort({ createdAt: -1 })
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit);
-//         res.json(messages);
-//     } catch (error) {
-//         res.status(500).json({ message: "Erreur lors de la récupération des messages", error });
-//     }
-// };
-
-// const createGroupChat = async (req, res) => {
-//     const { members } = req.body; // Un tableau d'identifiants d'utilisateurs
-//     try {
-//         const newChat = new ChatModel({ members });
-//         await newChat.save();
-//         res.status(201).json(newChat);
-//     } catch (error) {
-//         res.status(500).json({ message: "Erreur lors de la création du groupe", error });
-//     }
-// };

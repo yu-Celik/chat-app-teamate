@@ -27,6 +27,7 @@ import { drawerWidth, heightHeader } from '../styles/customTheme';
 import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
 import useListenConversationOpened from "../hooks/Socket/useListenConversationOpened";
 import useListenMarkAllMessagesAsRead from "../hooks/Socket/useListenMarkAllMessagesAsRead";
+import useListenMessageRead from "../hooks/Socket/useListenMessageRead";
 
 export default function ChatPage() {
     useListenCreateUser();
@@ -41,6 +42,7 @@ export default function ChatPage() {
     useListenDeleteChat();
     useListenConversationOpened();
     useListenMarkAllMessagesAsRead();
+    useListenMessageRead();
     const { socket } = useSocket();
     const { sendMessage } = useSendMessage();
     const { editMessage } = useEditMessage();

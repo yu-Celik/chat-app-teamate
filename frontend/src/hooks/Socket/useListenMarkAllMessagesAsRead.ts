@@ -1,33 +1,30 @@
 import { useEffect } from "react";
 import { useSocket } from "../../contexts/Socket/useSocketContext";
-import { Message } from "../../types/Chat.type/Chat.Props";
 import { useChat } from "../../contexts/ChatContext/useChatContext";
+import useAuth from "../../contexts/AuthContext/useAuthContext";
 
 const useListenMarkAllMessagesAsRead = () => {
     const { socket } = useSocket();
     const { chatInfo, updateMessageInList } = useChat();
+    const { currentUser } = useAuth();
 
     useEffect(() => {
-        // Vérification supplémentaire pour s'assurer que chatId est présent
         if (socket && chatInfo.chatId) {
-            console.log('useListenMarkAllMessagesAsRead');
-            
-            const handler = (messages: Message[]) => {
-                // Mettre à jour l'état des messages en les marquant comme lus
-                updateMessageInList(prevMessagesList => prevMessagesList.map(message => {
-                    const foundMessage = messages.find(m => m._id === message._id);
-                    return foundMessage ? { ...message, read: true } : message;
-                }));
+            const handler = ({ chatId, messageIds }: { chatId: string, messageIds: string[] }) => {
+                if (chatId === chatInfo.chatId) {
+                    const messageIdsRead = new Set(messageIds);
+                    updateMessageInList(prevMessagesList => prevMessagesList.map(message => {
+                        return messageIdsRead.has(message._id) ? { ...message, read: true } : message;
+                    }));
+                }
             };
-
             socket.on('messagesAsRead', handler);
 
-            // Nettoyage de l'effet
             return () => {
                 socket.off('messagesAsRead', handler);
             };
         }
-    }, [socket, chatInfo.chatId, updateMessageInList]);
+    }, [chatInfo.chatId, currentUser.data?._id, socket, updateMessageInList]);
 };
 
 export default useListenMarkAllMessagesAsRead;

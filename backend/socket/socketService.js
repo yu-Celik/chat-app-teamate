@@ -11,18 +11,25 @@ const emitToUser = (userId, event, data) => {
 
 export const notifyNewMessage = async (senderId, receiverId, message) => {
     emitToUser(receiverId, 'newMessage', message);
-    const openConversations = getUserOpenConversations(receiverId); // Récupérer les conversations ouvertes par le receiver
-    console.log('openConversations', openConversations);
-    if (openConversations.map(String).includes(String(message.chatId))) { // Vérifiez si le chatId du message est dans les conversations ouvertes
-        console.log('notifyNewMessage');
-        emitToUser(receiverId, 'messagesAsRead', message);
-        emitToUser(senderId, 'messagesAsRead', message);
-        await MessageModel.findOneAndUpdate(
-            { _id: message._id },
-            { read: true, readAt: new Date() }
-        );
+    const openConversations = getUserOpenConversations(receiverId);
+    console.log(`les conversations ouverte sont ${openConversations}`);
+    console.log(`L'id du message est ${message._id}`);
+    console.log(`L'id du chat est ${message.chatId}`);
+    if (openConversations.map(String).includes(String(message.chatId))) {
+        if (receiverId === message.receiverId) {
+            // console.log(`Le message ${message._id} du chat ${message.chatId} a été marqué comme lu par ${receiverId} pour ${senderId}`);
+            await MessageModel.findOneAndUpdate(
+                { _id: message._id },
+                { read: true, readAt: new Date() }
+            );
+            // Émettre un événement pour indiquer que le message a été marqué comme lu
+            emitToUser(receiverId, 'messageRead', { chatId: message.chatId, message });
+            if (senderId !== receiverId) {
+                console.log('re');
+                emitToUser(senderId, 'messageRead', { chatId: message.chatId, message });
+            }
+        }
     }
-
     if (senderId !== receiverId) {
         emitToUser(senderId, 'newMessage', message);
     }
@@ -59,17 +66,15 @@ export const notifyDeleteChat = (senderId, receiverId, chat) => {
         emitToUser(senderId, 'deleteChat', chat);
     }
 };
+export const notifyMarkAllMessagesAsRead = (chatId, messageIds, receiverId, senderId) => { // ChatId est l'id du chat, messageIds est un tableau d'id de messages, receiverId est l'id du destinataire, senderId est l'id de l'expéditeur
+    // console.log(`Le chat ${chatId} et les messages ${messageIds} ont été marqués comme lus par ${receiverId} pour ${senderId}`);
 
-export const notifyMarkAllMessagesAsRead = (senderId, receiverId, messages) => {
-    // console.log(`Émission de 'messagesAsRead' à receiverId: ${receiverId} et senderId: ${senderId}`);
-    emitToUser(receiverId, 'messagesAsRead', messages);
-    console.log('messages', messages);
+    emitToUser(receiverId, 'messagesAsRead', { chatId, messageIds });
     if (senderId !== receiverId) {
-        emitToUser(senderId, 'messagesAsRead', messages);
+        emitToUser(senderId, 'messagesAsRead', { chatId, messageIds });
     }
 };
 
 export const notifyCreateUser = (user) => {
-    // Émettre à tous les clients connectés
     io.emit('createUser', user);
 };

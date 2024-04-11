@@ -13,8 +13,7 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
     useEffect(() => {
         if (!currentUser.data) return;
 
-        // const newSocket = io("https://chat-app-teamate.onrender.com", { // Pour le site chat-app-teamate.onrender.com
-        const newSocket = io("http://192.168.1.150:5000", { // Pour le site local
+        const newSocket = io("http://192.168.1.103:5000", {
             withCredentials: true,
             query: { userId: currentUser.data?._id },
             transports: ['websocket'],
@@ -27,6 +26,9 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
         setSocket(newSocket);
 
         return () => {
+            // Suppression des écouteurs d'événements pour éviter les fuites de mémoire
+            newSocket.off("getOnlineUsers");
+            newSocket.off("getDisconnectedUsers");
             // Vérifiez si le socket est connecté avant de tenter de le fermer
             if (newSocket.connected) {
                 newSocket.close();
@@ -34,9 +36,6 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
         };
     }, [currentUser.data]);
 
-
-
-    // Écouteur pour les utilisateurs en ligne
     useEffect(() => {
         if (!socket) return;
 
@@ -63,20 +62,6 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
         return () => {
             socket.off("getDisconnectedUsers", handleUserDisconnected);
         };
-    }, [socket]);
-
-
-
-    useEffect(() => {
-        // console.log('onlineUsers', onlineUsers);
-    }, [onlineUsers]);
-
-    useEffect(() => {
-        // console.log('disconnectedUsers', disconnectedUsers);
-    }, [disconnectedUsers]);
-
-    useEffect(() => {
-        // console.log('socket', socket);
     }, [socket]);
 
     return <SocketContext.Provider value={{ socket, onlineUsers, disconnectedUsers }}>

@@ -13,7 +13,6 @@ const useListenConversationOpened = () => {
             const isMember = chatInfo.userChats.chats.some(chat => chat._id === data.chatId && chat.members.some(member => member._id === data.from));
             if (isMember) {
                 console.log(`Conversation ${data.chatId} ouverte par ${data.from}`);
-                socket.emit('markMessagesAsRead', { chatId: data.chatId });
             }
         };
 
