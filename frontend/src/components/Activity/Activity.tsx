@@ -15,7 +15,7 @@ export default function Activity() {
                     className='flex items-center gap-2'
                 >
                     <img
-                        className='h-20 rounded'
+                        className='h-12 rounded'
                         src={valorant}
                         alt="Valorant" />
                     <p>10.5h les 15 derniers jours</p>
@@ -24,7 +24,7 @@ export default function Activity() {
                     className='flex items-center gap-2'
                 >
                     <img
-                        className='h-20 rounded'
+                        className='h-12 rounded'
 
                         src={rocketLeague}
                         alt="Rocket League" />
@@ -34,7 +34,7 @@ export default function Activity() {
                     className='flex  items-center gap-2'
                 >
                     <img
-                        className='h-20 rounded'
+                        className='h-12 rounded'
 
                         src={fortnite}
                         alt="Fortnite" />

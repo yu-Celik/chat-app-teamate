@@ -7,7 +7,7 @@ import customTheme from '../styles/customTheme';
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
 
-    const isLgDown = useMediaQuery(customTheme.breakpoints.down('lg'));
+    const isSmDown = useMediaQuery(customTheme.breakpoints.down('sm'));
 
     return (
         <Box id="mainLayout" sx={{
@@ -21,7 +21,7 @@ const MainLayout = ({ children, connected }: { children: ReactNode, connected: U
             <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'} >
                 {children}
             </Stack>
-            {isLgDown && <LabelBottomNavigation />}
+            {isSmDown && <LabelBottomNavigation />}
         </Box>
     );
 };

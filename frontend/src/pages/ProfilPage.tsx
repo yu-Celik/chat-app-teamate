@@ -19,7 +19,7 @@ export default function Profil() {
     if (isMd || isLgUp) heightInfinitScroll = '160px';
 
     let totalHeight = `calc(100vh - ${heightHeader + bottomNavigationHeight + parseFloat(heightInfinitScroll)}px)`;
-    if (isLgUp) totalHeight = `calc(100vh - ${heightHeader + parseFloat(heightInfinitScroll)}px)`;
+    if (isSmUp) totalHeight = `calc(100vh - ${heightHeader + parseFloat(heightInfinitScroll)}px)`;
 
 
     const totalHeightWithout = `calc(${totalHeight} - ${parseFloat(heightHeaderProfil)}px)`;

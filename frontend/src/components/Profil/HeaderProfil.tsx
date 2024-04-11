@@ -7,10 +7,11 @@ import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateR
 import { StyledIconButton } from '../IconButton/IconButton.tsx';
 import useAuth from '../../contexts/AuthContext/useAuthContext.ts';
 import { useState } from 'react';
+import PlaygroundSpeedDial from '../OptionProfil/OptionProfil.tsx';
 
 export default function HeaderProfil() {
    const { currentUser } = useAuth();
-   const [username, setUsername] = useState(currentUser.data?.username || '');
+   const [username, setUsername] = useState(currentUser.data?.username || '')
 
 
    const [modification, setModification] = React.useState(false)
@@ -33,7 +34,7 @@ export default function HeaderProfil() {
             justifyContent="center"
             alignItems="center"
             margin="auto"
-            flexWrap={{ xs: 'wrap', md: 'nowrap'  }}
+            flexWrap={{ xs: 'wrap', md: 'nowrap' }}
             sx={{
                display: modification ? 'flex' : 'none',
             }}
@@ -57,9 +58,6 @@ export default function HeaderProfil() {
                [customTheme.breakpoints.up('md')]: {
                   paddingY: customTheme.spacing(1),
                }
-
-
-
 
             }}
          >
@@ -142,12 +140,25 @@ export default function HeaderProfil() {
                   </Stack>
 
                   <Stack>
-                     <Typography
-                        color={customTheme.palette.slate[200]}
-                        variant="body1"
+                     <Stack
+                        sx={{
+                           flexDirection: 'row',
+                           alignItems: 'center',
+                        }}
                      >
-                        {username}
-                     </Typography>
+                        <Typography
+                           color={customTheme.palette.slate[200]}
+                           variant="body1"
+                           sx={{
+                              fontSize: '1.25rem',
+                              fontWeight:'bold'
+                           }}
+                        >
+                           {username}
+                        </Typography>
+                        <PlaygroundSpeedDial />
+                     </Stack>
+
                      {isOnline ? (
                         <Stack>
                            <Typography
