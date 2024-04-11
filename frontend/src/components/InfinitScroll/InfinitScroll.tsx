@@ -40,7 +40,7 @@ export const InfinitScroll = () => {
 
     const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
     return (
-        <InfiniteMovingCards className='max-w-screen-2xl xl:mx-auto' direction="right" pauseOnHover={isSmUp} speed="slow" items={image} />
+        <InfiniteMovingCards className='max-w-screen-2xl xl:mx-auto scrollbar-none' direction="left" pauseOnHover={isSmUp} speed="slow" items={image} />
     );
 };
 

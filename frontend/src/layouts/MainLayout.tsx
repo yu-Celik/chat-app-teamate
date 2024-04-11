@@ -16,7 +16,7 @@ const MainLayout = ({ children, connected }: { children: ReactNode, connected: U
             position: 'relative',
         }}>
             {connected && <Header />}
-            <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'}>
+            <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'} >
                 {children}
             </Stack>
             {isSmDown && <LabelBottomNavigation />}

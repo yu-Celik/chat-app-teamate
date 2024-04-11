@@ -2,31 +2,16 @@ import { Button, Stack, Typography, alpha, styled } from '@mui/material';
 import ImageAvatars from '../ImageAvatars/ImageAvatars.tsx';
 import customTheme from '../../styles/customTheme';
 import { ColorPicker } from '../ColorPicker/ColorPicker.tsx';
-import React, { useCallback } from 'react';
+import React from 'react';
 import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateRounded';
 import { StyledIconButton } from '../IconButton/IconButton.tsx';
 import useAuth from '../../contexts/AuthContext/useAuthContext.ts';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { useState } from 'react';
-import { Input } from '@mui/material';
 
 export default function HeaderProfil() {
    const { currentUser } = useAuth();
-   const [isEditing, setIsEditing] = useState(false);
    const [username, setUsername] = useState(currentUser.data?.username || '');
 
-   const handleIconClick = useCallback(() => {
-      setIsEditing(true);
-   }, []);
-
-   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-      setUsername(event.target.value);
-   }, []);
-
-   const handleInputBlur = useCallback(() => {
-      setIsEditing(false);
-      // Ici, vous pouvez également ajouter du code pour mettre à jour le nom d'utilisateur dans votre base de données
-   }, []);
 
    const [modification, setModification] = React.useState(false)
    const isOnline = currentUser.data?.lastLogout || false;
@@ -43,9 +28,12 @@ export default function HeaderProfil() {
             position: 'static',
          }} >
          <Stack
-            component={'article'}
-            flexDirection={'row'}
-            flexWrap={'wrap'}
+            component="article"
+            flexDirection="row"
+            justifyContent="center"
+            alignItems="center"
+            margin="auto"
+            flexWrap={{ xs: 'wrap', md: 'nowrap'  }}
             sx={{
                display: modification ? 'flex' : 'none',
             }}
@@ -58,7 +46,7 @@ export default function HeaderProfil() {
          <Stack
             sx={{
                backgroundColor: alpha(customTheme.palette.slate[800], 0.1),
-               padding: customTheme.spacing(2),
+               paddingX: customTheme.spacing(2),
                display: 'flex',
                flexDirection: 'row',
                justifyContent: 'space-between',
@@ -66,6 +54,12 @@ export default function HeaderProfil() {
                boxShadow: customTheme.shadows[1],
                width: '100%',
                margin: '0 auto',
+               [customTheme.breakpoints.up('md')]: {
+                  paddingY: customTheme.spacing(1),
+               }
+
+
+
 
             }}
          >
@@ -76,8 +70,8 @@ export default function HeaderProfil() {
                   alignItems: 'center',
                   width: '100%',
                   margin: '0 auto',
-                  maxWidth: '1536px',
-                  
+                  maxWidth: '1500px',
+
                }}
             >
                <Stack
@@ -148,51 +142,12 @@ export default function HeaderProfil() {
                   </Stack>
 
                   <Stack>
-                     <Stack direction={'row'}>
-                        {isEditing ? (
-                           <Input
-                              value={username}
-                              onChange={handleInputChange}
-                              onBlur={handleInputBlur}
-                              onKeyDown={(event) => {
-                                 if (event.key === 'Enter') {
-                                    handleInputBlur();
-                                 }
-                              }}
-                              autoFocus
-                              sx={{
-                                 color: customTheme.palette.slate[200],
-                                 fontSize: '1rem',
-                                 '&:focus': {
-                                    color: customTheme.palette.slate[200],
-                                 },
-                                 '&::after': {
-                                    borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
-                                 },
-                              }}
-                           />
-                        ) : (
-                           <Typography
-                              color={customTheme.palette.slate[200]}
-                              variant="body1"
-                           >
-                              {username}
-                           </Typography>
-                        )}
-                        <EditRoundedIcon
-                           onClick={handleIconClick}
-                           sx={{
-                              marginLeft: 1,
-                              fontSize: '0.8rem',
-                              color: customTheme.palette.slate[200],
-                              '&:hover': {
-                                 cursor: 'pointer',
-                              },
-                           }}
-                        />
-                     </Stack>
-
-
+                     <Typography
+                        color={customTheme.palette.slate[200]}
+                        variant="body1"
+                     >
+                        {username}
+                     </Typography>
                      {isOnline ? (
                         <Stack>
                            <Typography
@@ -230,9 +185,9 @@ export default function HeaderProfil() {
                            />
                            <VisuallyHiddenInput type="file" />
                         </StyledIconButton>
-                        <StyledIconButton title="Modifier le profil"
+                        <StyledIconButton title="Modifier mon profil"
                            sx={{
-                              padding: 1,
+                              paddingY: 1,
                               backgroundColor: 'transparent',
                               fontSize: '1rem',
                               '&.MuiButtonBase-root': {
@@ -254,13 +209,16 @@ export default function HeaderProfil() {
                         <StyledIconButton title='Annuler les modifications'
                            sx={{
                               marginRight: 2,
-                              padding: 1,
+                              paddingY: 1,
+                              border: 'none',
+
                               backgroundColor: 'transparent',
                               fontSize: '1rem',
 
                               '&.MuiButtonBase-root': {
                                  backgroundColor: 'transparent',
-                                 border: 'none',
+                                 paddingRight: '0px',
+
                                  boxShadow: 'none',
                                  color: customTheme.palette.slate[200],
                               },
@@ -272,15 +230,15 @@ export default function HeaderProfil() {
                         <StyledIconButton title='Enregistrer les modifications'
                            sx={{
                               marginRight: 2,
-                              padding: 1,
+                              border: '0px',
+                              paddingY: 1,
                               backgroundColor: 'transparent',
                               '&.MuiButtonBase-root': {
                                  backgroundColor: 'transparent',
                                  fontSize: '1rem',
-
-                                 border: 'none',
+                                 paddingRight: '0px',
                                  boxShadow: 'none',
-                                 color: customTheme.palette.slate[200],
+                                 color: customTheme.palette.orangePV.dark,
                               },
                            }}
                            onClick={() => setModification(!modification)}

@@ -7,17 +7,13 @@ import { Stack, alpha, } from "@mui/material";
 import ClampLines from "react-clamp-lines";
 import ImageAvatars from '../ImageAvatars/ImageAvatars.tsx';
 
-
-
-
 export function BlockPublication() {
    const dummyContent = [
       {
          id: "1",
          postDate: "Aujourd'hui à 14h30",
          postValue: "Trop beau !!!",
-         postImage:
-            "https://images.unsplash.com/photo-1519669556878-63bdad8a1a49?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+         postImage: "https://images.unsplash.com/photo-1519669556878-63bdad8a1a49?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
       {
          id: "2",
@@ -29,15 +25,13 @@ export function BlockPublication() {
          id: "3",
          postDate: "Aujourd'hui à 14h30",
          postValue: "Sit duis est minim proident non nisi velit non consectetur.",
-         postImage:
-            "https://images.unsplash.com/photo-1581351123004-757df051db8e?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+         postImage: "https://images.unsplash.com/photo-1581351123004-757df051db8e?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
       {
          id: "4",
          postDate: "Aujourd'hui à 14h30",
          postValue: "Sit duis est minim proident non nisi velit non consectetur..",
-         postImage:
-            "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+         postImage: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
       {
          id: "5",
@@ -47,29 +41,26 @@ export function BlockPublication() {
       },
 
    ];
-
-
-
+   
    return (
-      <Stack sx={{
+      <Stack sx={{    
          overflowY: 'scroll',
          '&::-webkit-scrollbar': {
             display: 'none',
          },
          msOverflowStyle: 'none',
          scrollbarWidth: 'none'
-      }} className={`px-6`}>
-         <div className="mx-auto max-w-80 xl:max-w-2xl antialiased pt-4 relative w-full">
+      }} className={`px-6 `}>
+         <div className="mx-auto lg:mx-0 max-w-2xl antialiased pt-4 relative w-full">
             {dummyContent.map((item, index) => (
                <Stack
                   sx={{
                      backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
                      padding: 2,
-                     borderRadius: 2,
+                     borderRadius: 1,
                   }}
                   key={`content-${index}`}
                   className="flex flex-col gap-4 mb-10 antialiased r"
-
                >
                   <Stack>
                      <Stack
@@ -98,7 +89,7 @@ export function BlockPublication() {
                      gap={0.5}
                   >
                      <ClampLines
-                        className="text-sm text-slate-200 prose prose-sm dark:prose-invert "
+                        className=" text-slate-200  dark:prose-invert "
                         text={item.postValue}
                         id={item.id}
                         lines={2}
@@ -113,7 +104,6 @@ export function BlockPublication() {
                            className="rounded-lg object-cover h-48 w-full"
                         />
                      )}
-
                   </Stack>
                </Stack>
             ))}

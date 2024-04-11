@@ -1,7 +1,6 @@
 import { Stack } from '@mui/material';
 import { TypewriterEffectSmooth } from '../components/ui/typewriter-effect';
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
-import LabelBottomNavigation from '../components/BottomNavigation/BottomNavigation';
 import { bottomNavigationHeight, heightHeader } from '../styles/customTheme';
 
 export default function GamePage(): JSX.Element {
@@ -24,7 +23,7 @@ export default function GamePage(): JSX.Element {
 
         <Stack
             sx={{
-                minHeight: `calc(100vh - ${heightHeader + bottomNavigationHeight})`,
+                minHeight: `calc(100dvh - ${heightHeader + bottomNavigationHeight})`,
             }} direction={"column"} alignItems={'center'} justifyContent={"center"}>
             <LogoTeamateIcon
                 sx={{
@@ -35,7 +34,6 @@ export default function GamePage(): JSX.Element {
             <div style={{ position: 'relative', zIndex: 10 }}>
                 <TypewriterEffectSmooth speed={{ delay: 0.2, duration: 1 }} words={words} />
             </div>
-            <LabelBottomNavigation />
 
 
 

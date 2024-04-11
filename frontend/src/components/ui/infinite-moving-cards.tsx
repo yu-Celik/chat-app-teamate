@@ -74,7 +74,7 @@ export const InfiniteMovingCards = ({
          } else if (speed === "normal") {
             containerRef.current.style.setProperty("--animation-duration", "40s");
          } else {
-            containerRef.current.style.setProperty("--animation-duration", "80s");
+            containerRef.current.style.setProperty("--animation-duration", "700s");
          }
       }
    };
@@ -106,7 +106,7 @@ export const InfiniteMovingCards = ({
          >
             {isImage ? (
                items.map((item) => (
-                  <img key={item.id} onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="rounded h-20 sm:h-28 md:h-32 lg:h-36" />
+                  <img key={item.id} onContextMenu={(e) => e.preventDefault()} src={item.src} alt="" className="rounded h-20 sm:h-28 md:h-32 lg:h-32" />
                ))
 
             ) : (

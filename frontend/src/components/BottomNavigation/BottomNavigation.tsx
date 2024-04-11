@@ -9,13 +9,19 @@ import ImageAvatars from '../ImageAvatars/ImageAvatars';
 import customTheme from './../../styles/customTheme.ts';
 import { useLocation } from 'react-router-dom';
 import DialogBox from '../DialoguePublication/DialoguePublication.tsx';
+import { useTheme } from '@mui/material';
+
+
+
 
 
 export default function LabelBottomNavigation() {
 
+    const theme = useTheme();
     const location = useLocation();
     const [valueNav, setValueNav] = React.useState(location.pathname);
     const [open, setOpen] = React.useState(false);
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -63,10 +69,22 @@ export default function LabelBottomNavigation() {
                             fontSize: '0.8rem',
                         },
                     },
+                    [theme.breakpoints.up('xl')]: {
+                        height: '60px',
+                        "& .MuiSvgIcon-root": { // Doubler la taille des icônes
+                            width: "36px",
+                            height: "36px",
+                        },
+                        "& .MuiBottomNavigationAction-label": { // Doubler la taille du texte
+                            fontSize: '0.8rem',
+                        },
+                    },
+
                 }}
                 value={valueNav}
                 onChange={handleChangeNav}
             >
+
                 <BottomNavigationAction //  Accueil
                     component={RouterLink}
                     to="/accueil"
@@ -82,6 +100,7 @@ export default function LabelBottomNavigation() {
                     icon={<SportsEsportsRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
                 <BottomNavigationAction // Ajouter une publication
+                    value="publier"
                     onClick={handleClickOpen}
                     icon={<AddBoxRounded sx={{ color: customTheme.palette.slate[200], width: "28px", height: "28px" }} />}
                 />
@@ -104,5 +123,3 @@ export default function LabelBottomNavigation() {
         </>
     );
 }
-
-
