@@ -3,6 +3,7 @@ import customTheme from "../../styles/customTheme.ts";
 import BasicDateCalendar from "../Calendar/Calendar.tsx";
 import Activity from "../Activity/Activity.tsx";
 import { AnimatedTooltipPreview } from "../FriendsList/FriendsList.tsx";
+import PlateformConnaxion from "../PlateformConnexion/PlateformConnaxion.tsx";
 
 export default function RightBlockProfil() {
   return (
@@ -24,6 +25,7 @@ export default function RightBlockProfil() {
     >
       <BasicDateCalendar />
       <Activity />
+      <PlateformConnaxion />
 
     </Box>
   )

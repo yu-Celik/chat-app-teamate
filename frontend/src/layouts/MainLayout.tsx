@@ -8,7 +8,9 @@ import customTheme from '../styles/customTheme';
 // import LabelBottomNavigation from '../components/BottomNavigation/BottomNavigation';
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
+
     const isSmDown = useMediaQuery(customTheme.breakpoints.down('sm'));
+
     return (
         <Box id="mainLayout" sx={{
             backgroundImage: 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',
