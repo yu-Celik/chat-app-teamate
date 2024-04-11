@@ -5,7 +5,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import s3 from '../config/s3.config.js';
 import Chat from '../Models/chat.model.js';
-import { notifyDeleteMessage, notifyEditMessage, notifyNewMessage } from '../socket/socketService.js';
+import { notifyDeleteMessage, notifyEditMessage, notifyMarkAllMessagesAsRead, notifyNewMessage } from '../socket/socketService.js';
 
 
 dotenv.config();
@@ -226,18 +226,46 @@ const deleteImageUrl = async (req, res) => {
     }
 };
 
-const markMessageAsRead = async (req, res) => {
-    const { id } = req.params; // ID du message
+const markAllMessagesAsRead = async (req, res) => {
+    const { chatId } = req.params;
+    const userId = req.user._id;
+    const updateTimestamp = new Date(); // Timestamp avant la mise à jour
+
     try {
-        const message = await MessageModel.findByIdAndUpdate(id, { read: true }, { new: true });
-        if (message) {
-            res.status(200).json({ message: 'Message marked as read', data: message });
-        } else {
-            res.status(404).json({ message: 'Message not found' });
+        // Met à jour tous les messages dans le chat spécifié où l'utilisateur est le destinataire pour les marquer comme lus
+        const updateResult = await MessageModel.updateMany(
+            { chatId: chatId, receiverId: userId, read: false },
+            { read: true, readAt: updateTimestamp }
+        );
+
+        // Si aucun document n'a été modifié, cela signifie que tous les messages étaient déjà marqués comme lus
+        if (updateResult.nModified === 0) {
+            return res.status(200).json({ message: 'Tous les messages sont déjà marqués comme lus.' });
         }
+
+        // Récupère les messages mis à jour après le timestamp enregistré
+        const updatedMessages = await MessageModel.find({
+            chatId: chatId,
+            receiverId: userId,
+            read: true,
+            readAt: { $gte: updateTimestamp }
+        }).sort({ createdAt: -1 });
+
+        // Vérifie si au moins un message a été récupéré avant de continuer
+        if (updatedMessages.length > 0) {
+            const senderId = updatedMessages[0].senderId;
+            const receiverId = updatedMessages[0].receiverId;
+            console.log('senderId', senderId);
+            console.log('receiverId', receiverId);
+            notifyMarkAllMessagesAsRead(senderId, receiverId, updatedMessages);
+        } else {
+            console.log('Aucun message mis à jour trouvé.');
+        }
+
+        res.status(201).json(updatedMessages);
     } catch (error) {
-        console.error('Error marking message as read:', error);
-        res.status(500).json(error);
+        console.error('Erreur lors de la mise à jour des messages:', error);
+        res.status(500).json({ message: 'Erreur lors de la mise à jour des messages', error });
     }
 };
 
@@ -281,7 +309,7 @@ export {
     deleteMessage,
     editMessage,
     deleteImageUrl,
-    markMessageAsRead,
+    markAllMessagesAsRead,
     searchMessages,
     getLastMessageSeen
 };

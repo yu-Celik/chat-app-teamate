@@ -25,6 +25,8 @@ import { useSocket } from "../contexts/Socket/useSocketContext";
 import { AttachFile, Mic, Send, Done, Close } from '@mui/icons-material';
 import { drawerWidth, heightHeader } from '../styles/customTheme';
 import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
+import useListenConversationOpened from "../hooks/Socket/useListenConversationOpened";
+import useListenMarkAllMessagesAsRead from "../hooks/Socket/useListenMarkAllMessagesAsRead";
 
 export default function ChatPage() {
     useListenCreateUser();
@@ -37,6 +39,8 @@ export default function ChatPage() {
     useListenTyping();
     useListenNewChat();
     useListenDeleteChat();
+    useListenConversationOpened();
+    useListenMarkAllMessagesAsRead();
     const { socket } = useSocket();
     const { sendMessage } = useSendMessage();
     const { editMessage } = useEditMessage();
@@ -190,7 +194,7 @@ export default function ChatPage() {
                             flexGrow: 1,
                         }} >
                             <ChatHeader />
-                            <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} />
+                            <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} receiverId={receiverUser?._id ?? null} />
                             <MessageBar
                                 messageText={messageText}
                                 nameTextField={`message de ${receiverUser?.username}`}
@@ -251,7 +255,7 @@ export default function ChatPage() {
                                 <ChatHeader onClickOpenDrawer={toggleDrawer} />
                                 {chatInfo?.chatId != null ? (
                                     <>
-                                        <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} />
+                                        <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} receiverId={receiverUser?._id ?? null} />
                                         <MessageBar
                                             messageText={messageText}
                                             nameTextField={`message de ${receiverUser?.username}`}

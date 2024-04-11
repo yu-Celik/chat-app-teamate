@@ -19,6 +19,10 @@ export const getReceiverSocketIds = (receiverId) => {
     return userSocketMap[receiverId] || [];
 }
 
+export const getUserOpenConversations = (userId) => {
+    return userOpenConversations[userId] || [];
+}
+
 export const getDisconnectedUsers = () => {
     return disconnectedUsers;
 };
@@ -26,22 +30,23 @@ export const getDisconnectedUsers = () => {
 let onlineUsers = [];
 let disconnectedUsers = [];
 const userSocketMap = {}; // Clé: userId, Valeur: socketId
+const userOpenConversations = {}; // Clé: userId, Valeur: chatId
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id, socket.handshake.query.userId);
 
     const userId = socket.handshake.query.userId;
     const dateNow = new Date(); // Date et heure actuelles
     if (userId) {
-        if (!userSocketMap[userId]) {
-            userSocketMap[userId] = [];
+        if (!userSocketMap[userId]) { // Si l'utilisateur n'est pas dans la map
+            userSocketMap[userId] = []; // Créer une liste vide pour l'utilisateur
         }
-        userSocketMap[userId].push(socket.id);
+        userSocketMap[userId].push(socket.id); // Ajouter le socketId à la liste de sockets de l'utilisateur
 
         // Ajouter l'utilisateur à la liste des utilisateurs en ligne s'il n'est pas déjà présent
         if (!onlineUsers.some((user) => user.userId === userId)) {
-            onlineUsers.push({ userId, socketId: socket.id, connectedAt: dateNow });
+            onlineUsers.push({ userId, socketId: socket.id, connectedAt: dateNow }); // Ajouter l'utilisateur à la liste des utilisateurs en ligne
         }
-        io.emit('getOnlineUsers', onlineUsers);
+        io.emit('getOnlineUsers', onlineUsers); // Émettre la liste des utilisateurs en ligne aux clients
     }
 
     socket.on('typing', ({ receiverId, chatId }) => {
@@ -49,7 +54,7 @@ io.on('connection', (socket) => {
         const receiverSocketIds = getReceiverSocketIds(receiverId);
         if (receiverSocketIds.length > 0) {
             receiverSocketIds.forEach(socketId => {
-                io.to(socketId).emit('userTyping', { from: socket.handshake.query.userId, chatId: chatId });
+                io.to(socketId).emit('userTyping', { from: userId, chatId });
             });
         }
     });
@@ -59,8 +64,32 @@ io.on('connection', (socket) => {
         const receiverSocketIds = getReceiverSocketIds(receiverId);
         if (receiverSocketIds.length > 0) {
             receiverSocketIds.forEach(socketId => {
-                io.to(socketId).emit('stopTyping', { from: socket.handshake.query.userId, chatId: chatId });
+                io.to(socketId).emit('stopTyping', { from: userId, chatId });
             });
+        }
+    });
+
+    socket.on('conversationOpened', ({ chatId, receiverId }) => {
+        if (!userOpenConversations[userId]) { // Si l'utilisateur n'est pas dans la map
+            userOpenConversations[userId] = []; // Créer une liste vide pour l'utilisateur
+        }
+        if (!userOpenConversations[userId].includes(chatId)) { // Si la conversation n'est pas dans la liste de l'utilisateur
+            userOpenConversations[userId].push(chatId); // Ajouter le chatId à la liste de chats de l'utilisateur
+        }
+        console.log('conversationOpened', userId, chatId);
+        const receiverSocketIds = getReceiverSocketIds(receiverId); // Récupérer les sockets du receiver
+        if (receiverSocketIds.length > 0) { // Si le receiver a des sockets
+            receiverSocketIds.forEach(socketId => { // Pour chaque socket du receiver
+                io.to(socketId).emit('conversationOpened', {from: userId, chatId }); // Émettre l'ouverture de la conversation aux clients
+            });
+        }
+    });
+
+    socket.on('conversationClosed', ({ chatId }) => {
+        if (userOpenConversations[userId] && userOpenConversations[userId].includes(chatId)) { // Si la conversation est dans la liste de l'utilisateur
+            const index = userOpenConversations[userId].indexOf(chatId); // Trouver l'index de la conversation dans la liste
+            userOpenConversations[userId].splice(index, 1); // Supprimer la conversation de la liste
+            console.log('conversationClosed', userId, chatId);
         }
     });
 

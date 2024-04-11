@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createMessage, getMessages, deleteMessage, editMessage, deleteImageUrl, markMessageAsRead, searchMessages, getLastMessageSeen } from '../Controllers/message.controller.js';
+import { createMessage, getMessages, deleteMessage, editMessage, deleteImageUrl, searchMessages, getLastMessageSeen, markAllMessagesAsRead } from '../Controllers/message.controller.js';
 import protectRoute from '../middleware/protectRoute.js';
 
 const router = express.Router();
@@ -14,7 +14,7 @@ router.get('/:chatId', protectRoute, getMessages); // Find all messages of a cha
 router.delete('/:id', protectRoute, deleteMessage); // Delete a message
 router.delete('/:id/imageUrls', protectRoute, deleteImageUrl); // Delete image URLs from a message
 router.patch('/:id', protectRoute, editMessage); // Edit a message
-router.patch('/markAsRead/:id', protectRoute, markMessageAsRead); // Mark a message as read
+router.patch('/markAsRead/:chatId', protectRoute, markAllMessagesAsRead); // Mark a message as read
 router.get('/search/:chatId', protectRoute, searchMessages); // Search message by chat ID
 
 
