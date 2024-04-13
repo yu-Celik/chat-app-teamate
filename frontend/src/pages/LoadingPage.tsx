@@ -1,9 +1,9 @@
-import { Box, LinearProgress } from "@mui/material";
+import { Stack, LinearProgress } from "@mui/material";
 
 export default function LoadingPage() {
     return (
-        <Box>
+        <Stack>
             <LinearProgress color="secondary" />
-        </Box>
+        </Stack>
     )
 }
