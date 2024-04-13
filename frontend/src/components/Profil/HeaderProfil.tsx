@@ -43,9 +43,10 @@ export default function HeaderProfil() {
             <ColorPicker element={'Arrière-plans'} />
          </Stack>
          <Stack
+            px={{ xs: 0, md: 2 }}
+            py={{ xs: 1, md: 2 }}
             sx={{
                backgroundColor: alpha(customTheme.palette.slate[800], 0.1),
-               paddingX: customTheme.spacing(2),
                display: 'flex',
                flexDirection: 'row',
                justifyContent: 'space-between',
@@ -53,13 +54,11 @@ export default function HeaderProfil() {
                boxShadow: customTheme.shadows[1],
                width: '100%',
                margin: '0 auto',
-               [customTheme.breakpoints.up('md')]: {
-                  paddingY: customTheme.spacing(1),
-               }
 
             }}
          >
             <Stack
+               position={'relative'}
                sx={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
@@ -149,12 +148,11 @@ export default function HeaderProfil() {
                            variant="body1"
                            sx={{
                               fontSize: '1.25rem',
-                              fontWeight:'bold'
+                              fontWeight: 'bold'
                            }}
                         >
                            {currentUser.data?.username}
                         </Typography>
-                        <PlaygroundSpeedDial />
                      </Stack>
 
                      {isOnline ? (
@@ -179,10 +177,12 @@ export default function HeaderProfil() {
                      )}
                   </Stack>
                </Stack>
+               <PlaygroundSpeedDial />
+
                <Stack>
 
                   {!modification ? (
-                     <Stack direction={'row'} alignItems={'center'} >
+                     <Stack direction={{ xs: 'column-reverse', md: 'row' }} alignItems={'center'} >
                         <StyledIconButton title="Ajout d'image" >
                            <AddPhotoAlternateRoundedIcon
                               sx={{
@@ -213,7 +213,7 @@ export default function HeaderProfil() {
                      </Stack>
                   ) :
                      <Stack
-                        direction={'row'}
+                        direction={{ xs: 'column-reverse', md: 'row' }}
                      >
                         <StyledIconButton title='Annuler les modifications'
                            sx={{
