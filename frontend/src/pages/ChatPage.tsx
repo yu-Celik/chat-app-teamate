@@ -1,6 +1,6 @@
 import ChatHeader from "../components/Chats/ChatHeader";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Stack, Paper, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Stack, Paper, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
 import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";

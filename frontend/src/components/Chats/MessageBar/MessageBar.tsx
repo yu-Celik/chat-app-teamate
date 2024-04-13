@@ -1,4 +1,4 @@
-import { Stack, FormControl, Stack, TextFieldVariants, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Stack, FormControl, TextFieldVariants, Typography, alpha, useMediaQuery } from "@mui/material";
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import customTheme from "../../../styles/customTheme";

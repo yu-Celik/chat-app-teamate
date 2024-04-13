@@ -1,4 +1,4 @@
-import { Stack, Stack, Typography, alpha } from "@mui/material";
+import { Stack, Typography, alpha } from "@mui/material";
 import customTheme from "../../styles/customTheme.ts";
 import { CardBio } from "./CardBio.tsx";
 import { TopGame } from "./TopGame.tsx";

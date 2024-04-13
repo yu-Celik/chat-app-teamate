@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Stack, Button, CircularProgress, IconButton, InputAdornment, Link, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Stack, Button, CircularProgress, IconButton, InputAdornment, Link, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
