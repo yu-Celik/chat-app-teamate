@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, alpha } from "@mui/material";
+import { Stack, Typography, alpha } from "@mui/material";
 import customTheme from "../../styles/customTheme.ts";
 import { CardBio } from "./CardBio.tsx";
 import { TopGame } from "./TopGame.tsx";
@@ -6,7 +6,7 @@ import { AnimatedTooltipPreview } from "../FriendsList/FriendsList.tsx";
 
 export default function LeftBlockProfil() {
   return (
-    <Box
+    <Stack
       component={'article'}
       // minHeight='100%'
       marginTop={2}
@@ -39,6 +39,6 @@ export default function LeftBlockProfil() {
         <AnimatedTooltipPreview />
       </Stack>
 
-    </Box>
+    </Stack>
   )
 }

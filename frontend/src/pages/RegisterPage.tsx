@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, IconButton, InputAdornment, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Stack, Button, CircularProgress, IconButton, InputAdornment, Link, MenuItem, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
@@ -237,7 +237,7 @@ export default function RegisterPage() {
                         </Link>
                     </Stack>
                     <StyledTypography gutterBottom variant="h1">Créez un compte</StyledTypography>
-                    <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
+                    <Stack maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
                         <Stack spacing={2}>
                             {formField.map((step) => {
                                 // Champ spécifique pour 'gender'
@@ -324,7 +324,7 @@ export default function RegisterPage() {
                         <StyledTypography variant={'subtitle2'}>
                             En cliquant sur "S'inscrire", vous acceptez les <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Conditions d'utilisation</Link> et la <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Politique de confidentialité</Link> de Teamate.
                         </StyledTypography>
-                    </Box>
+                    </Stack>
                 </Stack>
             </Stack>
         </ThemeProvider>

@@ -1,7 +1,7 @@
 import { InfinitScroll } from '../components/InfinitScroll/InfinitScroll.tsx';
 import HeaderProfil from '../components/Profil/HeaderProfil.tsx';
 import { BlockPublication } from '../components/Profil/BlockPublication.tsx';
-import { Box, Stack, useMediaQuery } from '@mui/material';
+import { Stack, useMediaQuery } from '@mui/material';
 import customTheme, { bottomNavigationHeight, heightHeader } from '../styles/customTheme';
 import LeftBlockProfil from '../components/BiographyProfil/LeftBlockProfil.tsx';
 import RightBlockProfil from '../components/BiographyProfil/RightBlockProfil.tsx';
@@ -45,7 +45,7 @@ export default function Profil() {
 
                 )}
                 {isMd && (
-                    <Box component="section" sx={commonBoxStyles}>
+                    <Stack component="section" sx={commonBoxStyles}>
                         <LeftBlockProfil />
                         <Stack
                             sx={{
@@ -56,10 +56,10 @@ export default function Profil() {
                         >
                             <BlockPublication />
                         </Stack>
-                    </Box>
+                    </Stack>
                 )}
                 {isLgUp && (
-                    <Box component="section" sx={commonBoxStyles}>
+                    <Stack component="section" sx={commonBoxStyles}>
                         <LeftBlockProfil />
                         <Stack
                             sx={{
@@ -73,7 +73,7 @@ export default function Profil() {
                         </Stack>
                         <RightBlockProfil />
 
-                    </Box>
+                    </Stack>
                 )}
             </Stack>
             <InfinitScroll />

@@ -1,4 +1,4 @@
-import { Box, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
+import { Stack, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tab, Tabs, Typography, alpha } from "@mui/material";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader} from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
@@ -57,7 +57,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
 
     return (
         <>
-            <Box flexGrow={1} display={'flex'} sx={{
+            <Stack flexGrow={1} display={'flex'} sx={{
                 height: 'calc(100dvh - 69.5px)',
                 overflow: 'hidden',
                 border: 'none',
@@ -72,7 +72,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         border: 'none',
                         '& .MuiDrawer-paper': {
                             width: drawerWidth,
-                            boxSizing: 'border-box',
+                            boxSizing: 'border-Stack',
                             height: `calc(100% - ${heightHeader}px)`,
                             marginTop: `${heightHeader}px`,
                             backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
@@ -222,7 +222,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         </Stack>
                     )}
                 </>
-            </Box >
+            </Stack >
         </>
     );
 };

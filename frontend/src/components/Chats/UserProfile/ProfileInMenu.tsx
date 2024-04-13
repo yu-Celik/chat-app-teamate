@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, Skeleton, alpha } from '@mui/material';
+import { Avatar, Stack, ListItemAvatar, ListItemButton, ListItemText, Skeleton, alpha } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
@@ -89,7 +89,7 @@ export default function ProfileInMenu({ username, profilePic, onClick, lastLogou
                                 {username}
                             </Typography>}
                             secondary={
-                                <Box>
+                                <Stack>
                                     {isUserOnline ? (
                                         <Typography
                                             sx={{
@@ -118,7 +118,7 @@ export default function ProfileInMenu({ username, profilePic, onClick, lastLogou
                                         >
                                             {username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`}
                                         </Typography>)}
-                                </Box>
+                                </Stack>
                             }
                         />
                     </ListItemButton>

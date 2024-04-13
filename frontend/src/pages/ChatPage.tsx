@@ -1,6 +1,6 @@
 import ChatHeader from "../components/Chats/ChatHeader";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Paper, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Stack, Paper, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
 import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
@@ -170,7 +170,7 @@ export default function ChatPage() {
         <>
             {isMdUp &&
                 <PersistentDesktopDrawer>
-                    <Box component="div" sx={{
+                    <Stack component="div" sx={{
                         position: 'relative',
                         border: 'none',
                         flexShrink: 0,
@@ -185,7 +185,7 @@ export default function ChatPage() {
                             right: 0,
                             left: `calc(${drawerWidth}px)`,
                             width: `calc(100% - ${drawerWidth}px)`,
-                            boxSizing: 'border-box',
+                            boxSizing: 'border-Stack',
                             height: `calc(100% - ${heightHeader}px)`,
                             marginTop: `${heightHeader}px`,
                             backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
@@ -222,14 +222,14 @@ export default function ChatPage() {
                                 handleCloseEdit={handleCloseEdit}
                             />
                         </Paper>
-                    </Box>
+                    </Stack>
                 </PersistentDesktopDrawer >
             }
             {
                 isMdDown &&
                 <>
                     <SwipeableMobileDrawer anchor="left" open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
-                        <Box id="3" component="div" sx={{
+                        <Stack id="3" component="div" sx={{
                             position: 'relative',
                             border: 'none',
                             flexShrink: 0,
@@ -244,7 +244,7 @@ export default function ChatPage() {
                                 right: 0,
                                 left: 0,
                                 width: '100%',
-                                boxSizing: 'border-box',
+                                boxSizing: 'border-Stack',
                                 height: `calc(100% - ${heightHeader}px)`,
                                 marginTop: `${heightHeader}px`,
                                 backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
@@ -293,7 +293,7 @@ export default function ChatPage() {
 
 
                             </Paper>
-                        </Box>
+                        </Stack>
                     </SwipeableMobileDrawer>
                 </>
             }

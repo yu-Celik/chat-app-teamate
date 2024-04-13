@@ -1,4 +1,4 @@
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
+import { Stack, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
 import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
@@ -64,7 +64,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
 
 
     const list = () => (
-        <Box
+        <Stack
             sx={{
                 width: '100dvw',
                 height: '100dvh',
@@ -137,7 +137,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                     </List>
                 )
             }
-        </Box>
+        </Stack>
     );
 
     return (

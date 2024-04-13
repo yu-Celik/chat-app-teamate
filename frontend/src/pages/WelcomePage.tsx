@@ -1,11 +1,11 @@
-import { Box, styled } from '@mui/material';
+import { Stack, styled } from '@mui/material';
 
 import { Button } from '../components/ui/moving-border';
 import { TypewriterEffectSmooth } from '../components/ui/typewriter-effect';
 import { Link as RouterLink } from 'react-router-dom';
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
 
-const StyledBox = styled(Box)({
+const StyledBox = styled(Stack)({
     width: '10rem',
     height: '2.5rem',
     borderRadius: '1rem',
