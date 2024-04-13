@@ -1,17 +1,17 @@
 import { styled } from '@mui/material/styles';
 
 
-import {  Box } from '@mui/material';
+import {  Stack } from '@mui/material';
 import customTheme from '../../../styles/customTheme';
 
-export const DrawerHeader = styled(Box)(() => ({
+export const DrawerHeader = styled(Stack)(() => ({
     display: 'flex',
     alignItems: 'center',
     ...customTheme.mixins.toolbar,
     justifyContent: 'flex-start',
 }));
 
-export const DrawerFooter = styled(Box)(() => ({
+export const DrawerFooter = styled(Stack)(() => ({
 
     '& .MuiListItem-root': {
         color: customTheme.palette.slate[200],

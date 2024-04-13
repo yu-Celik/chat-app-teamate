@@ -1,4 +1,4 @@
-import { Box, alpha } from "@mui/material";
+import { Stack, alpha } from "@mui/material";
 import customTheme from "../../styles/customTheme.ts";
 import BasicDateCalendar from "../Calendar/Calendar.tsx";
 import Activity from "../Activity/Activity.tsx";
@@ -6,7 +6,7 @@ import PlateformConnaxion from "../PlateformConnexion/PlateformConnaxion.tsx";
 
 export default function RightBlockProfil() {
   return (
-    <Box
+    <Stack
       component={'article'}
       // minHeight='100%'
       marginTop={2}
@@ -26,6 +26,6 @@ export default function RightBlockProfil() {
       <Activity />
       <PlateformConnaxion />
 
-    </Box>
+    </Stack>
   )
 }

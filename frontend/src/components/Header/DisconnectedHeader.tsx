@@ -1,5 +1,5 @@
 // import { useState } from "react";
-// import { AppBar, Box, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, Stack, Divider, MenuList, styled } from '@mui/material';
+// import { AppBar, Stack, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, Stack, Divider, MenuList, styled } from '@mui/material';
 // import { AccountCircle, Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon } from '@mui/icons-material';
 // import customTheme from "../../styles/customTheme";
 // import { StyledIconButton } from "../IconButton/IconButton";
@@ -9,7 +9,7 @@
 
 // import { Link as RouterLink } from 'react-router-dom';
 
-// const StyledBox = styled(Box)({
+// const StyledBox = styled(Stack)({
 //     width: '10rem',
 //     height: '2.5rem',
 //     borderRadius: '1rem',
@@ -373,7 +373,7 @@
 //             <Stack height={68.5}>
 //                 <AppBar position="static" color="transparent">
 //                     <Toolbar>
-//                         <Box sx={{ flexGrow: 1, py: 1, display: { xs: 'flex', md: 'none' } }}>
+//                         <Stack sx={{ flexGrow: 1, py: 1, display: { xs: 'flex', md: 'none' } }}>
 //                             <BurgerButtonMui
 //                                 size='large'
 //                                 aria-label="open drawer"
@@ -416,8 +416,8 @@
 //                                     </MenuItem>
 //                                 ))}
 //                             </Menu>
-//                         </Box>
-//                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+//                         </Stack>
+//                         <Stack sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 //                             {pages.map((page) => (
 //                                 <Stack key={page} sx={{ my: 2 }}>
 //                                     <Button
@@ -436,7 +436,7 @@
 //                                     }} />
 //                                 </Stack>
 //                             ))}
-//                         </Box>
+//                         </Stack>
 //                         <StyledStack direction={'row'} width={'fit-content'} justifyContent={'center'} alignItems={'flex-end'} marginRight={{ xs: customTheme.spacing(2), sm: '0' }}>
 //                             <LogoTeamateIcon
 //                                 id="md"
