@@ -6,12 +6,10 @@ import React from 'react';
 import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateRounded';
 import { StyledIconButton } from '../IconButton/IconButton.tsx';
 import useAuth from '../../contexts/AuthContext/useAuthContext.ts';
-import { useState } from 'react';
 import PlaygroundSpeedDial from '../OptionProfil/OptionProfil.tsx';
 
 export default function HeaderProfil() {
    const { currentUser } = useAuth();
-   const [username, setUsername] = useState(currentUser.data?.username || '')
 
 
    const [modification, setModification] = React.useState(false)
@@ -154,7 +152,7 @@ export default function HeaderProfil() {
                               fontWeight:'bold'
                            }}
                         >
-                           {username}
+                           {currentUser.data?.username}
                         </Typography>
                         <PlaygroundSpeedDial />
                      </Stack>

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import customTheme from '../../styles/customTheme';
 
 import { styled } from '@mui/material/styles';

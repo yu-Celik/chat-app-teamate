@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar } from '@mui/material';
 import { More, Notifications as NotificationsIcon } from '@mui/icons-material';
 import customTheme from "../../styles/customTheme";
 import { StyledIconButton } from "../IconButton/IconButton";
@@ -349,7 +349,7 @@ export default function Header() {
             <Stack component={'header'} height={68.5}>
                 <AppBar position="static" color="transparent">
                     <Toolbar>
-                        <Box sx={{ flexGrow: 1, py: 1, display: { xs: 'flex', md: 'none' } }}>
+                        <Stack flexGrow={1} py={1} display={{ xs: 'flex', md: 'none' }}>
                             <BurgerButtonMui
                                 size='large'
                                 aria-label="open drawer"
@@ -392,8 +392,8 @@ export default function Header() {
                                     </MenuItem>
                                 ))}
                             </Menu>
-                        </Box>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        </Stack>
+                        <Stack flexGrow={1} display={{ xs: 'none', md: 'flex' }}>
                             {pages.map((page) => (
                                 <Stack key={page} sx={{ my: 2 }}>
                                     <Button
@@ -414,7 +414,7 @@ export default function Header() {
                                     }} />
                                 </Stack>
                             ))}
-                        </Box>
+                        </Stack>
                         <StyledStack direction={'row'} width={'fit-content'} justifyContent={'center'} alignItems={'flex-end'} marginRight={{ xs: customTheme.spacing(2), sm: '0' }}>
                             <LogoTeamateIcon
                                 id="md"
@@ -449,9 +449,9 @@ export default function Header() {
                                 eamate
                             </Link>
                         </StyledStack>
-                        <Box sx={{ flexGrow: 1 }} />
+                        <Stack flexGrow={1} />
                         {isSmUp ? (<SearchBar placeholder="Rechercher un utilisateur" inputProps={{ 'aria-label': 'Rechercher un utilisateur' }}></SearchBar>) : (<SearchIconOnly onClick={handleOpen} />)}
-                        <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center' } }}>
+                        <Stack display={{ xs: 'none', md: 'flex', alignItems: 'center' }}>
                             <StyledIconButton
                                 title="Notifications"
                                 size="large"
@@ -475,8 +475,8 @@ export default function Header() {
                                     cursor: 'pointer',
                                 }}
                             />
-                        </Box>
-                        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                        </Stack>
+                        <Stack display={{ xs: 'flex', md: 'none' }}>
                             <StyledIconButton
                                 title="Menu"
                                 size="large"
@@ -487,7 +487,7 @@ export default function Header() {
                             >
                                 <More />
                             </StyledIconButton>
-                        </Box>
+                        </Stack>
                     </Toolbar>
                 </AppBar>
                 {renderMobileMenu}
