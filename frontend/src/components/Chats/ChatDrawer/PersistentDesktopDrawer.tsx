@@ -215,7 +215,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                 </Drawer>
                 <>
                     {chatInfo?.chatId != null ? children : (
-                        <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'}>
+                        <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'} marginLeft={`${drawerWidth}px`}>
                             <Typography variant="h6" sx={{ color: customTheme.palette.slate[300] }}>
                                 Aucun chat selectionner
                             </Typography>

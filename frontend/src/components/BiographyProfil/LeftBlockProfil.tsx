@@ -8,7 +8,6 @@ export default function LeftBlockProfil() {
   return (
     <Stack
       component={'article'}
-      // minHeight='100%'
       marginTop={2}
       borderRadius={1}
       flexGrow={0}
@@ -19,6 +18,12 @@ export default function LeftBlockProfil() {
       gap={2}
       padding={2}
       sx={{
+        overflowY: 'scroll',
+        '&::-webkit-scrollbar': {
+           display: 'none',
+        },
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
         backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
       }}
     >

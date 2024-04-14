@@ -10,7 +10,7 @@ import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
 import BurgerButtonMui from "../Button/BurgerButtonMui";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
 import useLogout from "../../hooks/Auth/useLogout";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const pages = ['Accueil', 'Jouer', 'Profil', 'Messagerie'];
 
@@ -29,7 +29,7 @@ export default function Header() {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
-
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredPage, setHoveredPage] = useState<string | null>(null);
@@ -418,7 +418,7 @@ export default function Header() {
                         <StyledStack direction={'row'} width={'fit-content'} justifyContent={'center'} alignItems={'flex-end'} marginRight={{ xs: customTheme.spacing(2), sm: '0' }}>
                             <LogoTeamateIcon
                                 id="md"
-                                href='/'
+                                onClick={() => navigate('/accueil')}
                                 sx={{
                                     width: '3rem',
                                     height: '100%',

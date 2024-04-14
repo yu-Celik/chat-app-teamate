@@ -32,8 +32,9 @@ const useRegister = () => {
             const response = await axios.post('/users/register', registerInfo);
             setCurrentUser({ data: response.data });
             setRegister((prev) => ({ ...prev, isRegistered: true }));
+            updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
             localStorage.setItem('chat-user', JSON.stringify(response.data));
-            navigate('/');
+            navigate('/accueil');
             console.log('Inscription réussie');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -47,7 +48,7 @@ const useRegister = () => {
                 isRegisterLoading: false
             }));
         }
-    }, [navigate, setCurrentUser]); // Pas besoin de register.registerInfo dans les dépendances
+    }, [navigate, setCurrentUser, updateRegisterInfo]); // Pas besoin de register.registerInfo dans les dépendances
 
     return { register, updateRegisterInfo, registerUser };
 }

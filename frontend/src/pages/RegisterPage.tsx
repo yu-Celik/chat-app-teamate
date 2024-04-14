@@ -95,8 +95,6 @@ const StyledButton = styled(Button)(() => ({
     },
 }));
 
-
-
 export default function RegisterPage() {
     const { isAuthenticated } = useAuth()
     const navigate = useNavigate();
@@ -120,7 +118,7 @@ export default function RegisterPage() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/');
+            navigate('/accueil');
         }
     }, [isAuthenticated, navigate]);
 
@@ -172,7 +170,6 @@ export default function RegisterPage() {
 
         if (formIsValid) {
             registerUser(register.registerInfo).then(() => {
-                updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
             }).catch((error) => {
                 let errorMsg = 'Erreur lors de l\'inscription. Veuillez réessayer.';
                 if (error.response && error.response.data && error.response.data.error) {
@@ -206,7 +203,7 @@ export default function RegisterPage() {
                     <Stack direction={'row'} alignItems={'flex-end'} marginBottom={customTheme.spacing(2)}>
                         <LogoTeamateIcon
                             id="md"
-                            href='/'
+                            onClick={() => navigate('/')}
                             sx={{
                                 width: '3rem',
                                 height: '100%',

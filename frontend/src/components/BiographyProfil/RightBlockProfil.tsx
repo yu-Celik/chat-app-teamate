@@ -8,7 +8,8 @@ export default function RightBlockProfil() {
   return (
     <Stack
       component={'article'}
-      // minHeight='100%'
+      // minHeight='560px'
+      minWidth='320px'
       marginTop={2}
       borderRadius={1}
       flexGrow={0}
@@ -19,6 +20,12 @@ export default function RightBlockProfil() {
       gap={2}
       padding={2}
       sx={{
+        overflowY: 'scroll',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
         backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
       }}
     >

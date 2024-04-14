@@ -111,7 +111,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/accueil');
     }
   }, [isAuthenticated, navigate]);
 
@@ -147,7 +147,6 @@ export default function LoginPage() {
 
     if (formIsValid) {
       loginUser(login.loginInfo).then(() => {
-        updateLoginInfo({ email: '', password: '' });
       }).catch((error) => {
         let errorMsg = 'Erreur lors de la connexion. Veuillez réessayer.';
         if (error.response && error.response.data && error.response.data.error) {
@@ -180,7 +179,7 @@ export default function LoginPage() {
           <Stack direction={'row'} alignItems={'flex-end'} marginBottom={customTheme.spacing(2)}>
             <LogoTeamateIcon
               id="md"
-              href='/'
+              onClick={() => navigate('/')}
               sx={{
                 width: '3rem',
                 height: '100%',
