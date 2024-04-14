@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { AppBar, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar, Box, ClickAwayListener } from '@mui/material';
+import { AppBar, Toolbar, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, Avatar, ClickAwayListener } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { AddBoxRounded, Home, Logout, MoreVert, Notifications, Notifications as NotificationsIcon, Settings } from '@mui/icons-material';
+import { AddBoxRounded, Home, Logout, Notifications, Notifications as NotificationsIcon, Settings } from '@mui/icons-material';
 import customTheme from "../../styles/customTheme";
 import { StyledIconButton } from "../IconButton/IconButton";
 import { SearchBarInDialog } from "../SearchBar/SearchBarInDialog";
 import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
-import BurgerButtonMui from "../Button/BurgerButtonMui";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
 import useLogout from "../../hooks/Auth/useLogout";
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
@@ -15,46 +14,21 @@ import DialogBox from "../DialoguePublication/DialoguePublication";
 
 const pages = ['Accueil', 'Jouer', 'Profil', 'Messagerie'];
 
-const StyledStack = styled(Stack)(() => ({
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    [customTheme.breakpoints.up('xss')]: {
-        width: '5ch',
-    },
-    [customTheme.breakpoints.up('xs')]: {
-        width: '100%',
-    },
-}));
 export default function Header() {
     const { currentUser } = useAuth();
     const { logoutUser } = useLogout();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
     const [openPublication, setOpenPublication] = useState(false);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
     const [hoveredPage, setHoveredPage] = useState<string | null>(null);
     const location = useLocation();
-    const is300Up = useMediaQuery(customTheme.breakpoints.up('300'));
+    const is300Up = useMediaQuery(customTheme.breakpoints.up(300));
     const isChatPage = location.pathname.toLocaleLowerCase().includes('/chat');
 
-    const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const notificationsOpen = Boolean(notificationsAnchorEl);
-
-    const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
-
-
-    const handleOpen = (): void => {
-        if (isSmallScreen) {
-            setOpen(true);
-        }
-    };
 
     const handleClose = (): void => {
         setOpen(false);
@@ -69,30 +43,16 @@ export default function Header() {
         console.log('NotificationsMenuOpen');
     };
 
-    const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>): void => {
-        setAnchorEl(event.currentTarget);
-        console.log('ProfileMenuOpen');
-    };
-
     const handleMobileMenuClose = (): void => {
         setMobileMoreAnchorEl(null);
     };
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>): void => {
-        setAnchorElNav(event.currentTarget);
-        console.log('OpenNavMenu');
-        // nav
-    };
 
     const handleCloseNavMenu = (): void => {
-        setAnchorElNav(null);
-        setIsHovered(false);
         console.log('CloseNavMenu');
-        // nav
     };
 
     const handleMenuClose = (): void => {
-        setAnchorEl(null);
         handleMobileMenuClose();
         console.log('MenuClose');
     };
@@ -102,8 +62,6 @@ export default function Header() {
         console.log('MobileMenuOpen');
     };
 
-
-    const menuId = 'primary-search-account-menu';
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -122,7 +80,6 @@ export default function Header() {
             open={isMobileMenuOpen}
             onClose={() => {
                 handleMobileMenuClose();
-                setAnchorEl(null);
                 console.log('MobileMenuClose');
             }}
             sx={{
