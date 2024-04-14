@@ -23,8 +23,8 @@ export const styleListDrawer = {
     },
 };
 
-export const styleListDrawerOrder = {
-    height: '80%',
+export const StyleListDrawerOrder = {
+    height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
     scrollBehavior: 'smooth',

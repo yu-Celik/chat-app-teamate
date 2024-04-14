@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 
 
 import { Stack } from '@mui/material';
@@ -9,12 +9,14 @@ export const DrawerHeader = styled(Stack)(() => ({
     flexDirection: 'column-reverse',
     ...customTheme.mixins.toolbar,
     justifyContent: 'flex-start',
+    backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
 }));
 
 
 export const DrawerFooter = styled(Stack)(() => ({
     display: 'flex',
     color: customTheme.palette.slate[200],
+    backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
     '& .MuiList-root': {
         display: 'flex',
         alignItems: 'center',

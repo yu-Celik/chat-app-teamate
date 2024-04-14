@@ -2,7 +2,7 @@ import { Stack, Collapse, List, ListItemButton, ListItemIcon, ListItemText, Swip
 import { ReactEventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
-import { GroupAdd, Home, KeyboardArrowLeft, Search, ViewListOutlined, KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
+import { GroupAdd, KeyboardArrowLeft, Search, ViewListOutlined, KeyboardArrowUp, KeyboardArrowDown, Close } from "@mui/icons-material";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import { Chat } from "../../../types/Chat.type/Chat.Props";
@@ -80,8 +80,20 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
     const list = () => (
         <Stack
             sx={{
-                width: '100dvw',
-                height: '70dvh',
+                width: '100vw',
+                height: '20dvh', // Hauteur par défaut
+                '@media screen and (min-height: 200px)': {
+                    height: '30dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 400px)': {
+                    height: '55dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 600px)': {
+                    height: '70dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 800px)': {
+                    height: '80dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
             }}
             role="ChatDrawer"
             onKeyDown={onClose}
@@ -191,52 +203,66 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                     },
                 }}
             >
-                <DrawerHeader>
+                <div>
+                    <DrawerHeader>
+                        <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
+                            '& .MuiTabs-flexContainer': {
+                                justifyContent: 'flex-end',
+                            },
+                            '& .MuiTab-root': {
+                                flexGrow: 1,
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: customTheme.palette.orangePV.dark,
+                            },
+                        }}>
+                            <Tab sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Chat privé" onClick={() => setShowGroupe(false)} />
+                            <Tab sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Groupe" onClick={() => setShowGroupe(true)} />
+                        </Tabs>
+                        <Stack direction="row" justifyContent="space-between">
+                            <StyledIconButton
+                                title="Retour à la page d'accueil"
+                                size="large"
+                                aria-label="Retour à la page précedente"
+                                aria-controls="nav-drawer"
+                                aria-haspopup="true"
+                                onClick={() => navigate(-1)}
+                                >
+                                <KeyboardArrowLeft />
 
-                    <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
-                        '& .MuiTabs-flexContainer': {
-                            justifyContent: 'flex-end',
-                        },
-                        '& .MuiTab-root': {
-                            flexGrow: 1,
-                        },
-                        '& .MuiTab-textColorPrimary': {
-                            color: customTheme.palette.slate[200],
-                        },
-                        '& .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected': {
-                            color: customTheme.palette.orangePV.dark,
-                        },
-                        '& .MuiTabs-indicator': {
-                            backgroundColor: customTheme.palette.orangePV.dark,
-                        },
-                    }}>
-                        <Tab label="Chat privé" onClick={() => setShowGroupe(false)} />
-                        <Tab label="Groupe" onClick={() => setShowGroupe(true)} />
-                    </Tabs>
-                    <Stack direction="row" justifyContent="space-between">
-                        <StyledIconButton
-                            title="Retour à la page d'accueil"
-                            size="large"
-                            aria-label="Retour à la page d'accueil"
-                            aria-controls="nav-drawer"
-                            aria-haspopup="true"
-                            onClick={() => navigate('/accueil')}
-                        >
-                            <Home />
-                        </StyledIconButton>
-                        <StyledIconButton
-                            title="Fermer le menu"
-                            size="large"
-                            aria-label="Fermer le menu"
-                            aria-controls="nav-drawer"
-                            aria-haspopup="true"
-                            onClick={onClose}
-                        >
-                            <KeyboardArrowLeft />
-                        </StyledIconButton>
-                    </Stack>
-                </DrawerHeader>
-                {list()}
+                            </StyledIconButton>
+                            <StyledIconButton
+                                title="Fermer le menu"
+                                size="large"
+                                aria-label="Fermer le menu"
+                                aria-controls="nav-drawer"
+                                aria-haspopup="true"
+                                onClick={onClose}
+                            >
+                                <Close />
+                            </StyledIconButton>
+                        </Stack>
+                    </DrawerHeader>
+                    {list()}
+                </div>
                 <DrawerFooter >
                     <List>
                         {showGroupe ? (

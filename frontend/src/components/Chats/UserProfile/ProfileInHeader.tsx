@@ -28,7 +28,6 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
             variant="h6"
             noWrap
             component="div"
-            minHeight={'67.5px'}
             sx={{
                 flexGrow: 1,
                 display: 'flex',
