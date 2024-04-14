@@ -1,20 +1,25 @@
 import { useState } from "react";
-import { AppBar, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar, Box } from '@mui/material';
-import { MoreVert, Notifications as NotificationsIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar, Box, ClickAwayListener } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { AddBoxRounded, Home, Logout, MoreVert, Notifications, Notifications as NotificationsIcon, Settings } from '@mui/icons-material';
 import customTheme from "../../styles/customTheme";
 import { StyledIconButton } from "../IconButton/IconButton";
 import { SearchBarInDialog } from "../SearchBar/SearchBarInDialog";
-import { SearchBar } from "../SearchBar/SearchBar";
-import { SearchIconOnly } from "../SearchBar/SearchIconOnly";
 import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
 import BurgerButtonMui from "../Button/BurgerButtonMui";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
 import useLogout from "../../hooks/Auth/useLogout";
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
+import { heightHeader } from "../../styles/customTheme";
+import DialogBox from "../DialoguePublication/DialoguePublication";
 
 const pages = ['Accueil', 'Jouer', 'Profil', 'Messagerie'];
 
 const StyledStack = styled(Stack)(() => ({
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     [customTheme.breakpoints.up('xss')]: {
         width: '5ch',
     },
@@ -29,12 +34,14 @@ export default function Header() {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
+    const [openPublication, setOpenPublication] = useState(false);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredPage, setHoveredPage] = useState<string | null>(null);
-    const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
-    // const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
+    const location = useLocation();
+    const is300Up = useMediaQuery(customTheme.breakpoints.up('300'));
+    const isChatPage = location.pathname.toLocaleLowerCase().includes('/chat');
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -51,6 +58,10 @@ export default function Header() {
 
     const handleClose = (): void => {
         setOpen(false);
+    };
+
+    const handleClosePublication = (): void => {
+        setOpenPublication(false);
     };
 
     const handleNoticationsMenuOpen = (event: React.MouseEvent<HTMLElement>): void => {
@@ -93,49 +104,6 @@ export default function Header() {
 
 
     const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={() => {
-                setAnchorEl(null);
-                console.log('MenuClose');
-            }}
-            sx={{
-                '& .MuiMenu-paper': {
-                    backgroundColor: customTheme.palette.bluePV.dark,
-                    color: customTheme.palette.slate[300],
-                },
-                '& .MuiMenuItem-root': {
-                    '&:hover': {
-                        backgroundColor: customTheme.palette.transparant[100],
-                    },
-                },
-            }}
-
-        >
-            <MenuItem onClick={handleMenuClose}>{currentUser.data?.username}</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem
-                onClick={() => {
-                    handleMenuClose();
-                    if (logoutUser !== undefined && logoutUser !== null) {
-                        logoutUser();
-                    }
-                }}
-            >Déconnexion</MenuItem>
-        </Menu>
-    );
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -169,36 +137,41 @@ export default function Header() {
                 },
             }}
         >
-            <MenuItem onClick={handleNoticationsMenuOpen}>
-                <StyledIconButton
-                    title="Notifications"
-                    size="large"
-                    aria-label={`show ${0} new notifications`}
-                    menustyle='true'
-                >
-                    <Badge badgeContent={0} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                </StyledIconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
+
+            <MenuItem>
                 <StyledIconButton
                     title="Mon Compte"
                     size="large"
                     aria-label="account of current user"
                     aria-controls="primary-search-account-menu"
                     aria-haspopup="true"
-                    menustyle='true'
-
                 >
-                    <Avatar sx={{
-                        width: '1.75rem',
-                        height: '1.75rem',
-                        cursor: 'pointer',
-                    }} alt={currentUser.data?.username || ''} src={currentUser.data?.profilePic || ''} />
+                    <Avatar
+                        sx={{
+                            width: '1.5rem',
+                            height: '1.5rem',
+                            cursor: 'pointer',
+                        }}
+                        alt={currentUser.data?.username || ''}
+                        src={currentUser.data?.profilePic || ''} />
                 </StyledIconButton>
-                <p>Mon Compte</p>
+                <p>Paramètres de compte</p>
+            </MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                if (logoutUser !== undefined && logoutUser !== null) {
+                    logoutUser();
+                }
+            }}>
+                <StyledIconButton
+                    title="Notifications"
+                    size="large"
+                    aria-label={`show ${0} new notifications`}
+                    menustyle='true'
+                >
+                    <Logout />
+                </StyledIconButton>
+                <p>Déconnexion</p>
             </MenuItem>
         </Menu>
     );
@@ -344,56 +317,16 @@ export default function Header() {
         </Menu>
     );
 
+
+
     return (
         <>
-            <Stack component={'header'} height={68.5}>
-                <AppBar position="static" color="transparent">
-                    <Toolbar>
-                        <Box sx={{ flexGrow: 1, py: 1, display: { xs: 'flex', md: 'none' } }}>
-                            <BurgerButtonMui
-                                size='large'
-                                aria-label="open drawer"
-                                open={isHovered}
-                                onClick={(event) => {
-                                    setIsHovered(!isHovered);
-                                    handleOpenNavMenu(event);
-                                }}
-                            />
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{
-                                    display: { xs: 'block', md: 'none' },
-                                    '& .MuiMenu-paper': {
-                                        backgroundColor: customTheme.palette.bluePV.dark,
-                                        color: customTheme.palette.slate[300],
-                                    },
-                                    '& .MuiMenuItem-root': {
-                                        '&:hover': {
-                                            backgroundColor: customTheme.palette.transparant[100],
-                                        },
-                                    },
-                                }}
-                            >
-                                {pages.map((page) => (
-                                    <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">{page}</Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            <AppBar position="static" color="transparent">
+                <Toolbar sx={{
+                    minHeight: { heightHeader },
+                }}>
+                    <Grid container alignItems="center" flexGrow={1} minHeight={heightHeader} justifyContent={'space-between'}>
+                        <Grid md={5} id={'desktop-menu'} display={{ xs: 'none', md: 'flex' }}>
                             {pages.map((page) => (
                                 <Stack key={page} sx={{ my: 2 }}>
                                     <Button
@@ -414,22 +347,26 @@ export default function Header() {
                                     }} />
                                 </Stack>
                             ))}
-                        </Box>
-                        <StyledStack direction={'row'} width={'fit-content'} justifyContent={'center'} alignItems={'flex-end'} marginRight={{ xs: customTheme.spacing(2), sm: '0' }}>
+                        </Grid>
+                        <Grid xs={6} md={2} id={'logo-container'} display={'flex'} alignItems={'center'} minHeight={heightHeader} justifyContent={{ xs: 'flex-start', md: 'center' }}>
                             <LogoTeamateIcon
                                 id="md"
                                 onClick={() => navigate('/accueil')}
                                 sx={{
                                     width: '3rem',
                                     height: '100%',
-                                    marginLeft: '1rem',
+                                    minHeight: heightHeader,
                                 }}
                             />
-                            <Link
+                            {is300Up && <Link
+                                component={RouterLink}
                                 variant="h5"
                                 noWrap
-                                href="/"
+                                to="/accueil"
                                 sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    minHeight: heightHeader,
                                     fontWeight: 700,
                                     letterSpacing: '.1rem',
                                     color: 'transparent',
@@ -447,11 +384,17 @@ export default function Header() {
                                 }}
                             >
                                 eamate
-                            </Link>
-                        </StyledStack>
-                        <Box sx={{ flexGrow: 1 }} />
-                        {isSmUp ? (<SearchBar placeholder="Rechercher un utilisateur" inputProps={{ 'aria-label': 'Rechercher un utilisateur' }}></SearchBar>) : (<SearchIconOnly onClick={handleOpen} />)}
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+                            </Link>}
+                        </Grid>
+                        <Grid md={5} id={'desktop-buttons'} display={{ xs: 'none', md: 'flex' }} justifyContent={'flex-end'}>
+                            <StyledIconButton
+                                title="Publier"
+                                size="large"
+                                aria-label="publier"
+                                onClick={() => setOpenPublication(true)}
+                            >
+                                <AddBoxRounded />
+                            </StyledIconButton>
                             <StyledIconButton
                                 title="Notifications"
                                 size="large"
@@ -462,38 +405,53 @@ export default function Header() {
                                     <NotificationsIcon />
                                 </Badge>
                             </StyledIconButton>
-                            <Avatar
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                alt={currentUser.data?.username || ''} src={currentUser.data?.profilePic || ''}
-                                onClick={handleProfileMenuOpen}
-                                sx={{
-                                    marginLeft: '0.5rem',
-                                    width: '1.75rem',
-                                    height: '1.75rem',
-                                    cursor: 'pointer',
-                                }}
-                            />
-                        </Box>
-                        <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                             <StyledIconButton
-                                title="Menu"
+                                title='Menu'
                                 size="large"
-                                aria-label="show more"
-                                aria-controls={mobileMenuId}
+                                aria-label="menu"
                                 aria-haspopup="true"
                                 onClick={handleMobileMenuOpen}
                             >
-                                <MoreVert />
+                                <Settings />
                             </StyledIconButton>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-                {renderMobileMenu}
-                {renderMenu}
-                {renderNoticationsMenu}
-            </Stack>
+                        </Grid>
+                        <Grid xs={4} id={'Mobile-buttons'} display={{ xs: 'flex', md: 'none' }} alignItems={'center'} minHeight={heightHeader} justifyContent={'flex-end'}>
+                            {isChatPage && <StyledIconButton
+                                title="Accueil"
+                                size="large"
+                                aria-label="accueil"
+                                onClick={() => navigate('/accueil')}
+
+                            >
+                                <Home />
+                            </StyledIconButton>}
+                            <StyledIconButton
+                                title="Notifications"
+                                size="large"
+                                aria-label="notifications"
+                                aria-haspopup='true'
+                                onClick={handleNoticationsMenuOpen}
+                            >
+                                <Notifications />
+                            </StyledIconButton>
+                            <StyledIconButton
+                                title='Menu'
+                                size="large"
+                                aria-label="menu"
+                                aria-haspopup="true"
+                                onClick={handleMobileMenuOpen}
+                            >
+                                <Settings />
+                            </StyledIconButton>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+            {renderMobileMenu}
+            {renderNoticationsMenu}
+            <ClickAwayListener onClickAway={handleClose}>
+                <DialogBox open={openPublication} handleClose={handleClosePublication} />
+            </ClickAwayListener>
             <SearchBarInDialog
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}

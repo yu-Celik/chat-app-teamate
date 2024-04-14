@@ -142,7 +142,7 @@ export default function MessageSend({ _id, chatId, senderId, message, read, edit
                             <Typography fontSize={customTheme.typography.caption.fontSize} sx={{
                                 order: read ? 0 : 1,
                             }}>
-                                {new Date(createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                {new Date(createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                             </Typography>
                             <Visibility sx={{
                                 fontSize: customTheme.typography.body1.fontSize,

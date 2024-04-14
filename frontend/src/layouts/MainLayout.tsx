@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 
 const MainLayout = ({ children, connected }: { children: ReactNode, connected: User | null }) => {
 
-    const isSmDown = useMediaQuery(customTheme.breakpoints.down('sm'));
+    const isMdDown = useMediaQuery(customTheme.breakpoints.down('md'));
     const location = useLocation();
     const isChatPage = location.pathname.toLocaleLowerCase().includes('/chat');
     return (
@@ -21,7 +21,7 @@ const MainLayout = ({ children, connected }: { children: ReactNode, connected: U
             <Stack component={'main'} direction={'column'} flexGrow={1} overflow={'hidden'} >
                 {children}
             </Stack>
-            {isSmDown && connected && !isChatPage && <LabelBottomNavigation />}
+            {isMdDown && connected && !isChatPage && <LabelBottomNavigation />}
         </Stack>
     );
 };
