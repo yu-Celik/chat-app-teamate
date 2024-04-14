@@ -4,7 +4,7 @@ import {
     MuiColorInputValue,
     MuiColorInputFormat
 } from 'mui-color-input'
-import customTheme from '../../styles/customTheme';
+import customTheme from '../../../../styles/customTheme';
 import { Stack, Typography } from '@mui/material';
 
 export const ColorPicker = ({ element }: { element: string }) => {

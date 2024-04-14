@@ -1,14 +1,13 @@
-import { Box, Button, Stack, Typography, alpha } from "@mui/material";
-import customTheme from "../../styles/customTheme.ts";
+import { Stack, Typography, alpha } from "@mui/material";
+import customTheme from "../../../../styles/customTheme.ts";
 import { CardBio } from "./CardBio.tsx";
 import { TopGame } from "./TopGame.tsx";
 import { AnimatedTooltipPreview } from "../FriendsList/FriendsList.tsx";
 
 export default function LeftBlockProfil() {
   return (
-    <Box
+    <Stack
       component={'article'}
-      // minHeight='100%'
       marginTop={2}
       borderRadius={1}
       flexGrow={0}
@@ -19,6 +18,12 @@ export default function LeftBlockProfil() {
       gap={2}
       padding={2}
       sx={{
+        overflowY: 'scroll',
+        '&::-webkit-scrollbar': {
+           display: 'none',
+        },
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
         backgroundColor: alpha(customTheme.palette.slate[200], 0.1),
       }}
     >
@@ -39,6 +44,6 @@ export default function LeftBlockProfil() {
         <AnimatedTooltipPreview />
       </Stack>
 
-    </Box>
+    </Stack>
   )
 }

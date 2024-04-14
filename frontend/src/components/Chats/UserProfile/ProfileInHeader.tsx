@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, alpha } from '@mui/material';
+import { Avatar, ListItemAvatar, ListItemButton, ListItemText, alpha } from '@mui/material';
 import { StyledBadge } from '../../BadgeRipple/BadgeRipple';
 import customTheme from '../../../styles/customTheme';
 import { User } from '../../../types/Auth.type/Auth.Props';
@@ -77,7 +77,7 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
                         {username}
                     </Typography>}
                     secondary={
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <>
                             {isUserOnline ? (
                                 <Typography
                                     sx={{ display: 'inline' }}
@@ -101,7 +101,7 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
                                     {isUserDisconnected ? (username && `Dernière connexion : ${formatLastLogout(isUserDisconnected.disconnectedAt as string)}`) : (username && `Dernière connexion : ${formatLastLogout(lastLogout as string)}`)}
                                 </Typography>
                             )}
-                        </Box>
+                        </>
                     }
                 />
             </ListItemButton>

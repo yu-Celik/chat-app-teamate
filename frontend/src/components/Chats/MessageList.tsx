@@ -6,16 +6,29 @@ import { useEffect } from "react";
 import { Message } from "../../types/Chat.type/Chat.Props";
 import { TransitionGroup } from 'react-transition-group';
 import { ChatInfo } from "../../types/Chat.type/ChatContext.Props";
+import { useSocket } from "../../contexts/Socket/useSocketContext";
+import useMarkAllMessagesAsRead from "../../hooks/Chat/useMarkAllMessagesAsRead";
 
-export default function ChatList({ chatInfo, currentUserId }: { chatInfo: ChatInfo, currentUserId: string | null }) {
+export default function ChatList({ chatInfo, currentUserId, receiverId }: { chatInfo: ChatInfo, currentUserId: string | null, receiverId: string | null }) {
     const { getMessages } = useGetMessages();
+    const { markAllMessagesAsRead } = useMarkAllMessagesAsRead();
+    const { socket } = useSocket();
 
     useEffect(() => {
-        if (chatInfo?.chatId) {
-            getMessages(chatInfo?.chatId)
+        if (chatInfo?.chatId && receiverId) {
+            getMessages(chatInfo.chatId);
+            markAllMessagesAsRead(chatInfo.chatId);
+            if (socket) {
+                socket.emit('conversationOpened', { chatId: chatInfo.chatId, receiverId });
+            }
         }
-    }, [chatInfo?.chatId, getMessages])
+    }, [chatInfo.chatId, getMessages, markAllMessagesAsRead, receiverId, socket]);
 
+    // useEffect(() => {
+    //     chatInfo.messages.messagesList.forEach(message => {
+    // console.log(message);
+    //     });
+    // }, [chatInfo.messages.messagesList]);
 
     return (
         <>
@@ -48,12 +61,12 @@ export default function ChatList({ chatInfo, currentUserId }: { chatInfo: ChatIn
                     <>
                         {/* Affiche le skeleton si le chat n'est pas en cours d'édition et si isTyping ou isLoading sont true */}
                         {((chatInfo.typingState.isTyping && chatInfo.typingState.userId !== currentUserId) && chatInfo.sendMessageStatus.isEditing === false) && (
-                            <Stack marginTop={1} marginBottom={{xs: 1, sm: 0}} alignItems={'flex-start'}>
-                                <Skeleton variant="rectangular" width={'40%'} height={'3rem'} sx={{ 
-                                    borderRadius: '0px 10px 10px 10px', 
+                            <Stack marginTop={1} marginBottom={{ xs: 1, sm: 0 }} alignItems={'flex-start'}>
+                                <Skeleton variant="rectangular" width={'40%'} height={'3rem'} sx={{
+                                    borderRadius: '0px 10px 10px 10px',
                                     marginLeft: '10px'
 
-                                    }}/>
+                                }} />
                             </Stack>
                         )}
                         {chatInfo.messages.isLoading ? (
@@ -78,6 +91,8 @@ export default function ChatList({ chatInfo, currentUserId }: { chatInfo: ChatIn
                                                 updatedAt={message.updatedAt}
                                                 isLoading={chatInfo.messages.isLoading}
                                                 chatInfo={chatInfo}
+                                                readAt={message.readAt}
+                                                editedAt={message.editedAt}
                                             />
                                         </Collapse>
                                     )).reverse()}

@@ -3,13 +3,13 @@ import { cn } from './../../utils/cn.ts';
 import React, {
   createContext,
   useState,
-  useContext,
   useRef,
   useEffect,
   useCallback,
 } from "react";
+import { useMouseEnter } from './useMouseEnter.ts';
 
-const MouseEnterContext = createContext<
+export const MouseEnterContext = createContext<
   [boolean, React.Dispatch<React.SetStateAction<boolean>>] | undefined
 >(undefined);
 
@@ -107,7 +107,7 @@ export const CardItem = ({
   [key: string]: unknown; // Changed as per instructions
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [isMouseEntered] = useMouseEnter();
+  const isMouseEntered = useMouseEnter();
 
   useEffect(() => {
     const handleAnimations = () => {
@@ -131,13 +131,4 @@ export const CardItem = ({
       {children}
     </Tag>
   );
-};
-
-// Create a hook to use the context
-export const useMouseEnter = () => {
-  const context = useContext(MouseEnterContext);
-  if (context === undefined) {
-    throw new Error("useMouseEnter must be used within a MouseEnterProvider");
-  }
-  return context;
 };

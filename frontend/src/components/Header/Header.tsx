@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AppBar, Box, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, useTheme, Stack, Divider, MenuList, styled, Avatar } from '@mui/material';
-import { Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Badge, MenuItem, Menu, Button, Link, useMediaQuery, Stack, Divider, MenuList, styled, Avatar, Box } from '@mui/material';
+import { MoreVert, Notifications as NotificationsIcon } from '@mui/icons-material';
 import customTheme from "../../styles/customTheme";
 import { StyledIconButton } from "../IconButton/IconButton";
 import { SearchBarInDialog } from "../SearchBar/SearchBarInDialog";
@@ -10,8 +10,9 @@ import LogoTeamateIcon from "../Logo/LogoTeamateIcon";
 import BurgerButtonMui from "../Button/BurgerButtonMui";
 import useAuth from "../../contexts/AuthContext/useAuthContext";
 import useLogout from "../../hooks/Auth/useLogout";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
-const pages = ['Accueil', 'Événement', 'Calendrier'];
+const pages = ['Accueil', 'Jouer', 'Profil', 'Messagerie'];
 
 const StyledStack = styled(Stack)(() => ({
     [customTheme.breakpoints.up('xss')]: {
@@ -28,7 +29,7 @@ export default function Header() {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
-
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredPage, setHoveredPage] = useState<string | null>(null);
@@ -39,8 +40,7 @@ export default function Header() {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const notificationsOpen = Boolean(notificationsAnchorEl);
 
-    const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
 
 
     const handleOpen = (): void => {
@@ -169,19 +169,6 @@ export default function Header() {
                 },
             }}
         >
-            <MenuItem>
-                <StyledIconButton
-                    title="Messages"
-                    size="large"
-                    ria-label="show 4 new mails"
-                    menustyle='true'
-                >
-                    <Badge badgeContent={0} color="error">
-                        <MailIcon />
-                    </Badge>
-                </StyledIconButton>
-                <p>Messages</p>
-            </MenuItem>
             <MenuItem onClick={handleNoticationsMenuOpen}>
                 <StyledIconButton
                     title="Notifications"
@@ -410,6 +397,8 @@ export default function Header() {
                             {pages.map((page) => (
                                 <Stack key={page} sx={{ my: 2 }}>
                                     <Button
+                                        component={RouterLink}
+                                        to={page === 'Messagerie' ? '/chat' : page === 'Accueil' ? '/' : `/${page.toLowerCase()}`}
                                         onClick={handleCloseNavMenu}
                                         sx={{ color: customTheme.palette.slate[200], display: 'block', '&:hover': { color: customTheme.palette.slate[300] } }}
                                         onMouseEnter={() => { setHoveredPage(page); }}
@@ -429,7 +418,7 @@ export default function Header() {
                         <StyledStack direction={'row'} width={'fit-content'} justifyContent={'center'} alignItems={'flex-end'} marginRight={{ xs: customTheme.spacing(2), sm: '0' }}>
                             <LogoTeamateIcon
                                 id="md"
-                                href='/'
+                                onClick={() => navigate('/accueil')}
                                 sx={{
                                     width: '3rem',
                                     height: '100%',
@@ -462,16 +451,7 @@ export default function Header() {
                         </StyledStack>
                         <Box sx={{ flexGrow: 1 }} />
                         {isSmUp ? (<SearchBar placeholder="Rechercher un utilisateur" inputProps={{ 'aria-label': 'Rechercher un utilisateur' }}></SearchBar>) : (<SearchIconOnly onClick={handleOpen} />)}
-                        <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center' } }}>
-                            <StyledIconButton
-                                title="Messages"
-                                size="large"
-                                aria-label="show 4 new mails"
-                            >
-                                <Badge badgeContent={0} color="error">
-                                    <MailIcon />
-                                </Badge>
-                            </StyledIconButton>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
                             <StyledIconButton
                                 title="Notifications"
                                 size="large"
@@ -505,7 +485,7 @@ export default function Header() {
                                 aria-haspopup="true"
                                 onClick={handleMobileMenuOpen}
                             >
-                                <MoreIcon />
+                                <MoreVert />
                             </StyledIconButton>
                         </Box>
                     </Toolbar>

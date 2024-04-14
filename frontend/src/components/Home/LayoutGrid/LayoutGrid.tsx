@@ -3,18 +3,18 @@ import React, { useCallback, useEffect, useState, } from "react";
 
 import { motion } from "framer-motion";
 
-import { cn } from "../../utils/cn.ts";
-import img1 from './../../assets/imgGames/assassin.jpg';
-import img3 from './../../assets/imgGames/nba.jpeg';
-import img4 from './../../assets/imgGames/Minecraft.jpg';
-import img2 from './../../assets/imgGames/apex.jpg';
-import img5 from './../../assets/imgGames/league.jpg';
-import img6 from './../../assets/imgGames/fornite.jpg';
-import img7 from './../../assets/imgGames/CS.jpg';
-import img8 from './../../assets/imgGames/Valorant.jpeg';
-import img9 from './../../assets/imgGames/warzone.jpg';
-import img10 from './../../assets/imgGames/red dead.jpg';
-import img11 from './../../assets/imgGames/destiny2.jpg';
+import { cn } from "../../../utils/cn.ts";
+import img1 from './../../../assets/imgGames/assassin.jpg';
+import img3 from './../../../assets/imgGames/nba.jpeg';
+import img4 from './../../../assets/imgGames/Minecraft.jpg';
+import img2 from './../../../assets/imgGames/apex.jpg';
+import img5 from './../../../assets/imgGames/league.jpg';
+import img6 from './../../../assets/imgGames/fornite.jpg';
+import img7 from './../../../assets/imgGames/CS.jpg';
+import img8 from './../../../assets/imgGames/Valorant.jpeg';
+import img9 from './../../../assets/imgGames/warzone.jpg';
+import img10 from './../../../assets/imgGames/red dead.jpg';
+import img11 from './../../../assets/imgGames/destiny2.jpg';
 
 type Card = {
   id: number;

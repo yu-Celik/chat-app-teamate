@@ -1,7 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import customTheme from "../../styles/customTheme.ts";
+import customTheme from "../../../../styles/customTheme.ts";
 
 export default function BasicDateCalendar() {
 
