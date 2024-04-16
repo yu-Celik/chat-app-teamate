@@ -3,9 +3,9 @@ import React from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { GiTrophyCup } from "react-icons/gi";
-import gta from './../../assets/imgGames/gta.jpg';
-import rocketLeague from './../../assets/imgGames/rocket.jpg';
-import valorant from './../../assets/imgGames/Valorant.jpeg';
+import gta from '../../../../assets/imgGames/gta.jpg';
+import rocketLeague from '../../../../assets/imgGames/rocket.jpg';
+import valorant from '../../../../assets/imgGames/Valorant.jpeg';
 export function TopGame() {
   return (
     <>

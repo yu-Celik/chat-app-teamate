@@ -2,14 +2,14 @@ import { Collapse, Skeleton, Stack, Typography } from "@mui/material";
 import customTheme from "../../styles/customTheme";
 import MessageSend from "./MessageSend/MessageSend";
 import useGetMessages from "../../hooks/Chat/useGetMessages";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { Message } from "../../types/Chat.type/Chat.Props";
 import { TransitionGroup } from 'react-transition-group';
 import { ChatInfo } from "../../types/Chat.type/ChatContext.Props";
 import { useSocket } from "../../contexts/Socket/useSocketContext";
 import useMarkAllMessagesAsRead from "../../hooks/Chat/useMarkAllMessagesAsRead";
 
-export default function ChatList({ chatInfo, currentUserId, receiverId }: { chatInfo: ChatInfo, currentUserId: string | null, receiverId: string | null }) {
+export default memo(function ChatList({ chatInfo, currentUserId, receiverId }: { chatInfo: ChatInfo, currentUserId: string | null, receiverId: string | null }) {
     const { getMessages } = useGetMessages();
     const { markAllMessagesAsRead } = useMarkAllMessagesAsRead();
     const { socket } = useSocket();
@@ -103,5 +103,5 @@ export default function ChatList({ chatInfo, currentUserId, receiverId }: { chat
                 </Stack>)}
         </>
     )
-}
+})
 

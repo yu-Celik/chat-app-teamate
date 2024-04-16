@@ -9,7 +9,6 @@ import { StyledIconButton } from '../IconButton/IconButton';
 import { KeyboardArrowRight } from '@mui/icons-material';
 import ProfileInHeader from './UserProfile/ProfileInHeader';
 import { useChat } from '../../contexts/ChatContext/useChatContext';
-import { DrawerHeader } from './ChatDrawer/stylesDrawers';
 
 export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: () => void }) {
     const { chatInfo } = useChat();
@@ -31,49 +30,53 @@ export default function ChatHeader({ onClickOpenDrawer }: { onClickOpenDrawer?: 
 
     return (
         <>
-            {(selectedChat != null || isMdDown) && <DrawerHeader>
-                <AppBar position="relative" sx={{
-                    backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
-                    boxShadow: 'none',
-                    borderColor: 'rgba(255, 255, 255, 0.0)',
-                }}>
-                    <Toolbar sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+            {(selectedChat != null || isMdDown) &&
+                <>
+                    <AppBar position="relative" sx={{
+                        backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
+                        boxShadow: 'none',
+                        borderColor: 'rgba(255, 255, 255, 0.0)',
                     }}>
-                        <StyledIconButton
-                            title="Ouvrir le menu"
-                            size="large"
-                            aria-label="show more"
-                            aria-controls="nav-drawer"
-                            aria-haspopup="true"
-                            onClick={onClickOpenDrawer}
+                        <Toolbar sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            paddingLeft: '0px',
+                            paddingRight: '0px',
+                        }}>
+                            <StyledIconButton
+                                title="Ouvrir le menu"
+                                size="large"
+                                aria-label="show more"
+                                aria-controls="nav-drawer"
+                                aria-haspopup="true"
+                                onClick={onClickOpenDrawer}
 
-                            sx={{
-                                display: { xs: 'flex', md: 'none' }
-                            }}
-                        >
-                            <KeyboardArrowRight />
-                        </StyledIconButton>
-                        {selectedChat != null && nonCurrentUserMember != null && <ProfileInHeader
-                            userId={nonCurrentUserMember._id ?? ''}
-                            username={nonCurrentUserMember.username}
-                            profilePic={nonCurrentUserMember.profilePic}
-                            lastLogout={nonCurrentUserMember.lastLogout}
-                            onlineUsers={chatInfo.onlineUsersIds}
-                            disconnectedUsersIds={chatInfo.disconnectedUsersIds}
-                        />}
-                        {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
-                    </Toolbar>
-                </AppBar>
-                <SearchBarInDialog
-                    placeholder="Rechercher un message"
-                    inputProps={{ 'aria-label': 'search' }}
-                    onClose={handleClose}
-                    open={open}
-                />
-            </DrawerHeader>}
+                                sx={{
+                                    display: { xs: 'flex', md: 'none' }
+                                }}
+                            >
+                                <KeyboardArrowRight />
+                            </StyledIconButton>
+                            {selectedChat != null && nonCurrentUserMember != null && <ProfileInHeader
+                                userId={nonCurrentUserMember._id ?? ''}
+                                username={nonCurrentUserMember.username}
+                                profilePic={nonCurrentUserMember.profilePic}
+                                lastLogout={nonCurrentUserMember.lastLogout}
+                                onlineUsers={chatInfo.onlineUsersIds}
+                                disconnectedUsersIds={chatInfo.disconnectedUsersIds}
+                            />}
+                            {selectedChat != null && <SearchIconOnly onClick={handleOpen} />}
+                        </Toolbar>
+                    </AppBar>
+                    <SearchBarInDialog
+                        placeholder="Rechercher un message"
+                        inputProps={{ 'aria-label': 'search' }}
+                        onClose={handleClose}
+                        open={open}
+                    />
+                </>
+            }
         </>
     );
 }

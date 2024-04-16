@@ -55,7 +55,6 @@ export default function ChatPage() {
     const chatInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
     const [icon, setIcon] = useState({ icon: <Mic />, key: "mic", title: "Enregistrer" });
     const [secondaryIcon, setSecondaryIcon] = useState({ icon: <AttachFile />, key: "file", title: "Fichier" });
-
     const emitTypingDebounced = useMemo(() => debounce(() => {
         if (chatInfo.chatId && socket) {
             socket.emit('typing', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });
@@ -129,9 +128,6 @@ export default function ChatPage() {
             }
         }
 
-        // Redémarrez le debounce chaque fois que l'utilisateur tape
-        emitStopTypingDebounced();
-
         // Réinitialisez et démarrez le debounce pour "stop typing" à chaque frappe
         emitStopTypingDebounced.cancel(); // Annulez le debounce précédent pour s'assurer qu'il s'exécute après la dernière frappe
         emitStopTypingDebounced(); // Démarrez un nouveau debounce pour "stop typing"
@@ -170,15 +166,6 @@ export default function ChatPage() {
         <>
             {isMdUp &&
                 <PersistentDesktopDrawer>
-                    <Stack component="div" sx={{
-                        position: 'relative',
-                        border: 'none',
-                        flexShrink: 0,
-                        flexGrow: 1,
-                        '&::-webkit-scrollbar': {
-                            display: 'none',
-                        }
-                    }}>
                         <Paper component="div" sx={{
                             position: 'fixed',
                             top: 0,
@@ -222,7 +209,6 @@ export default function ChatPage() {
                                 handleCloseEdit={handleCloseEdit}
                             />
                         </Paper>
-                    </Stack>
                 </PersistentDesktopDrawer >
             }
             {

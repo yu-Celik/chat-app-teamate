@@ -9,11 +9,9 @@ export const SocketProvider = ({ children, currentUser }: { children: React.Reac
     const [socket, setSocket] = useState<Socket | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<{ socketId: string, userId: string }[]>([]);
     const [disconnectedUsers, setDisconnectedUsers] = useState<{ userId: string, disconnectedAt: string }[]>([]);
-
     useEffect(() => {
         if (!currentUser.data) return;
-        const newSocket = io("https://chat-app-teamate.onrender.com", { // Pour le site chat-app-teamate.onrender.com
-        // const newSocket = io("http://192.168.1.103:5000", { // Pour le site en local
+        const newSocket = io(import.meta.env.VITE_CLIENT_URL, {
             withCredentials: true,
             query: { userId: currentUser.data?._id },
             transports: ['websocket'],

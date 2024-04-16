@@ -1,6 +1,6 @@
-import valorant from './../../assets/imgGames/Valorant.jpeg';
-import rocketLeague from './../../assets/imgGames/rocket.jpg';
-import fortnite from './../../assets/imgGames/fornite.jpg';
+import valorant from '../../../../assets/imgGames/Valorant.jpeg';
+import rocketLeague from '../../../../assets/imgGames/rocket.jpg';
+import fortnite from '../../../../assets/imgGames/fornite.jpg';
 
 export default function Activity() {
     return (

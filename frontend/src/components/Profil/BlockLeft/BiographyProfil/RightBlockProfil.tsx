@@ -1,8 +1,8 @@
 import { Stack, alpha } from "@mui/material";
-import customTheme from "../../styles/customTheme.ts";
-import BasicDateCalendar from "../Calendar/Calendar.tsx";
-import Activity from "../Activity/Activity.tsx";
-import PlateformConnaxion from "../PlateformConnexion/PlateformConnaxion.tsx";
+import customTheme from "../../../../styles/customTheme.ts";
+import BasicDateCalendar from "../../BlockRight/Calendar/Calendar.tsx";
+import Activity from "../../BlockRight/Activity/Activity.tsx";
+import PlateformConnaxion from "../../../PlateformConnexion/PlateformConnaxion.tsx";
 
 export default function RightBlockProfil() {
   return (

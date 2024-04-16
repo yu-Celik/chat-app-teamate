@@ -4,7 +4,7 @@ import data from '@emoji-mart/data'
 import customTheme from "../../../styles/customTheme";
 import { Mood, EditOutlined } from '@mui/icons-material';
 import { StyledIconButton } from "../../IconButton/IconButton";
-import { ChangeEventHandler, FormEvent, FormEventHandler, MouseEventHandler, RefObject, useState } from "react";
+import { ChangeEventHandler, FormEvent, FormEventHandler, MouseEventHandler, RefObject, memo, useState } from "react";
 import { StyledTextField } from "./styleMessageBar";
 import { motion } from 'framer-motion';
 import { generateIconAnimation } from "../../Button/generateIconAnimation";
@@ -35,7 +35,7 @@ interface ChatBarProps {
 
 }
 
-export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsEditing, handleCloseEdit, handleTextChange, handleSendMessage, idTextField, variantTextField, ariaLabelTextField, ariaDescribedbyTextField, ariaInvalidTextField, chatInputRef, messageText, nameTextField, typeTextField, colorTextField, placeholderTextField, hiddenLabelTextField, multilineTextField, helperText, errorTextField }: ChatBarProps) {
+export default memo(function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsEditing, handleCloseEdit, handleTextChange, handleSendMessage, idTextField, variantTextField, ariaLabelTextField, ariaDescribedbyTextField, ariaInvalidTextField, chatInputRef, messageText, nameTextField, typeTextField, colorTextField, placeholderTextField, hiddenLabelTextField, multilineTextField, helperText, errorTextField }: ChatBarProps) {
     const [openPicker, setOpenPicker] = useState(false);
     const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
 
@@ -148,4 +148,4 @@ export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsE
             </Stack >
         </>
     )
-}
+})

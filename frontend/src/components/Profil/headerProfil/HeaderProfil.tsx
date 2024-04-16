@@ -1,12 +1,12 @@
 import { Button, Stack, Typography, alpha, styled } from '@mui/material';
-import ImageAvatars from '../ImageAvatars/ImageAvatars.tsx';
-import customTheme from '../../styles/customTheme';
-import { ColorPicker } from '../ColorPicker/ColorPicker.tsx';
+import ImageAvatars from '../../ImageAvatars/ImageAvatars.tsx';
+import customTheme from '../../../styles/customTheme.ts';
+import { ColorPicker } from './ColorPicker/ColorPicker.tsx';
 import React from 'react';
 import AddPhotoAlternateRoundedIcon from '@mui/icons-material/AddPhotoAlternateRounded';
-import { StyledIconButton } from '../IconButton/IconButton.tsx';
-import useAuth from '../../contexts/AuthContext/useAuthContext.ts';
-import PlaygroundSpeedDial from '../OptionProfil/OptionProfil.tsx';
+import { StyledIconButton } from '../../IconButton/IconButton.tsx';
+import useAuth from '../../../contexts/AuthContext/useAuthContext.ts';
+import PlaygroundSpeedDial from './OptionProfil/OptionProfil.tsx';
 
 export default function HeaderProfil() {
    const { currentUser } = useAuth();

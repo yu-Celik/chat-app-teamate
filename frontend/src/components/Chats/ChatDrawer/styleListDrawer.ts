@@ -23,26 +23,4 @@ export const styleListDrawer = {
     },
 };
 
-export const StyleListDrawerOrder = {
-    height: '100%',
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    scrollBehavior: 'smooth',
-    WebkitOverflowScrolling: 'touch',
-    '::WebkitScrollbar': {
-        width: '0.25rem',
-        height: '0.25rem',
-    },
-    '::WebkitScrollbarThumb': {
-        backgroundColor: customTheme.palette.slate[500],
-        borderRadius: '10px',
-    },
-    '::WebkitScrollbarTrack': {
-        backgroundColor: 'transparent',
-    },
-    '::WebkitScrollbarThumb:hover': {
-        backgroundColor: customTheme.palette.slate[600],
-    },
-};
-
 

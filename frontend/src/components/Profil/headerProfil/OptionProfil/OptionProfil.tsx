@@ -1,4 +1,4 @@
-import customTheme from '../../styles/customTheme';
+import customTheme from '../../../../styles/customTheme';
 
 import { styled } from '@mui/material/styles';
 

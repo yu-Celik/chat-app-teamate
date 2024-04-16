@@ -59,7 +59,7 @@ interface DialogBoxProps {
     handleClose: () => void;
 }
 
-export default function DialogBox({ open, handleClose }: DialogBoxProps) {
+const DialogBox = React.forwardRef<HTMLDivElement, DialogBoxProps>(({ open, handleClose }, ref) => {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +92,7 @@ export default function DialogBox({ open, handleClose }: DialogBoxProps) {
         }
     };
     return (
-            <Dialog open={open} onClose={handleClose}
+        <Dialog open={open} onClose={handleClose} ref={ref}
                 sx={{
                     "& .MuiDialog-paper": {
                         backgroundColor: customTheme.palette.bluePV.dark,
@@ -191,5 +191,9 @@ export default function DialogBox({ open, handleClose }: DialogBoxProps) {
                 </DialogActions>
             </Dialog >
     );
-}
+});
 
+
+DialogBox.displayName = 'DialogBox';
+
+export default DialogBox;

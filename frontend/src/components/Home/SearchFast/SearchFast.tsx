@@ -1,5 +1,5 @@
 import { Button, Checkbox, FormControl, FormControlLabel, FormLabel, Stack, Typography, alpha, styled } from "@mui/material"
-import customTheme from "./../../styles/customTheme.ts";
+import customTheme from "../../../styles/customTheme.ts";
 
 const StyledTypography = styled(Typography)(() => ({
     color: customTheme.palette.slate[200],
