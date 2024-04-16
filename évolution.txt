@@ -13,13 +13,3 @@ WhatsApp utilise des WebSocket ou des technologies similaires pour une communica
 Compression : Les données envoyées entre le client et le serveur peuvent être compressées pour réduire l'utilisation de la bande passante.
 Dénormalisation : La structure de données côté serveur peut être optimisée pour la récupération rapide des messages d'une conversation, par exemple, en stockant les messages de manière dénormalisée pour réduire le nombre de requêtes nécessaires pour récupérer tous les messages d'une conversation.
 Ces techniques, combinées à d'autres optimisations spécifiques à l'application et à la gestion des données, permettent à WhatsApp et à des applications similaires d'afficher efficacement tous les messages d'une conversation tout en maintenant de bonnes performances et une expérience utilisateur fluide.
-
-
-
-empeché le chat de souvrir sur mobile/desktop lorsque l'utilisateur ne veut pas supprimé // js
-les messages ne vont trop a la ligne // css
-Terminer le rangement pour ouvrir le chat avec _____ au clique sur mobile (le title) // css
-barre de recherche s'active lorsque j'appuie sur creer un chat en mobile // css
-mettre l'heure de deconnexion au lieux de connection // js
-lorsque la fenetre d'une conversation est ouverte, le message reçus de n'importe quel autre utilisateur apparait dans le chat actuellement ouvert
-lorsque aucun chat n'est ouvert sur mobile,  "Aucun message dans ce chat" est affiché.
