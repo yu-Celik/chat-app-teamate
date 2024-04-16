@@ -16,7 +16,7 @@ Cette application de chat offre une expérience de messagerie instantanée riche
 - Notifications de nouveaux messages (en développement)
 - Support des fichiers multimédias (images, vidéos) (en développement)
 - Recherche d'un message dans une conversation (en développement)
-- Création et suppression de groupes (en développement)
+- Création et suppression de conversation en groupe (en développement)
 
 ### Backend
 
@@ -35,6 +35,7 @@ Cette application de chat offre une expérience de messagerie instantanée riche
 ### Frontend
 - React avec TypeScript pour une interface utilisateur dynamique et maintenable
 - Material-UI pour des composants UI esthétiques et responsives
+- Tailwind pour l'unification du style en général
 - Socket.IO client pour une communication en temps réel fluide
 - Axios pour des requêtes API simplifiées et efficaces
 
