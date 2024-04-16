@@ -12,6 +12,7 @@ Cette application de chat offre une expérience de messagerie instantanée riche
 - Indicateur de saisie en temps réel des autres utilisateurs
 - Création et suppression de conversations
 - Thème personnalisé et adaptatif avec Material-UI
+- Organisation des chats créer personnalisable par l'utilisateur
 - Notifications de nouveaux messages (en développement)
 - Support des fichiers multimédias (images, vidéos) (en développement)
 - Recherche d'un message dans une conversation (en développement)
