@@ -1,9 +1,6 @@
-import ChatHeader from "../components/Chats/ChatHeader";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Stack, Paper, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
-import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
-import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
 import useGetAllUsers from "../hooks/Chat/useGetAllUsers";
 import useUserChats from "../hooks/Chat/useUserChats";
 import useGetLastMessageSeen from "../hooks/Chat/useGetLastMessageSeen";
@@ -13,8 +10,10 @@ import useListenDeleteMessage from "../hooks/Socket/useListenDeleteMessage";
 import useListenTyping from "../hooks/Socket/useListenTyping";
 import useListenNewChat from "../hooks/Socket/useListenNewChat";
 import useListenDeleteChat from "../hooks/Socket/useListenDeleteChat";
-import MessageList from "../components/Chats/MessageList";
-import MessageBar from "../components/Chats/MessageBar/MessageBar";
+import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
+import useListenConversationOpened from "../hooks/Socket/useListenConversationOpened";
+import useListenMarkAllMessagesAsRead from "../hooks/Socket/useListenMarkAllMessagesAsRead";
+import useListenMessageRead from "../hooks/Socket/useListenMessageRead";
 import { useChat } from "../contexts/ChatContext/useChatContext";
 import useAuth from "../contexts/AuthContext/useAuthContext";
 import { User } from "../types/Auth.type/Auth.Props";
@@ -24,11 +23,11 @@ import { debounce } from 'lodash';
 import { useSocket } from "../contexts/Socket/useSocketContext";
 import { AttachFile, Mic, Send, Done, Close } from '@mui/icons-material';
 import { drawerWidth, heightHeader } from '../styles/customTheme';
-import useListenCreateUser from "../hooks/Socket/useListenCreateUser";
-import useListenConversationOpened from "../hooks/Socket/useListenConversationOpened";
-import useListenMarkAllMessagesAsRead from "../hooks/Socket/useListenMarkAllMessagesAsRead";
-import useListenMessageRead from "../hooks/Socket/useListenMessageRead";
-
+const ChatHeader = lazy(() => import('../components/Chats/ChatHeader'))
+const PersistentDesktopDrawer = lazy(() => import('../components/Chats/ChatDrawer/PersistentDesktopDrawer'))
+const MessageBar = lazy(() => import('../components/Chats/MessageBar/MessageBar'))
+const MessageList = lazy(() => import('../components/Chats/MessageList'))
+const SwipeableMobileDrawer = lazy(() => import('../components/Chats/ChatDrawer/SwipeableMobileDrawer'))
 export default function ChatPage() {
     useListenCreateUser();
     useGetAllUsers();
@@ -166,49 +165,49 @@ export default function ChatPage() {
         <>
             {isMdUp &&
                 <PersistentDesktopDrawer>
-                        <Paper component="div" sx={{
-                            position: 'fixed',
-                            top: 0,
-                            right: 0,
-                            left: `calc(${drawerWidth}px)`,
-                            width: `calc(100dvw - ${drawerWidth}px)`,
-                            boxSizing: 'border-Stack',
-                            height: `calc(100dvh - ${heightHeader}px)`,
-                            marginTop: `${heightHeader}px`,
-                            backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            border: 'none',
-                            flexGrow: 1,
-                        }} >
-                            <ChatHeader />
-                            <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} receiverId={receiverUser?._id ?? null} />
-                            <MessageBar
-                                messageText={messageText}
-                                nameTextField={`message de ${receiverUser?.username}`}
-                                placeholderTextField={`Écrivez un message à ${receiverUser?.username}`}
-                                helperText={chatInfo.sendMessageStatus.warning}
-                                errorTextField={chatInfo.sendMessageStatus.error !== null}
-                                handleSendMessage={handleSendMessage}
-                                handleTextChange={handleTextChange}
-                                idTextField={'chatInput'}
-                                variantTextField={'filled'}
-                                ariaLabelTextField="Saisissez votre message ici"
-                                ariaDescribedbyTextField={`ChatInput-helper-text-${receiverUser?.username}`}
-                                ariaInvalidTextField={chatInfo.sendMessageStatus.error ? true : false}
-                                chatInputRef={chatInputRef}
-                                typeTextField={'text'}
-                                colorTextField={'primary'}
-                                hiddenLabelTextField={true}
-                                multilineTextField={true}
-                                icon={icon}
-                                secondaryIcon={secondaryIcon}
-                                messageToEdit={chatInfo.sendMessageStatus.messageToEdit}
-                                messageIsEditing={chatInfo.sendMessageStatus.isEditing}
-                                handleCloseEdit={handleCloseEdit}
-                            />
-                        </Paper>
+                    <Paper component="div" sx={{
+                        position: 'fixed',
+                        top: 0,
+                        right: 0,
+                        left: `calc(${drawerWidth}px)`,
+                        width: `calc(100dvw - ${drawerWidth}px)`,
+                        boxSizing: 'border-Stack',
+                        height: `calc(100dvh - ${heightHeader}px)`,
+                        marginTop: `${heightHeader}px`,
+                        backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        border: 'none',
+                        flexGrow: 1,
+                    }} >
+                        <ChatHeader />
+                        <MessageList chatInfo={chatInfo} currentUserId={currentUser.data?._id ?? null} receiverId={receiverUser?._id ?? null} />
+                        <MessageBar
+                            messageText={messageText}
+                            nameTextField={`message de ${receiverUser?.username}`}
+                            placeholderTextField={`Écrivez un message à ${receiverUser?.username}`}
+                            helperText={chatInfo.sendMessageStatus.warning}
+                            errorTextField={chatInfo.sendMessageStatus.error !== null}
+                            handleSendMessage={handleSendMessage}
+                            handleTextChange={handleTextChange}
+                            idTextField={'chatInput'}
+                            variantTextField={'filled'}
+                            ariaLabelTextField="Saisissez votre message ici"
+                            ariaDescribedbyTextField={`ChatInput-helper-text-${receiverUser?.username}`}
+                            ariaInvalidTextField={chatInfo.sendMessageStatus.error ? true : false}
+                            chatInputRef={chatInputRef}
+                            typeTextField={'text'}
+                            colorTextField={'primary'}
+                            hiddenLabelTextField={true}
+                            multilineTextField={true}
+                            icon={icon}
+                            secondaryIcon={secondaryIcon}
+                            messageToEdit={chatInfo.sendMessageStatus.messageToEdit}
+                            messageIsEditing={chatInfo.sendMessageStatus.isEditing}
+                            handleCloseEdit={handleCloseEdit}
+                        />
+                    </Paper>
                 </PersistentDesktopDrawer >
             }
             {
