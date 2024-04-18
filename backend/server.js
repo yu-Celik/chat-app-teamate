@@ -28,12 +28,12 @@ app.use('/api/users', userRoutes); // pour les routes liées aux utilisateurs
 app.use('/api/chats', chatRoutes); // pour les routes liées aux chats
 app.use('/api/messages', messageRoutes); // pour les routes liées aux messages
 
-app.use(express.static(path.join(__dirname, '/frontend/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
-});
+// app.use(express.static(path.join(__dirname, '/frontend/dist')));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+// });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   connectToMongoDB();
   console.log(`Le serveur fonctionne sur le port : ${PORT}`);
 });
