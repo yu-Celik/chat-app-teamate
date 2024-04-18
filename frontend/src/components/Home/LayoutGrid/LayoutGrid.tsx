@@ -1,8 +1,5 @@
-"use client";
 import React, { useCallback, useEffect, useState, } from "react";
-
 import { motion } from "framer-motion";
-
 import { cn } from "../../../utils/cn.ts";
 import img1 from '../../../assets/imgGames/assassin.jpg';
 import img3 from '../../../assets/imgGames/nba.jpeg';

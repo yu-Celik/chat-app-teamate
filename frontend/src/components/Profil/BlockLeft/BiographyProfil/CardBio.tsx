@@ -1,4 +1,3 @@
-"use client";
 import { Stack } from "@mui/material";
 import { CardBody, CardContainer, CardItem } from "../../../ui/3d-card";
 

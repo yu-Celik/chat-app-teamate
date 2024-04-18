@@ -1,4 +1,3 @@
-"use client";
 import { AnimatedTooltip } from "../../../ui/animated-tooltip";
 const people = [
   {

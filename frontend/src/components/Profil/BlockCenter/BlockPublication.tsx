@@ -1,4 +1,3 @@
-"use client";
 import customTheme from "../../../styles/customTheme.ts";
 
 import { users } from '../../../data/userData.ts';
