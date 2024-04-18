@@ -23,7 +23,7 @@ interface SwipeableMobileDrawerProps {
 }
 type Anchor = 'left';
 
-export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: SwipeableMobileDrawerProps) {
+const SwipeableMobileDrawer = ({ open, onClose, onOpen, children }: SwipeableMobileDrawerProps) => {
     const [value, setValue] = useState(0);
     const [showGroupe, setShowGroupe] = useState(false);
     const { chatInfo, updateChatOrder } = useChat();
@@ -223,7 +223,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                                     width: '50%',
                                 },
                                 '&.Mui-selected': {
-                                color: customTheme.palette.orangePV.dark,
+                                    color: customTheme.palette.orangePV.dark,
                                 },
                             }} label="Chat privé" onClick={() => setShowGroupe(false)} />
                             <Tab sx={{
@@ -233,7 +233,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                                     width: '50%',
                                 },
                                 '&.Mui-selected': {
-                                color: customTheme.palette.orangePV.dark,
+                                    color: customTheme.palette.orangePV.dark,
                                 },
                             }} label="Groupe" onClick={() => setShowGroupe(true)} />
                         </Tabs>
@@ -245,7 +245,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                                 aria-controls="nav-drawer"
                                 aria-haspopup="true"
                                 onClick={() => navigate(-1)}
-                                >
+                            >
                                 <KeyboardArrowLeft />
 
                             </StyledIconButton>
@@ -299,3 +299,5 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
         </>
     );
 }
+
+export default SwipeableMobileDrawer
