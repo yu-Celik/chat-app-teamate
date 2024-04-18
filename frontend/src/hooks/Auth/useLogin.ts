@@ -31,7 +31,8 @@ const useLogin = () => {
             setCurrentUser({ data: response.data });
             setLogin((prev) => ({ ...prev, isLogged: true }));
             localStorage.setItem('chat-user', JSON.stringify(response.data));
-            navigate('/');
+            updateLoginInfo({ email: '', password: '' });
+            navigate('/accueil');
             console.log('Connexion réussie');
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -45,7 +46,7 @@ const useLogin = () => {
                 isLoggedLoading: false
             }));
         }
-    }, [navigate, setCurrentUser]);
+    }, [navigate, setCurrentUser, updateLoginInfo]);
 
     return { login, updateLoginInfo, loginUser };
 }

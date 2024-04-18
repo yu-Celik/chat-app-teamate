@@ -1,10 +1,10 @@
-import { Box, FormControl, Stack, TextFieldVariants, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Stack, FormControl, TextFieldVariants, Typography, alpha, useMediaQuery } from "@mui/material";
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import customTheme from "../../../styles/customTheme";
 import { Mood, EditOutlined } from '@mui/icons-material';
 import { StyledIconButton } from "../../IconButton/IconButton";
-import { ChangeEventHandler, FormEvent, FormEventHandler, MouseEventHandler, RefObject, useState } from "react";
+import { ChangeEventHandler, FormEvent, FormEventHandler, MouseEventHandler, RefObject, memo, useState } from "react";
 import { StyledTextField } from "./styleMessageBar";
 import { motion } from 'framer-motion';
 import { generateIconAnimation } from "../../Button/generateIconAnimation";
@@ -35,7 +35,7 @@ interface ChatBarProps {
 
 }
 
-export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsEditing, handleCloseEdit, handleTextChange, handleSendMessage, idTextField, variantTextField, ariaLabelTextField, ariaDescribedbyTextField, ariaInvalidTextField, chatInputRef, messageText, nameTextField, typeTextField, colorTextField, placeholderTextField, hiddenLabelTextField, multilineTextField, helperText, errorTextField }: ChatBarProps) {
+export default memo(function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsEditing, handleCloseEdit, handleTextChange, handleSendMessage, idTextField, variantTextField, ariaLabelTextField, ariaDescribedbyTextField, ariaInvalidTextField, chatInputRef, messageText, nameTextField, typeTextField, colorTextField, placeholderTextField, hiddenLabelTextField, multilineTextField, helperText, errorTextField }: ChatBarProps) {
     const [openPicker, setOpenPicker] = useState(false);
     const isSmallScreen = useMediaQuery(customTheme.breakpoints.down('sm'));
 
@@ -49,7 +49,7 @@ export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsE
         <>
             <Stack direction={'column'} padding={{ xs: customTheme.spacing(0, 1), md: customTheme.spacing(0) }}>
                 {openPicker &&
-                    <Box zIndex={1000} flexGrow={1}>
+                    <Stack zIndex={1000} flexGrow={1}>
                         <Picker data={data} emojiButtonColors={[
                             'rgba(155,223,88,.7)',
                             'rgba(149,211,254,.7)',
@@ -57,7 +57,7 @@ export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsE
                             'rgba(238,166,252,.7)',
                             'rgba(255,213,143,.7)',
                             'rgba(211,209,255,.7)',]} onEmojiSelect={handleTextChange} emojiSize={24} perLine={isSmallScreen ? 6 : 10} onClickOutside={() => { setOpenPicker(!openPicker); }} />
-                    </Box>
+                    </Stack>
                 }
                 <FormControl component="form" onSubmit={handleSendMessage}>
                     <Stack direction={'row'} alignItems={'center'} sx={{
@@ -148,4 +148,4 @@ export default function ChatBar({ icon, secondaryIcon, messageToEdit, messageIsE
             </Stack >
         </>
     )
-}
+})

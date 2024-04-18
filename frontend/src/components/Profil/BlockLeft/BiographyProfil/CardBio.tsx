@@ -1,11 +1,10 @@
-"use client";
-import { Box } from "@mui/material";
-import { CardBody, CardContainer, CardItem } from "../ui/3d-card";
+import { Stack } from "@mui/material";
+import { CardBody, CardContainer, CardItem } from "../../../ui/3d-card";
 
 
 export function CardBio() {
   return (
-    <Box 
+    <Stack 
     component={'article'}
     >
     <CardContainer className="">
@@ -19,6 +18,6 @@ export function CardBio() {
         </CardItem>
       </CardBody>
     </CardContainer>
-    </Box>
+    </Stack>
   );
 }

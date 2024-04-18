@@ -23,7 +23,7 @@ export default function GamePage(): JSX.Element {
 
         <Stack
             sx={{
-                minHeight: `calc(100dvh - ${heightHeader + bottomNavigationHeight})`,
+                minHeight: `calc(100dvh - ${heightHeader + bottomNavigationHeight}px)`,
             }} direction={"column"} alignItems={'center'} justifyContent={"center"}>
             <LogoTeamateIcon
                 sx={{

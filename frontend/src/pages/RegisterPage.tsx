@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, IconButton, InputAdornment, Link, MenuItem, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Stack, Button, CircularProgress, IconButton, InputAdornment, Link, MenuItem, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
@@ -95,8 +95,6 @@ const StyledButton = styled(Button)(() => ({
     },
 }));
 
-
-
 export default function RegisterPage() {
     const { isAuthenticated } = useAuth()
     const navigate = useNavigate();
@@ -120,7 +118,7 @@ export default function RegisterPage() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/');
+            navigate('/accueil');
         }
     }, [isAuthenticated, navigate]);
 
@@ -172,7 +170,6 @@ export default function RegisterPage() {
 
         if (formIsValid) {
             registerUser(register.registerInfo).then(() => {
-                updateRegisterInfo({ email: '', username: '', password: '', gender: '', confirmPassword: '' });
             }).catch((error) => {
                 let errorMsg = 'Erreur lors de l\'inscription. Veuillez réessayer.';
                 if (error.response && error.response.data && error.response.data.error) {
@@ -206,7 +203,7 @@ export default function RegisterPage() {
                     <Stack direction={'row'} alignItems={'flex-end'} marginBottom={customTheme.spacing(2)}>
                         <LogoTeamateIcon
                             id="md"
-                            href='/'
+                            onClick={() => navigate('/')}
                             sx={{
                                 width: '3rem',
                                 height: '100%',
@@ -237,7 +234,7 @@ export default function RegisterPage() {
                         </Link>
                     </Stack>
                     <StyledTypography gutterBottom variant="h1">Créez un compte</StyledTypography>
-                    <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
+                    <Stack maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
                         <Stack spacing={2}>
                             {formField.map((step) => {
                                 // Champ spécifique pour 'gender'
@@ -324,7 +321,7 @@ export default function RegisterPage() {
                         <StyledTypography variant={'subtitle2'}>
                             En cliquant sur "S'inscrire", vous acceptez les <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Conditions d'utilisation</Link> et la <Link color={'primary'} fontWeight={600} component={RouterLink} underline={'hover'} to={'/'}>Politique de confidentialité</Link> de Teamate.
                         </StyledTypography>
-                    </Box>
+                    </Stack>
                 </Stack>
             </Stack>
         </ThemeProvider>

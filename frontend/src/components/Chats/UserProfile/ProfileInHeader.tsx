@@ -28,7 +28,6 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
             variant="h6"
             noWrap
             component="div"
-            minHeight={'67.5px'}
             sx={{
                 flexGrow: 1,
                 display: 'flex',
@@ -42,7 +41,7 @@ export default function ProfileInHeader({ username, profilePic, lastLogout, onli
         >
             <ListItemButton disableGutters sx={{
                 display: 'flex',
-                padding: customTheme.spacing(1.5, 2),
+                padding: customTheme.spacing(1.5, 0),
                 maxHeight: '58px',
             }}>
                 <ListItemAvatar

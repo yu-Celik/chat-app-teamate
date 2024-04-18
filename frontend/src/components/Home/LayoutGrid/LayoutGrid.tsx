@@ -1,20 +1,17 @@
-"use client";
 import React, { useCallback, useEffect, useState, } from "react";
-
 import { motion } from "framer-motion";
-
-import { cn } from "../../utils/cn.ts";
-import img1 from './../../assets/imgGames/assassin.jpg';
-import img3 from './../../assets/imgGames/nba.jpeg';
-import img4 from './../../assets/imgGames/Minecraft.jpg';
-import img2 from './../../assets/imgGames/apex.jpg';
-import img5 from './../../assets/imgGames/league.jpg';
-import img6 from './../../assets/imgGames/fornite.jpg';
-import img7 from './../../assets/imgGames/CS.jpg';
-import img8 from './../../assets/imgGames/Valorant.jpeg';
-import img9 from './../../assets/imgGames/warzone.jpg';
-import img10 from './../../assets/imgGames/red dead.jpg';
-import img11 from './../../assets/imgGames/destiny2.jpg';
+import { cn } from "../../../utils/cn.ts";
+import img1 from '../../../assets/imgGames/assassin.jpg';
+import img3 from '../../../assets/imgGames/nba.jpeg';
+import img4 from '../../../assets/imgGames/Minecraft.jpg';
+import img2 from '../../../assets/imgGames/apex.jpg';
+import img5 from '../../../assets/imgGames/league.jpg';
+import img6 from '../../../assets/imgGames/fornite.jpg';
+import img7 from '../../../assets/imgGames/CS.jpg';
+import img8 from '../../../assets/imgGames/Valorant.jpeg';
+import img9 from '../../../assets/imgGames/warzone.jpg';
+import img10 from '../../../assets/imgGames/red dead.jpg';
+import img11 from '../../../assets/imgGames/destiny2.jpg';
 
 type Card = {
   id: number;
@@ -43,7 +40,7 @@ export const LayoutGrid = () => {
         <p className="font-bold text-4xl text-white">Apex</p>
         <p className="font-normal text-base text-white"></p>
         <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-  
+
           Apex Legends est un jeu vidéo de type battle royale développé par Respawn Entertainment, où des équipes de joueurs s'affrontent dans une arène futuriste en utilisant des personnages aux compétences uniques pour être la dernière équipe en vie.
         </p>
       </div>,
@@ -80,7 +77,7 @@ export const LayoutGrid = () => {
         <p className="font-bold text-4xl text-white">League of Legends</p>
         <p className="font-normal text-base text-white"></p>
         <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-  
+
           League of Legends (LoL) est un jeu vidéo de type MOBA (Multiplayer Online Battle Arena), où deux équipes de champions uniques s'affrontent pour détruire la base adverse. Chaque joueur contrôle un champion avec des compétences spécifiques, et le jeu combine stratégie, compétences et coopération pour remporter la victoire.
         </p>
       </div>,
@@ -117,7 +114,7 @@ export const LayoutGrid = () => {
         <p className="font-bold text-4xl text-white">Valorant</p>
         <p className="font-normal text-base text-white"></p>
         <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-  
+
           Valorant est un jeu vidéo de tir à la première personne (FPS) développé par Riot Games. Dans Valorant, deux équipes de cinq joueurs s'affrontent pour accomplir des objectifs sur une carte. Chaque joueur incarne un agent avec des compétences uniques, et le jeu combine l'habileté des tirs avec des éléments tactiques pour offrir une expérience compétitive intense.
         </p>
       </div>,
@@ -135,8 +132,8 @@ export const LayoutGrid = () => {
       </div>,
       className: 'col-span-3',
       thumbnail: img9,
-    
-  },
+
+    },
 
     {
       id: 10,

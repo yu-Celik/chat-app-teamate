@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Add } from '@mui/icons-material';
-import { Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Divider, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import customTheme from '../../styles/customTheme';
 import { SearchBar } from '../SearchBar/SearchBar';
 import { StyledMenu } from './ContextMenu/ContextMenu';
@@ -44,7 +44,6 @@ export default function MenuCreateChat() {
 
   return (
     <>
-      <ListItem key="create-chat-button" disablePadding>
         <ListItemButton
           id="create-chat-button"
           aria-controls={open ? 'create-chat-menu' : undefined}
@@ -57,7 +56,6 @@ export default function MenuCreateChat() {
           </ListItemIcon>
           <ListItemText primary="Créer un chat" />
         </ListItemButton>
-      </ListItem>
       <StyledMenu
         id="create-chat-menu"
         MenuListProps={{

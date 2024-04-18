@@ -1,11 +1,10 @@
-"use client";
-import customTheme from "./../../styles/customTheme.ts";
+import customTheme from "../../../styles/customTheme.ts";
 
-import { users } from './../../data/userData.ts';
+import { users } from '../../../data/userData.ts';
 import { twMerge } from "tailwind-merge";
 import { Stack, alpha, } from "@mui/material";
 import ClampLines from "react-clamp-lines";
-import ImageAvatars from '../ImageAvatars/ImageAvatars.tsx';
+import ImageAvatars from '../../ImageAvatars/ImageAvatars.tsx';
 
 export function BlockPublication() {
    const dummyContent = [

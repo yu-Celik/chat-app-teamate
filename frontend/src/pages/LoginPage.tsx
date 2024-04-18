@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, IconButton, InputAdornment, Link, Stack, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
+import { Alert, Stack, Button, CircularProgress, IconButton, InputAdornment, Link, TextField, ThemeProvider, Typography, alpha, styled } from "@mui/material";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import customTheme from '../styles/customTheme'
 import LogoTeamateIcon from '../components/Logo/LogoTeamateIcon';
@@ -111,7 +111,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/accueil');
     }
   }, [isAuthenticated, navigate]);
 
@@ -147,7 +147,6 @@ export default function LoginPage() {
 
     if (formIsValid) {
       loginUser(login.loginInfo).then(() => {
-        updateLoginInfo({ email: '', password: '' });
       }).catch((error) => {
         let errorMsg = 'Erreur lors de la connexion. Veuillez réessayer.';
         if (error.response && error.response.data && error.response.data.error) {
@@ -180,7 +179,7 @@ export default function LoginPage() {
           <Stack direction={'row'} alignItems={'flex-end'} marginBottom={customTheme.spacing(2)}>
             <LogoTeamateIcon
               id="md"
-              href='/'
+              onClick={() => navigate('/')}
               sx={{
                 width: '3rem',
                 height: '100%',
@@ -211,7 +210,7 @@ export default function LoginPage() {
             </Link>
           </Stack>
           <StyledTypography gutterBottom variant="h1">Se connecter</StyledTypography>
-          <Box maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
+          <Stack maxWidth={{ xs: '100%', md: '470px' }} width={'100%'} component={'form'} onSubmit={handleSubmit}>
             <Stack spacing={2}>
               {formField.map((field) => (
                 <StyledTextField
@@ -269,7 +268,7 @@ export default function LoginPage() {
             <StyledTypography gutterBottom variant={'body2'}>
               Vous n'avez pas de compte ? <Link fontWeight={600} component={RouterLink} color={'primary'} underline={'hover'} to={'/Register'}>Inscrivez-vous</Link>
             </StyledTypography>
-          </Box>
+          </Stack>
         </Stack>
       </Stack>
     </ThemeProvider>

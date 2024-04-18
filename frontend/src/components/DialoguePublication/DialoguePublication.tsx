@@ -59,7 +59,7 @@ interface DialogBoxProps {
     handleClose: () => void;
 }
 
-export default function DialogBox({ open, handleClose }: DialogBoxProps) {
+const DialogBox = React.forwardRef<HTMLDivElement, DialogBoxProps>(({ open, handleClose }, ref) => {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,103 +92,108 @@ export default function DialogBox({ open, handleClose }: DialogBoxProps) {
         }
     };
     return (
-        <Dialog open={open} onClose={handleClose}
-            sx={{
-                "& .MuiDialog-paper": {
-                    backgroundColor: customTheme.palette.bluePV.dark,
-                    color: customTheme.palette.slate[200],
-                },
-            }}
-        >
-            <DialogTitle
+        <Dialog open={open} onClose={handleClose} ref={ref}
                 sx={{
-                    borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
-                }}
-                textAlign={'center'}
-            >
-                <TypewriterEffectSmooth speed={{delay: 0.2, duration: 1}} words={words} />
-            </DialogTitle>
-
-            <DialogContent
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                sx={{
-                    display: 'flex',
-                    gap: '1rem',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    backgroundColor: customTheme.palette.bluePV.dark,
-                }}
-            >
-
-                <input
-                    accept="image/*,video/*"
-                    type="file"
-                    multiple
-                    onChange={handleFileSelect}
-                    style={{ display: 'none' }}
-                    id="file-upload"
-                />
-
-                <label htmlFor="file-upload">
-                    {selectedFile ? (
-                        <img src={selectedFile} alt="Selected" style={{ width: '40rem', height: '10rem', objectFit: 'cover', marginTop: "1rem", borderRadius: "10px" }} />
-                    ) : (
-                        <Stack>
-                            <StyledIconButton title={"Ajouter"} color="primary" component="span">
-                                <AddPhotoAlternateOutlinedIcon sx={{
-                                    textAlign: 'center',
-                                    fontSize: '5rem',
-                                    color: customTheme.palette.slate[200],
-                                }} />
-                            </StyledIconButton>
-                            <DialogContentText
-                                sx={{
-                                    color: customTheme.palette.slate[200],
-                                }}>
-                                Faites glisser vos photos et les vidéos ici
-                            </DialogContentText>
-                        </Stack>
-                    )}
-                </label>
-
-                <StyledTextField
-                    autoFocus
-                    margin="dense"
-                    id="post"
-                    label="Écrire..."
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    sx={{
-                        fontSize: '1rem',
+                    "& .MuiDialog-paper": {
+                        backgroundColor: customTheme.palette.bluePV.dark,
                         color: customTheme.palette.slate[200],
-                    }}
-                    title="Annuler"
-                    onClick={() => {
-                        handleClose();
-                        setSelectedFile(null);
-                    }}>Annuler
-                </Button>
-                <Button
+                    },
+                }}
+            >
+                <DialogTitle
                     sx={{
-                        fontSize: '1rem',
-                        color: customTheme.palette.orangePV.dark,
-
+                        borderBottom: `1px solid ${customTheme.palette.orangePV.dark}`,
                     }}
-                    title="Publier"
-                    onClick={() => {
-                        handleClose();
-                        setSelectedFile(null);
-                    }}>Publier
-                </Button>
-            </DialogActions>
-        </Dialog >
+                    textAlign={'center'}
+                >
+                    <TypewriterEffectSmooth speed={{ delay: 0.2, duration: 1 }} words={words} />
+                </DialogTitle>
+
+                <DialogContent
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    sx={{
+                        display: 'flex',
+                        gap: '1rem',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        backgroundColor: customTheme.palette.bluePV.dark,
+                    }}
+                >
+
+                    <input
+                        accept="image/*,video/*"
+                        type="file"
+                        multiple
+                        onChange={handleFileSelect}
+                        style={{ display: 'none' }}
+                        id="file-upload"
+                    />
+
+                    <label htmlFor="file-upload">
+                        {selectedFile ? (
+                            <img src={selectedFile} alt="Selected" style={{ width: '40rem', height: '10rem', objectFit: 'cover', marginTop: "1rem", borderRadius: "10px" }} />
+                        ) : (
+                            <Stack>
+                                <StyledIconButton title={"Ajouter"} color="primary" component="span">
+                                    <AddPhotoAlternateOutlinedIcon sx={{
+                                        textAlign: 'center',
+                                        fontSize: '5rem',
+                                        color: customTheme.palette.slate[200],
+                                    }} />
+                                </StyledIconButton>
+                                <DialogContentText
+                                    sx={{
+                                        color: customTheme.palette.slate[200],
+                                    }}>
+                                    Faites glisser vos photos et les vidéos ici
+                                </DialogContentText>
+                            </Stack>
+                        )}
+                    </label>
+
+                    <StyledTextField
+                        autoFocus
+                        margin="dense"
+                        id="post"
+                        label="Écrire..."
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        sx={{
+                            fontSize: '1rem',
+                            color: customTheme.palette.slate[200],
+                        }}
+                        title="Annuler"
+                        onClick={() => {
+                            handleClose();
+                            setSelectedFile(null);
+                        }}>Annuler
+                    </Button>
+                    <Button
+                        sx={{
+                            fontSize: '1rem',
+                            color: customTheme.palette.orangePV.dark,
+
+                        }}
+                        title="Publier"
+                        onClick={() => {
+                            handleClose();
+                            setSelectedFile(null);
+                        }}>Publier
+                    </Button>
+                </DialogActions>
+            </Dialog >
     );
-}
+});
+
+
+DialogBox.displayName = 'DialogBox';
+
+export default DialogBox;

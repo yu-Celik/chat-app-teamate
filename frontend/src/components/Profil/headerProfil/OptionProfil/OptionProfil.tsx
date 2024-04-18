@@ -1,5 +1,4 @@
-import * as React from 'react';
-import customTheme from '../../styles/customTheme';
+import customTheme from '../../../../styles/customTheme';
 
 import { styled } from '@mui/material/styles';
 
@@ -11,16 +10,31 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import EmailIcon from '@mui/icons-material/Email';
 import GppMaybeIcon from '@mui/icons-material/GppMaybe';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
-const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
+import { useMediaQuery } from '@mui/material';
+const StyledSpeedDial = styled(SpeedDial)(() => ({
   position: 'absolute',
-  '&.MuiSpeedDial-directionUp, &.MuiSpeedDial-directionLeft': {
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
+  '&.MuiSpeedDial-directionDown': {
+    top: customTheme.spacing(2),
+    left: customTheme.spacing(18),
   },
-  '&.MuiSpeedDial-directionDown, &.MuiSpeedDial-directionRight': {
-    top: theme.spacing(2),
-    left: theme.spacing(2),
+  '&.MuiSpeedDial-directionRight': {
+    top: customTheme.spacing(0.40),
+    left: customTheme.spacing(19),
   },
+  '& .MuiSpeedDial-actions': {
+    padding: 0,
+    marginLeft: customTheme.spacing(0.50)
+  },
+  '& .MuiFab-root': {
+    minWidth: 0,
+    minHeight: 0,
+    width: '24px',
+    height: '24px'
+  },
+  '& .MuiSvgIcon-root': {
+    width: '18px',
+    height: '18px'
+  }
 }));
 
 const actions = [
@@ -31,36 +45,25 @@ const actions = [
 ];
 
 export default function PlaygroundSpeedDial() {
-
+  const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
   return (
         <StyledSpeedDial
           ariaLabel="SpeedDial playground example"
           icon={<SpeedDialIcon />}
-          direction={'right'}
+          direction={isMdUp ? 'right' : 'down'}
           sx={{
-            position: 'static',
             '& .MuiButtonBase-root': {
-              height: '0rem',
-              width: '0rem',
               backgroundColor: customTheme.palette.orangePV.dark,
               color: customTheme.palette.slate[200],
-              padding: '1rem',
-              direction: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              scale: '0.6',
-              margin: '0.2rem',
               '&:hover': {
                 backgroundColor: customTheme.palette.orangePV.dark,
               }
             },
             '& .MuiSvgIcon-root': {
-              fontSize: '1.5rem',
+              // fontSize: '1.5rem',
 
             },
-            '& .MuiSpeedDial-actions': {
-              paddingLeft: '30px'
-            }
+
 
           }}
         >

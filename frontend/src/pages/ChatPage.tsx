@@ -1,6 +1,6 @@
 import ChatHeader from "../components/Chats/ChatHeader";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Paper, Stack, Typography, alpha, useMediaQuery } from "@mui/material";
+import { Stack, Paper, Typography, alpha, useMediaQuery } from "@mui/material";
 import customTheme from "../styles/customTheme";
 import PersistentDesktopDrawer from "../components/Chats/ChatDrawer/PersistentDesktopDrawer";
 import { SwipeableMobileDrawer } from "../components/Chats/ChatDrawer/SwipeableMobileDrawer";
@@ -47,7 +47,7 @@ export default function ChatPage() {
     const { sendMessage } = useSendMessage();
     const { editMessage } = useEditMessage();
     const [isTyping, setIsTyping] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const { chatInfo, updateSendMessageStatus } = useChat();
     const { currentUser } = useAuth();
     const [receiverUser, setReceiverUser] = useState<User | null>(null);
@@ -55,7 +55,6 @@ export default function ChatPage() {
     const chatInputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
     const [icon, setIcon] = useState({ icon: <Mic />, key: "mic", title: "Enregistrer" });
     const [secondaryIcon, setSecondaryIcon] = useState({ icon: <AttachFile />, key: "file", title: "Fichier" });
-
     const emitTypingDebounced = useMemo(() => debounce(() => {
         if (chatInfo.chatId && socket) {
             socket.emit('typing', { receiverId: receiverUser?._id, chatId: chatInfo.chatId });
@@ -129,9 +128,6 @@ export default function ChatPage() {
             }
         }
 
-        // Redémarrez le debounce chaque fois que l'utilisateur tape
-        emitStopTypingDebounced();
-
         // Réinitialisez et démarrez le debounce pour "stop typing" à chaque frappe
         emitStopTypingDebounced.cancel(); // Annulez le debounce précédent pour s'assurer qu'il s'exécute après la dernière frappe
         emitStopTypingDebounced(); // Démarrez un nouveau debounce pour "stop typing"
@@ -170,23 +166,14 @@ export default function ChatPage() {
         <>
             {isMdUp &&
                 <PersistentDesktopDrawer>
-                    <Box component="div" sx={{
-                        position: 'relative',
-                        border: 'none',
-                        flexShrink: 0,
-                        flexGrow: 1,
-                        '&::-webkit-scrollbar': {
-                            display: 'none',
-                        }
-                    }}>
                         <Paper component="div" sx={{
                             position: 'fixed',
                             top: 0,
                             right: 0,
                             left: `calc(${drawerWidth}px)`,
-                            width: `calc(100% - ${drawerWidth}px)`,
-                            boxSizing: 'border-box',
-                            height: `calc(100% - ${heightHeader}px)`,
+                            width: `calc(100dvw - ${drawerWidth}px)`,
+                            boxSizing: 'border-Stack',
+                            height: `calc(100dvh - ${heightHeader}px)`,
                             marginTop: `${heightHeader}px`,
                             backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
                             display: 'flex',
@@ -222,14 +209,13 @@ export default function ChatPage() {
                                 handleCloseEdit={handleCloseEdit}
                             />
                         </Paper>
-                    </Box>
                 </PersistentDesktopDrawer >
             }
             {
                 isMdDown &&
                 <>
                     <SwipeableMobileDrawer anchor="left" open={open} onClose={toggleDrawer} onOpen={toggleDrawer}>
-                        <Box id="3" component="div" sx={{
+                        <Stack id="3" component="div" sx={{
                             position: 'relative',
                             border: 'none',
                             flexShrink: 0,
@@ -240,17 +226,15 @@ export default function ChatPage() {
                         }}>
                             <Paper component="div" sx={{
                                 position: 'fixed',
+                                height: `calc(100dvh - ${heightHeader}px)`,
                                 top: 0,
                                 right: 0,
                                 left: 0,
                                 width: '100%',
-                                boxSizing: 'border-box',
-                                height: `calc(100% - ${heightHeader}px)`,
                                 marginTop: `${heightHeader}px`,
                                 backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
                                 display: 'flex',
                                 flexDirection: 'column',
-                                justifyContent: 'flex-start',
                                 border: 'none',
                                 flexGrow: 1,
                             }} >
@@ -282,6 +266,7 @@ export default function ChatPage() {
                                             messageIsEditing={chatInfo.sendMessageStatus.isEditing}
                                             handleCloseEdit={handleCloseEdit}
                                         />
+
                                     </>
                                 ) : (
                                     <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'}>
@@ -293,7 +278,7 @@ export default function ChatPage() {
 
 
                             </Paper>
-                        </Box>
+                        </Stack>
                     </SwipeableMobileDrawer>
                 </>
             }

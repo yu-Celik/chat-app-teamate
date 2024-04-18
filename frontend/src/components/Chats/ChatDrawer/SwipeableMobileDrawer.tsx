@@ -1,8 +1,8 @@
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs } from "@mui/material";
-import { ReactEventHandler, SyntheticEvent, useEffect, useState } from "react";
+import { Stack, Collapse, List, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, Tab, Tabs, useMediaQuery } from "@mui/material";
+import { ReactEventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
 import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
-import { GroupAdd, KeyboardArrowLeft, Search, ViewListOutlined } from "@mui/icons-material";
+import { GroupAdd, KeyboardArrowLeft, Search, ViewListOutlined, KeyboardArrowUp, KeyboardArrowDown, Close } from "@mui/icons-material";
 import ProfileInDrawer from "../UserProfile/ProfileInDrawer";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
 import { Chat } from "../../../types/Chat.type/Chat.Props";
@@ -11,7 +11,7 @@ import { styleListDrawer } from "./styleListDrawer";
 import MenuCreateChat from "../MenuCreateChat";
 import { StyledIconButton } from "../../IconButton/IconButton";
 import { TransitionGroup } from 'react-transition-group';
-import LabelBottomNavigation from "../../BottomNavigation/BottomNavigation";
+import { useNavigate } from "react-router-dom";
 
 
 interface SwipeableMobileDrawerProps {
@@ -29,9 +29,23 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
     const { chatInfo, updateChatOrder } = useChat();
     const [items, setItems] = useState([...chatInfo.userChats.chats]); // Initialisez items avec les chats de l'utilisateur
     const [isRearrangeMode, setIsRearrangeMode] = useState(false);
-
+    const navigate = useNavigate();
     const handleChange = (_event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
+    };
+    // Référence à la liste pour contrôler le défilement
+    const listRef = useRef<HTMLDivElement>(null);
+    const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
+    const scrollList = (direction: 'up' | 'down') => {
+        if (listRef.current) {
+            const currentScroll = listRef.current.scrollTop;
+            const scrollAmount = 100;
+            if (direction === 'up') {
+                listRef.current.scrollTo({ top: currentScroll - scrollAmount, behavior: 'smooth' });
+            } else {
+                listRef.current.scrollTo({ top: currentScroll + scrollAmount, behavior: 'smooth' });
+            }
+        }
     };
 
     // Mettre à jour l'état lorsque les éléments sont réordonnés
@@ -50,8 +64,8 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
             storedOrderIds.every((id: string) => currentChatIds.includes(id)) && // Si tous les éléments de storedOrderIds sont dans currentChatIds
             currentChatIds.every((id: string) => storedOrderIds.includes(id)); // Si tous les éléments de currentChatIds sont dans storedOrderIds
 
-        if (!arraysHaveSameElements) {
-            setItems([...chatInfo.userChats.chats]);
+        if (!arraysHaveSameElements) { // Si les deux tableaux n'ont pas les mêmes éléments
+            setItems([...chatInfo.userChats.chats]); // On met à jour les chats
             return;
         }
 
@@ -64,11 +78,22 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
 
 
     const list = () => (
-        <Box
+        <Stack
             sx={{
-                width: '100dvw',
-                height: '100dvh',
-
+                width: '100vw',
+                height: '20dvh', // Hauteur par défaut
+                '@media screen and (min-height: 200px)': {
+                    height: '30dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 400px)': {
+                    height: '55dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 600px)': {
+                    height: '70dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
+                '@media screen and (min-height: 800px)': {
+                    height: '80dvh', // Hauteur pour les écrans de plus de 600px de haut
+                },
             }}
             role="ChatDrawer"
             onKeyDown={onClose}
@@ -80,8 +105,27 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                         onReorder={handleReorder}
                         values={items}
                         className="list-drawer-order"
+                        style={{ position: 'relative' }}
+                        ref={listRef}
 
                     >
+                        <Stack sx={{
+                            position: 'fixed',
+                            bottom: '15%',
+                            zIndex: 1000,
+                            right: isSmUp ? '-0%' : '-5%',
+                            transform: 'translateX(-50%)',
+                            backgroundColor: customTheme.palette.noirTransparent.dark,
+                            borderRadius: customTheme.spacing(1),
+                            padding: customTheme.spacing(1),
+                        }}>
+                            <StyledIconButton title="Défilement vers le haut" onClick={() => scrollList('up')}>
+                                <KeyboardArrowUp />
+                            </StyledIconButton>
+                            <StyledIconButton title="Défilement vers le bas" onClick={() => scrollList('down')}>
+                                <KeyboardArrowDown />
+                            </StyledIconButton>
+                        </Stack>
                         <TransitionGroup>
                             {items.map((item) => (
                                 <Reorder.Item key={item._id} value={item}>
@@ -137,7 +181,7 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                     </List>
                 )
             }
-        </Box>
+        </Stack>
     );
 
     return (
@@ -150,8 +194,6 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                 sx={{
                     '& .MuiDrawer-paper': {
                         backgroundImage: 'linear-gradient(to right, #0a3155, #172e60, #2e2966, #471d67, #5f0061)',
-                        maxHeight: 'calc(100dvh)',
-
                     },
                     '& .MuiPaper-root': {
                         display: 'flex',
@@ -161,78 +203,96 @@ export function SwipeableMobileDrawer({ open, onClose, onOpen, children }: Swipe
                     },
                 }}
             >
-                <DrawerHeader>
+                <div>
+                    <DrawerHeader>
+                        <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
+                            '& .MuiTabs-flexContainer': {
+                                justifyContent: 'flex-end',
+                            },
+                            '& .MuiTab-root': {
+                                flexGrow: 1,
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: customTheme.palette.orangePV.dark,
+                            },
+                        }}>
+                            <Tab sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Chat privé" onClick={() => setShowGroupe(false)} />
+                            <Tab sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Groupe" onClick={() => setShowGroupe(true)} />
+                        </Tabs>
+                        <Stack direction="row" justifyContent="space-between">
+                            <StyledIconButton
+                                title="Retour à la page d'accueil"
+                                size="large"
+                                aria-label="Retour à la page précedente"
+                                aria-controls="nav-drawer"
+                                aria-haspopup="true"
+                                onClick={() => navigate(-1)}
+                                >
+                                <KeyboardArrowLeft />
 
-                    <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
-                        width: '100%',
-                        '& .MuiTabs-flexContainer': {
-                            justifyContent: 'flex-end',
-                        },
-                        '& .MuiTab-root': {
-                            flexGrow: 1,
-                        },
-                        '& .MuiTab-textColorPrimary': {
-                            color: customTheme.palette.slate[200],
-                        },
-                        '& .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected': {
-                            color: customTheme.palette.orangePV.dark,
-                        },
-                        '& .MuiTabs-indicator': {
-                            backgroundColor: customTheme.palette.orangePV.dark,
-                        },
-                    }}>
-                        <Tab label="Chat privé" onClick={() => setShowGroupe(false)} />
-                        <Tab label="Groupe" onClick={() => setShowGroupe(true)} />
-                    </Tabs>
-                    <StyledIconButton
-                        title="Fermer le menu"
-                        size="large"
-                        aria-label="Fermer le menu"
-                        aria-controls="nav-drawer"
-                        aria-haspopup="true"
-                        onClick={onClose}
-                    >
-                        <KeyboardArrowLeft />
-                    </StyledIconButton>
-                </DrawerHeader>
-                {list()}
-
+                            </StyledIconButton>
+                            <StyledIconButton
+                                title="Fermer le menu"
+                                size="large"
+                                aria-label="Fermer le menu"
+                                aria-controls="nav-drawer"
+                                aria-haspopup="true"
+                                onClick={onClose}
+                            >
+                                <Close />
+                            </StyledIconButton>
+                        </Stack>
+                    </DrawerHeader>
+                    {list()}
+                </div>
                 <DrawerFooter >
                     <List>
                         {showGroupe ? (
                             ['Creer un groupe', 'Rejoins un groupe'].map((text, index) => (
-                                <ListItem key={text} disablePadding>
-                                    <ListItemButton>
-                                        <ListItemIcon>
-                                            {index % 2 === 0 ? <GroupAdd /> : <Search />}
-                                        </ListItemIcon>
-                                        <ListItemText primary={text} />
-                                    </ListItemButton>
-                                </ListItem>
+                                <ListItemButton key={text}>
+                                    <ListItemIcon>
+                                        {index % 2 === 0 ? <GroupAdd /> : <Search />}
+                                    </ListItemIcon>
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
                             ))
                         ) : (
                             <>
                                 <MenuCreateChat />
-                                <ListItem key="rearrange-button" disablePadding>
-                                    <ListItemButton
-                                        id="rearrange-button"
-                                        aria-controls={isRearrangeMode ? 'Terminer le rangement' : 'Ranger les chats'}
-                                        aria-haspopup="true"
-                                        aria-expanded={isRearrangeMode ? 'true' : undefined}
-                                        onClick={() => setIsRearrangeMode(!isRearrangeMode)}
-                                    >
-                                        <ListItemIcon>
-                                            <ViewListOutlined />
-                                        </ListItemIcon>
-                                        <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} sx={{
-                                            textAlign: 'center',
-                                        }} />
-                                    </ListItemButton>
-                                </ListItem>
+                                <ListItemButton
+                                    key="rearrange-button"
+                                    id="rearrange-button"
+                                    aria-controls={isRearrangeMode ? 'Terminer le rangement' : 'Ranger les chats'}
+                                    aria-haspopup="true"
+                                    aria-expanded={isRearrangeMode ? 'true' : undefined}
+                                    onClick={() => setIsRearrangeMode(!isRearrangeMode)}
+                                >
+                                    <ListItemIcon>
+                                        <ViewListOutlined />
+                                    </ListItemIcon>
+                                    <ListItemText primary={isRearrangeMode ? "Terminer le rangement" : "Ranger les chats"} />
+                                </ListItemButton>
                             </>
                         )}
                     </List>
-                    <LabelBottomNavigation />
                 </DrawerFooter>
             </SwipeableDrawer>
             {children}

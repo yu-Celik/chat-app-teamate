@@ -1,6 +1,6 @@
-import { Box, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, alpha } from "@mui/material";
+import { Stack, Collapse, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tab, Tabs, Typography, alpha } from "@mui/material";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { DrawerFooter, DrawerHeader} from "./stylesDrawers";
+import { DrawerFooter, DrawerHeader } from "./stylesDrawers";
 import customTheme from '../../../styles/customTheme';
 import { GroupAdd, Search, ViewListOutlined } from "@mui/icons-material";
 import { useChat } from "../../../contexts/ChatContext/useChatContext";
@@ -57,8 +57,8 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
 
     return (
         <>
-            <Box flexGrow={1} display={'flex'} sx={{
-                height: 'calc(100dvh - 69.5px)',
+            <Stack flexGrow={1} display={'flex'} sx={{
+                height: `calc(100dvh - ${heightHeader}px)`,
                 overflow: 'hidden',
                 border: 'none',
             }}>
@@ -72,7 +72,7 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                         border: 'none',
                         '& .MuiDrawer-paper': {
                             width: drawerWidth,
-                            boxSizing: 'border-box',
+                            boxSizing: 'border-Stack',
                             height: `calc(100% - ${heightHeader}px)`,
                             marginTop: `${heightHeader}px`,
                             backgroundColor: alpha(customTheme.palette.slate[800], 0.2),
@@ -99,24 +99,34 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                     <DrawerHeader>
                         <Tabs value={value} onChange={handleChange} aria-label="Chats" sx={{
                             width: '100%',
-                            '& .MuiTabs-flexContainer': {
-                                justifyContent: 'flex-end',
-                            },
                             '& .MuiTab-root': {
                                 flexGrow: 1,
-                            },
-                            '& .MuiTab-textColorPrimary': {
-                                color: customTheme.palette.slate[200],
-                            },
-                            '& .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected': {
-                                color: customTheme.palette.orangePV.dark,
+                                minHeight: '63px',
                             },
                             '& .MuiTabs-indicator': {
                                 backgroundColor: customTheme.palette.orangePV.dark,
                             },
                         }}>
-                            <Tab label="Chat privé" onClick={() => setShowGroupe(false)} />
-                            <Tab label="Groupe" onClick={() => setShowGroupe(true)} />
+                            <Tab id="tab-private" sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Chat privé" onClick={() => setShowGroupe(false)} />
+                            <Tab sx={{
+                                '&.MuiTab-textColorPrimary': {
+                                    color: customTheme.palette.slate[200],
+                                    maxWidth: '100%',
+                                    width: '50%',
+                                },
+                                '&.Mui-selected': {
+                                color: customTheme.palette.orangePV.dark,
+                                },
+                            }} label="Groupe" onClick={() => setShowGroupe(true)} />
                         </Tabs>
                     </DrawerHeader>
                     {
@@ -215,14 +225,14 @@ const PersistentDesktopDrawer = ({ children }: { children: ReactNode }) => {
                 </Drawer>
                 <>
                     {chatInfo?.chatId != null ? children : (
-                        <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'}>
+                        <Stack flexGrow={1} alignItems={'center'} justifyContent={'center'} height={'100%'} marginLeft={`${drawerWidth}px`}>
                             <Typography variant="h6" sx={{ color: customTheme.palette.slate[300] }}>
                                 Aucun chat selectionner
                             </Typography>
                         </Stack>
                     )}
                 </>
-            </Box >
+            </Stack >
         </>
     );
 };

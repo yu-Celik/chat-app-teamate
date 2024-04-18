@@ -1,7 +1,7 @@
 import { Stack, useMediaQuery } from "@mui/material"
-import { LayoutGrid } from "../components/LayoutGrid/LayoutGrid";
+import { LayoutGrid } from "../components/Home/LayoutGrid/LayoutGrid";
 import { InfinitScrollAccueil } from "../components/InfinitScroll/InfinitScrollAccueil";
-import SearchFast from "../components/SearchFast/SearchFast";
+import SearchFast from "../components/Home/SearchFast/SearchFast";
 import { heightHeader } from "../styles/customTheme";
 
 

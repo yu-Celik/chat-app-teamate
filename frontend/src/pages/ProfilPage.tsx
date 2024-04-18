@@ -1,28 +1,32 @@
 import { InfinitScroll } from '../components/InfinitScroll/InfinitScroll.tsx';
-import HeaderProfil from '../components/Profil/HeaderProfil.tsx';
-import { BlockPublication } from '../components/Profil/BlockPublication.tsx';
-import { Box, Stack, useMediaQuery } from '@mui/material';
+import HeaderProfil from '../components/Profil/headerProfil/HeaderProfil.tsx';
+import { BlockPublication } from '../components/Profil/BlockCenter/BlockPublication.tsx';
+import { Stack, useMediaQuery } from '@mui/material';
 import customTheme, { bottomNavigationHeight, heightHeader } from '../styles/customTheme';
-import LeftBlockProfil from '../components/BiographyProfil/LeftBlockProfil.tsx';
-import RightBlockProfil from '../components/BiographyProfil/RightBlockProfil.tsx';
+import LeftBlockProfil from '../components/Profil/BlockLeft/BiographyProfil/LeftBlockProfil.tsx';
+import RightBlockProfil from '../components/Profil/BlockLeft/BiographyProfil/RightBlockProfil.tsx';
 
 export default function Profil() {
     const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
     const isMd = useMediaQuery(customTheme.breakpoints.between('md', 'lg'));
+    const isMdUp = useMediaQuery(customTheme.breakpoints.up('md'));
     const isMdDown = useMediaQuery(customTheme.breakpoints.down('md'));
     const isLgUp = useMediaQuery(customTheme.breakpoints.up('lg'));
 
-    const heightHeaderProfil = isMd || isLgUp ? '80' : '64';
+    // Assurez-vous que heightHeader et bottomNavigationHeight sont en pixels
+    const heightHeaderPx = `${heightHeader}px`;
+    const bottomNavigationHeightPx = `${bottomNavigationHeight}px`;
+
+    const heightHeaderProfil = '96px';
     let heightInfinitScroll = '112px';
 
-    if (isSmUp) heightInfinitScroll = '144px';
-    if (isMd || isLgUp) heightInfinitScroll = '160px';
+    if (isSmUp) heightInfinitScroll = '144px'; // Lorsque la largeur est supérieure à sm
+    if (isMd || isLgUp) heightInfinitScroll = '160px'; // Lorsque la largeur est entre md et lg
 
-    let totalHeight = `calc(100vh - ${heightHeader + bottomNavigationHeight + parseFloat(heightInfinitScroll)}px)`;
-    if (isSmUp) totalHeight = `calc(100vh - ${heightHeader + parseFloat(heightInfinitScroll)}px)`;
+    let totalHeight = `calc(100dvh - (${heightHeaderPx} + ${bottomNavigationHeightPx} + ${heightInfinitScroll}))`;
+    if (isMdUp) totalHeight = `calc(100dvh - (${heightHeaderPx} + ${heightInfinitScroll}))`;
 
-
-    const totalHeightWithout = `calc(${totalHeight} - ${parseFloat(heightHeaderProfil)}px)`;
+    const totalHeightWithout = `calc(${totalHeight} - ${heightHeaderProfil})`;
 
     const commonBoxStyles = {
         maxWidth: '1537px',
@@ -42,10 +46,9 @@ export default function Profil() {
                 <HeaderProfil />
                 {isMdDown && (
                     <BlockPublication />
-
                 )}
                 {isMd && (
-                    <Box component="section" sx={commonBoxStyles}>
+                    <Stack component="section" sx={commonBoxStyles}>
                         <LeftBlockProfil />
                         <Stack
                             sx={{
@@ -56,10 +59,10 @@ export default function Profil() {
                         >
                             <BlockPublication />
                         </Stack>
-                    </Box>
+                    </Stack>
                 )}
                 {isLgUp && (
-                    <Box component="section" sx={commonBoxStyles}>
+                    <Stack component="section" sx={commonBoxStyles}>
                         <LeftBlockProfil />
                         <Stack
                             sx={{
@@ -72,8 +75,7 @@ export default function Profil() {
                             <BlockPublication />
                         </Stack>
                         <RightBlockProfil />
-
-                    </Box>
+                    </Stack>
                 )}
             </Stack>
             <InfinitScroll />

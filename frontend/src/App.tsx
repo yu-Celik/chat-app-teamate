@@ -16,11 +16,11 @@ const ChatPage = lazy(() => import('./pages/ChatPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
 const ProfilPage = lazy(() => import('./pages/ProfilPage'));
 const GamePage = lazy(() => import('./pages/GamePage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 
 const App = () => {
   const { isAuthenticated, currentUser } = useAuth();
-  // const navigate = useNavigate();
   useVerifyUser();
 
   const renderPageBasedOnAuth = (loggedInPage: JSX.Element, loggedOutPage: JSX.Element) => {
@@ -42,6 +42,7 @@ const App = () => {
                 <Route path='/chat' element={renderPageBasedOnAuth(<ChatPage />, <Welcome />)} />
                 <Route path='/profil' element={renderPageBasedOnAuth(<ProfilPage />, <Welcome />)} />
                 <Route path='/jouer' element={renderPageBasedOnAuth(<GamePage />, <Welcome />)} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
           </MainLayout>
