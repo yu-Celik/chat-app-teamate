@@ -33,7 +33,7 @@ app.use('/api/messages', messageRoutes); // pour les routes liées aux messages
 //   res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 // });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   connectToMongoDB();
   console.log(`Le serveur fonctionne sur le port : ${PORT}`);
 });
