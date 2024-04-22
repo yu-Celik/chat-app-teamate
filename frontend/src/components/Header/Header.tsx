@@ -12,8 +12,12 @@ import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { heightHeader } from "../../styles/customTheme";
 import DialogBox from "../DialoguePublication/DialoguePublication";
 
-const pages = ['Accueil', 'Jouer', 'Profil', 'Messagerie'];
-
+const pages = [
+    { label: 'Accueil', path: '/accueil' },
+    { label: 'Jouer', path: '/jouer' },
+    { label: 'Profil', path: '/profil' },
+    { label: 'Messagerie', path: '/chat' }
+];
 export default function Header() {
     const { currentUser } = useAuth();
     const { logoutUser } = useLogout();
@@ -26,7 +30,6 @@ export default function Header() {
     const location = useLocation();
     const is300Up = useMediaQuery(customTheme.breakpoints.up(300));
     const isChatPage = location.pathname.toLocaleLowerCase().includes('/chat');
-
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const notificationsOpen = Boolean(notificationsAnchorEl);
 
@@ -61,7 +64,6 @@ export default function Header() {
         setMobileMoreAnchorEl(event.currentTarget);
         console.log('MobileMenuOpen');
     };
-
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -285,19 +287,27 @@ export default function Header() {
                     <Grid container alignItems="center" flexGrow={1} minHeight={heightHeader} justifyContent={'space-between'}>
                         <Grid md={5} id={'desktop-menu'} display={{ xs: 'none', md: 'flex' }}>
                             {pages.map((page) => (
-                                <Stack key={page} sx={{ my: 2 }}>
+                                <Stack key={page.label} sx={{ my: 2 }}>
                                     <Button
                                         component={RouterLink}
-                                        to={page === 'Messagerie' ? '/chat' : page === 'Accueil' ? '/' : `/${page.toLowerCase()}`}
+                                        to={page.path}
                                         onClick={handleCloseNavMenu}
-                                        sx={{ color: customTheme.palette.slate[200], display: 'block', '&:hover': { color: customTheme.palette.slate[300] } }}
-                                        onMouseEnter={() => { setHoveredPage(page); }}
+                                        sx={{
+                                            color: customTheme.palette.slate[200],
+                                            display: 'block',
+                                            '&:hover': { color: customTheme.palette.slate[300] },
+                                            ...(location.pathname === page.path && {
+                                                color: customTheme.palette.primary.main,
+                                                '&:hover': { color: customTheme.palette.primary.dark },
+                                            })
+                                        }}
+                                        onMouseEnter={() => { setHoveredPage(page.label); }}
                                         onMouseLeave={() => { setHoveredPage(null); }}
                                     >
-                                        {page}
+                                        {page.label}
                                     </Button>
                                     <Divider sx={{
-                                        width: hoveredPage === page ? '100%' : '0%',
+                                        width: (location.pathname === page.path || hoveredPage === page.label) ? '100%' : '0%',
                                         backgroundColor: customTheme.palette.common.white,
                                         height: '1px',
                                         transition: 'width 0.5s',

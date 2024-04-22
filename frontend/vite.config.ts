@@ -20,7 +20,6 @@ export default defineConfig({
 	plugins: [
 		react(),
 		visualizer({ open: true, gzipSize: true, brotliSize: true }),
-
 	],
 	server: {
 		port: 3000,

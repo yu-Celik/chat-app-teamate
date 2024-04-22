@@ -19,6 +19,8 @@ const useUserChats = () => {
                         chats,
                         secondUsers : chats.map((chat: Chat) => chat.members.find(member => member._id !== prevState.currentUser?._id))
                     }));
+                    console.log(chats);
+                    
                     // localStorage.setItem('userChats', JSON.stringify(chats));
                 } else {
                     throw new Error('Aucun chat trouvé.');

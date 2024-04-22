@@ -34,7 +34,7 @@ export const InfinitScrollAccueil = () => {
     },
     {
       id: 6,
-      quote: "Putains ! le chnoiw il est dead ! J'aurais préféré que ça soit Dom.... #twd",
+      quote: "Putains ! le chnoiw il est dead !",
       name: "Aïmane",
     },
     {
@@ -46,7 +46,7 @@ export const InfinitScrollAccueil = () => {
   const isSmUp = useMediaQuery(customTheme.breakpoints.up('sm'));
 
   return (
-    <InfiniteMovingCards direction="left" pauseOnHover={isSmUp} speed="slow" className='' items={image}  />
-  );
+    <InfiniteMovingCards className='max-w-screen-2xl xl:mx-auto scrollbar-none' direction="left" pauseOnHover={isSmUp} speed="slow" items={image} />
+    );
 };
 

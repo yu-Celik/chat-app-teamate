@@ -29,7 +29,7 @@ export default function Profil() {
     const totalHeightWithout = `calc(${totalHeight} - ${heightHeaderProfil})`;
 
     const commonBoxStyles = {
-        maxWidth: '1537px',
+        maxWidth: '1537px', // équivalant a 2xxl en tailwind
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',

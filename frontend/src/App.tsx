@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import { Suspense, lazy } from 'react';
 import { CssBaseline } from '@mui/material';
@@ -35,7 +35,7 @@ const App = () => {
           <MainLayout connected={currentUser.data as User}>
             <Suspense fallback={<LoadingPage />}>
               <Routes>
-                <Route path="/" element={renderPageBasedOnAuth(<HomePage />, <Welcome />)} />
+                <Route path="/" element={<Navigate to="/accueil" replace />} />
                 <Route path="/accueil" element={renderPageBasedOnAuth(<HomePage />, <Welcome />)} />
                 <Route path="/login" element={renderPageBasedOnAuth(<HomePage />, <LoginPage />)} />
                 <Route path="/register" element={renderPageBasedOnAuth(<HomePage />, <RegisterPage />)} />
