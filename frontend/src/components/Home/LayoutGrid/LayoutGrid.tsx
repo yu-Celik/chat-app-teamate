@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, alpha, useMediaQuery } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import customTheme from "../../../styles/customTheme.ts";
@@ -90,8 +90,12 @@ const AnimatedImages = ({ initialImages }) => {
           '& .MuiDialogContent-root': {
             color: customTheme.palette.slate[200],
           },
-          '& .MuiTypography-root': {
+          '& .MuiDialogContentText-root': {
             color: customTheme.palette.slate[200],
+            padding: customTheme.spacing(2, 0)
+          },
+          '& .MuiButtonBase-root': {
+            color: customTheme.palette.slate[200]
           }
         }}
       >
