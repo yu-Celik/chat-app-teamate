@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, alpha, useMediaQuery } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import customTheme from "../../../styles/customTheme.ts";
